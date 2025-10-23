@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import HcmuteLogo from '../../assets/logo_hcmute.png';
 
 const LogoImage = styled.img`
-  height: 120px;
+  height: 5.7rem;
   width: auto;
   object-fit: contain;
 `;

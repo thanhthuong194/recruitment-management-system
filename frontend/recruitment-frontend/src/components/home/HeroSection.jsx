@@ -10,17 +10,16 @@ const HeroWrapper = styled.div`
     max-width: 900px;
     text-align: center;
     color: ${OFF_WHITE_COLOR};
-    padding: 40px;
-    margin-top: -300px; 
+    padding: 2.5rem; 
     position: relative;
     z-index: 5;
-    margin-top: -50px;
+    margin-top: -22rem;
 `;
 
 const MainTitle = styled.h1`
-    font-size: 3.4rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
     text-shadow:
         0 0 5px ${DARK_SHADOW},
         0 0 10px ${DARK_SHADOW};
@@ -33,7 +32,7 @@ const MainTitle = styled.h1`
 const Tagline = styled.h2`
     font-size: 2.0rem; 
     font-weight: 500;
-    margin-bottom: 25px; 
+    margin-bottom: 1.25rem; 
     color: ${OFF_WHITE_COLOR};
     text-shadow: 0 0 3px ${DARK_SHADOW};
 `;
@@ -41,7 +40,7 @@ const Tagline = styled.h2`
 const Description = styled.h2`
     font-size: 1.3rem;
     font-weight: 400; 
-    margin-bottom: 40px; 
+    margin-bottom: 2.5rem; 
     line-height: 1.6;
     opacity: 1;
     color: ${OFF_WHITE_COLOR};
@@ -52,7 +51,7 @@ const Description = styled.h2`
 const ButtonGroup = styled.div`
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 1.25rem;
 `;
 
 const HeroSection = () => {

@@ -15,9 +15,6 @@ const initialLoginState = {
 const LoginPage = () => {
 
     const navigate = useNavigate();
-    // Lấy hàm login từ AuthContext
-    // AuthContext chứa state và hàm liên quan đến xác thực người dùng : user, login, logout
-    // useContext(AuthContext): Truy cập giá trị hiện tại của AuthContext
     const { login } = useContext(AuthContext);
 
     const handleLoginSuccess = (result) => {

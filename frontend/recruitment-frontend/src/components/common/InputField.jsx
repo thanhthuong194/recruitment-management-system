@@ -6,16 +6,16 @@ const ACCENT_COLOR = '#1877f2';
 
 const InputGroup = styled.div`
     text-align: left;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     
     label {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 0.9rem;
+        gap: 0.5rem;
+        font-size: 1rem;
         font-weight: 500;
         color: #333;
-        margin-bottom: 8px;
+        margin-bottom: 0.3rem;
     }
 `;
 
@@ -26,10 +26,10 @@ const InputFieldWrapper = styled.div`
 
     input {
         width: 100%;
-        padding: 12px 15px;
+        padding: 0.4rem 0.7rem;
         border: 1px solid #ddd;
         border-radius: 8px;
-        font-size: 1rem;
+        font-size: 0.9rem;
         transition: border-color 0.2s;
         
         &:focus {
@@ -41,10 +41,10 @@ const InputFieldWrapper = styled.div`
 
     .toggle-password {
         position: absolute;
-        right: 15px;
+        right: 0.7rem;
         cursor: pointer;
         color: #999;
-        font-size: 1.1rem;
+        font-size: 0.9rem;
         
         &:hover {
             color: #333;
@@ -58,16 +58,11 @@ const InputFieldWrapper = styled.div`
  */
 const InputField = ({ Icon, label, isPassword, type = 'text', ...props }) => {
     const [showPassword, setShowPassword] = useState(false);
-    
-    // Xác định type của input
+
     let inputType = type;
     if (isPassword) {
         inputType = showPassword ? 'text' : 'password';
     }
-
-    // 💡 LƯU Ý QUAN TRỌNG:
-    // Thuộc tính 'name', 'value', 'onChange' được truyền qua ...props.
-    // Đảm bảo rằng trong component cha (LoginForm.jsx), bạn đã truyền name="username"
     
     return (
         <InputGroup>
@@ -75,9 +70,6 @@ const InputField = ({ Icon, label, isPassword, type = 'text', ...props }) => {
                 {Icon && <Icon size={12} />} {label}
             </label>
             <InputFieldWrapper>
-                {/* Sử dụng toán tử spread {...props} để truyền name, value, onChange, 
-                  và các thuộc tính input khác (placeholder, required) vào thẻ <input> 
-                */}
                 <input 
                     type={inputType} 
                     {...props} 

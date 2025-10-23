@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaDoorOpen } from 'react-icons/fa';
 import Logo from '../common/Logo'; 
+import useScrollDirection from '../../hooks/useScrollDirection';
 
 const HeaderContainer = styled.header`
     width: 100%;
-    height: 140px;
+    height: 5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -17,6 +18,8 @@ const HeaderContainer = styled.header`
     left: 0;
     z-index: 100;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(${props => (props.$hidden ? '-100%' : '0')});
 `;
 
 const HeaderContent = styled.div`
@@ -26,11 +29,10 @@ const HeaderContent = styled.div`
     align-items: center;
     justify-content: center; 
     position: relative;
-    padding: 0 150px;
+    padding: 0 10rem;
 `;
 
 const LogoWrapper = styled.div`
-    /* GIỮ NGUYÊN CẤU TRÚC CŨ CỦA BẠN */
     position: absolute;
     left: 0;
     display: flex;
@@ -38,11 +40,10 @@ const LogoWrapper = styled.div`
 `;
 
 const Title = styled.div`
-    /* GIỮ NGUYÊN CẤU TRÚC CŨ CỦA BẠN */
     text-align: center; 
 
     h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
         margin: 0;
         font-weight: bold;
         letter-spacing: 1px;
@@ -50,7 +51,7 @@ const Title = styled.div`
     }
 
     h2 {
-        font-size: 2.1rem;
+        font-size: 1.5rem;
         margin: 0;
         font-weight: normal;
         opacity: 0.9;
@@ -60,26 +61,27 @@ const Title = styled.div`
 
 const RightAction = styled.div`
     position: absolute;
-    right: 0; // Đẩy sát góc phải
-    /* Có thể điều chỉnh vị trí dọc (top/bottom) nếu cần, nhưng căn giữa mặc định là đủ */
+    right: 1.5rem;   /* 🔽 đẩy nút vào trong một chút */
+    top: 50%;
+    transform: translateY(-50%);  /* căn giữa theo chiều dọc */
 `;
 
 const AuthActionLink = styled(Link)`
     background-color: white;
     color: #1877f2;
     border: none;
-    border-radius: 8px; 
+    border-radius: 0.5rem; 
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 
-    padding: 10px 15px; 
+    padding: 0.35rem 0.7rem;
     
     display: flex;
     align-items: center;
-    gap: 8px; 
-    font-size: 1rem;
+    gap: 0.3rem; 
+    font-size: 0.9rem; 
     text-decoration: none;
 
     &:hover {
@@ -89,15 +91,20 @@ const AuthActionLink = styled(Link)`
     }
 `;
 
-const Header = () => {
+const Header = ({ isAuthenticated, onLogout }) => {
     const location = useLocation();
+
+    const { isHidden, scrollDir: scrollDirection } = useScrollDirection(80);    
+    console.log(`Scroll Direction: ${scrollDirection} | Is Hidden: ${isHidden}`);
     
     const isAuthPage = location.pathname.startsWith('/login') || 
                        location.pathname.startsWith('/register') || 
                        location.pathname.startsWith('/forgot-password');
 
+    const shouldShowLogout = isAuthenticated && !isAuthPage;
+
     return (
-        <HeaderContainer>
+        <HeaderContainer $hidden={isHidden}>
             <HeaderContent>
                 <LogoWrapper>
                     <Logo />
@@ -106,11 +113,17 @@ const Header = () => {
                     <h1>TRƯỜNG ĐẠI HỌC SƯ PHẠM KỸ THUẬT TP.HCM</h1>
                     <h2>PHÒNG TỔ CHỨC HÀNH CHÍNH</h2>
                 </Title>
-                {isAuthPage && (
+                {(isAuthPage || shouldShowLogout) && (
                     <RightAction>
-                        <AuthActionLink to="/">
-                            <FaArrowLeft size={14} /> Về trang chủ
-                        </AuthActionLink>
+                        {isAuthPage ? (
+                            <AuthActionLink to="/">
+                                <FaArrowLeft size={10} /> Về trang chủ
+                            </AuthActionLink>
+                        ) : (
+                            <AuthActionLink to="/" onClick={onLogout}>
+                                <FaDoorOpen size={10} />Đăng xuất
+                            </AuthActionLink>
+                        )}
                     </RightAction>
                 )}
             </HeaderContent>

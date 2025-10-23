@@ -8,23 +8,23 @@ const ACCENT_COLOR = '#1877f2';
 
 const PrimaryButton = styled.button`
     width: 100%;
-    padding: 12px;
+    padding: 0.5rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     color: white;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
-    margin-top: 20px;
+    margin-top: 0.8rem;
     
     background: linear-gradient(90deg, ${ACCENT_COLOR}, #4ac4d3);
-    box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3);
+    box-shadow: 0 0.2rem 0.6rem rgba(24, 119, 242, 0.3);
 
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 
     &:hover {
         background: linear-gradient(90deg, #166fe5, #45b3c0);
@@ -32,8 +32,8 @@ const PrimaryButton = styled.button`
 `;
 
 const FooterLinks = styled.div`
-    margin-top: 20px;
-    padding-top: 15px;
+    margin-top: 0.8rem;
+    padding-top: 0.5rem;
     border-top: 1px solid #eee;
     font-size: 0.9rem;
     color: #666;
@@ -52,7 +52,7 @@ const FooterLinks = styled.div`
 const RegisterForm = ({ formData, handleChange, handleSubmit, isLoading, error }) => {
     return (
         <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
+            {error && <p style={{ color: 'red', marginBottom: '0.5rem' }}>{error}</p>}
 
             <InputField 
                 Icon={FaUser} 

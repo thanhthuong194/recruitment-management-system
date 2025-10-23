@@ -1,12 +1,6 @@
-// File: src/hooks/useAuth.js (ĐÃ SỬA LỖI)
-
 import { useState, useCallback, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext'; 
 
-/**
- * Hook tùy chỉnh để quản lý form và luồng xác thực (Login, Register, Forgot Password).
- * ...
- */
 const useAuth = (initialState, successCallback, apiFunction) => {
     const [formData, setFormData] = useState(initialState);
     const [error, setError] = useState(null); 
@@ -23,13 +17,8 @@ const useAuth = (initialState, successCallback, apiFunction) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         setError(null);
-        setSuccessMessage(null); // Xóa thông báo thành công khi người dùng nhập lại
-
-        // ❌ XÓA DÒNG NÀY: Việc gọi successCallback trong handleChange gây ra lỗi điều hướng không mong muốn.
-        // if (successCallback) {
-        //     successCallback(null); 
-        // }
-    }, []); // 💡 DEPENDECY ĐÃ ĐƯỢC CẬP NHẬT
+        setSuccessMessage(null);
+    }, []); 
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
@@ -40,11 +29,10 @@ const useAuth = (initialState, successCallback, apiFunction) => {
             const result = await apiFunction(formData); 
             
             if (successCallback) {
-                // Xử lý thành công (Đăng nhập/Đăng ký)
                 if (result && (result.token || result.user)) {
-                    successCallback(result); // GỌI ĐIỀU HƯỚNG CHỈ KHI THÀNH CÔNG API
+                    successCallback(result); 
                 } 
-                // Xử lý tin nhắn thành công (Quên mật khẩu)
+
                 else if (result && result.message) {
                     setSuccessMessage(result.message);
                 } else {
