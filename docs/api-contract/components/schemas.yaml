@@ -1,0 +1,192 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+          example: "user01"
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          example: "lethanhthuong"
+        email:
+          type: string
+          format: email
+          example: "lethanhthuong19423@gmail.com"
+        phone:
+          type: string
+          pattern: "^(\\+84|0)\\d{9,10}$"
+          example: "0123456789"
+        fullName:
+          type: string
+          minLength: 3
+          maxLength: 50
+          example: "Lê Thanh Thưởng"
+        role:
+          type: string
+          enum: [ADMIN, RECRUITER, RECTOR, CANDIDATE]
+          example: "RECTOR"
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, PENDING]
+          example: "ACTIVE"
+        isVerified:
+          type: boolean
+          readOnly: true
+          description: Indicates if the user's email is verified
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2023-10-01T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2023-10-10T12:00:00Z"
+      required:
+        - id
+        - username
+        - email
+        - phone
+        - fullName
+        - role
+        - status
+        - isVerified
+        - createdAt
+        - updatedAt
+
+    UserBasicInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user01"
+        username:
+          type: string
+          example: "lethanhthuong"
+        email:
+          type: string
+          example: "lethanhthuong19423@gmail.com"
+        fullName:
+          type: string
+          example: "Lê Thanh Thưởng"
+        role:
+          type: string
+          example: "RECTOR"
+      required:
+        - id
+        - username
+        - email
+        - fullName
+        - role
+
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          example: "lephuchai"
+        email:
+          type: string
+          format: email
+          example: "lephuchai@gmail.com"
+        phone:
+          type: string
+          pattern: "^(\\+84|0)\\d{9,10}$"
+          example: "0987654321"
+        fullName:
+          type: string
+          minLength: 3
+          maxLength: 50
+          example: "Lê Phú Hải"
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: "lephuchai123"
+        role:
+          type: string
+          enum: [RECRUITER, RECTOR, CANDIDATE]
+          example: "CANDIDATE"
+      required:
+        - username
+        - email
+        - phone
+        - fullName
+        - password
+        - role
+
+    LoginRequest:
+      type: object
+      properties:
+        UsernameOrEmail:
+          type: string
+          example: "lethanhthuong"
+        password:
+          type: string
+          format: password
+          example: "lethanhthuong123"
+      required:
+        - UsernameOrEmail
+        - password  
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5"
+        tokenType:
+          type: string
+          example: "Bearer"
+        expiresIn:
+          type: integer
+          example: 3600
+        user:
+          $ref: "#/components/schemas/UserBasicInfo"
+      required:
+        - accessToken
+        - tokenType
+        - expiresIn
+        - user
+
+    ErrorDetail:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "email"
+        issue:
+          type: string
+          example: "Invalid email format"
+      required:
+        - field
+        - issue
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        errorcode:
+          type: string
+          example: "USER_NOT_FOUND"
+        message:
+          type: string
+          example: "User not found"
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorDetail"
+      required:
+        - success
+        - errorcode
+        - message

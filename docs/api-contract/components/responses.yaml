@@ -1,0 +1,73 @@
+components:
+  responses:
+    Success:
+      description: Successful response (200 OK)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                description: The response data
+            required:
+              - success
+              - data
+
+    Created:
+      description: Resource created successfully (201 Created)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                description: The created resource data
+            required:
+              - success
+              - data
+
+    NoContent:
+      description: No content (204 No Content)
+
+    BadRequest:
+      description: Bad request (400 Bad Request)
+      content:
+        application/json:
+          schema:
+            $ref: "./schemas.yaml#/components/schemas/ErrorResponse"
+
+    Unauthorized:
+      description: Unauthorized (401 Unauthorized)
+      content:
+        application/json:
+          schema:
+            $ref: "./schemas.yaml#/components/schemas/ErrorResponse"
+
+    Forbidden:
+      description: Forbidden (403 Forbidden)
+      content:
+        application/json:
+          schema:
+            $ref: "./schemas.yaml#/components/schemas/ErrorResponse"
+
+    NotFound:
+      description: Resource not found (404 Not Found)
+      content:
+        application/json:
+          schema:
+            $ref: "./schemas.yaml#/components/schemas/ErrorResponse"
+
+    Conflict:
+      description: Conflict (409 Conflict)
+      content:
+        application/json:
+          schema:
+            $ref: "./schemas.yaml#/components/schemas/ErrorResponse"

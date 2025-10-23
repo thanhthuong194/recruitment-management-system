@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: Recruitment Management System API
+  version: 1.0.0
+  description: API for managing recruitment processes.
+  contact:
+    name: Thanh Thuong
+    email: thanhthuongnlp@gmail.com
+
+servers:
+  - url: http://localhost:8080
+    description: localhost
+  - url: https://recruitment-management-system.onrender.com
+    description: Production server
+
+tags:
+  - name: Auth
+    description: Endpoints for user authentication and authorization.
+  - name: Users
+    description: Endpoints for managing user accounts and profiles.
+  - name: Candidates
+    description: Endpoints for managing candidate information and applications.
+  - name: Jobs
+    description: Endpoints for managing job postings and descriptions.
+  - name: Applications
+    description: Endpoints for managing job applications and statuses.
+  - name: Plans
+    description: Endpoints for managing subscription plans and payments.
+  - name: Notifications
+    description: Endpoints for managing user notifications and alerts.
+  - name: Exams
+    description: Endpoints for managing exams and assessments.
+
+paths:
+  /api/auth/register:
+    $ref: "./modules/auth.yaml#/auth_register"
+  /api/auth/login:
+    $ref: "./modules/auth.yaml#/auth_login"
+  /api/auth/refresh:
+    $ref: "./modules/auth.yaml#/auth_refresh"
+  /api/auth/forgot-password:
+    $ref: "./modules/auth.yaml#/auth_forgot_password"
+  /api/auth/reset-password:
+    $ref: "./modules/auth.yaml#/auth_reset_password"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      $ref: './components/schemas.yaml#/components/schemas/User'
+    LoginRequest:
+      $ref: './components/schemas.yaml#/components/schemas/LoginRequest'
+    RegisterRequest:
+      $ref: './components/schemas.yaml#/components/schemas/RegisterRequest'
+    AuthResponse:
+      $ref: './components/schemas.yaml#/components/schemas/AuthResponse'
+
+  responses:
+    Success:
+      $ref: './components/responses.yaml#/components/responses/Success'
+    BadRequest:
+      $ref: './components/responses.yaml#/components/responses/BadRequest'
+    Unauthorized:
+      $ref: './components/responses.yaml#/components/responses/Unauthorized'
+
+  parameters:
+    Page:
+      $ref: './components/parameters.yaml#/components/parameters/Page'
+    Limit:
+      $ref: './components/parameters.yaml#/components/parameters/Limit'
+
+
+security:
+  - BearerAuth: []

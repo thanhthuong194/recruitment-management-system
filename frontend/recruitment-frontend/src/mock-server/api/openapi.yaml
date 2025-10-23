@@ -1,0 +1,507 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: thanhthuongnlp@gmail.com
+    name: Thanh Thuong
+  description: API for managing recruitment processes.
+  title: Recruitment Management System API
+  version: 1.0.0
+servers:
+- description: localhost
+  url: http://localhost:8080
+- description: Production server
+  url: https://recruitment-management-system.onrender.com
+security:
+- BearerAuth: []
+tags:
+- description: Endpoints for user authentication and authorization.
+  name: Auth
+- description: Endpoints for managing user accounts and profiles.
+  name: Users
+- description: Endpoints for managing candidate information and applications.
+  name: Candidates
+- description: Endpoints for managing job postings and descriptions.
+  name: Jobs
+- description: Endpoints for managing job applications and statuses.
+  name: Applications
+- description: Endpoints for managing subscription plans and payments.
+  name: Plans
+- description: Endpoints for managing user notifications and alerts.
+  name: Notifications
+- description: Endpoints for managing exams and assessments.
+  name: Exams
+paths:
+  /api/auth/register:
+    post:
+      description: Create a new user account in the system
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/registerUser_201_response"
+          description: Resource created successfully (201 Created)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+      summary: Register a new user
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /api/auth/login:
+    post:
+      description: Authenticate user and return access token
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+          description: Login successful
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized (401 Unauthorized)
+      summary: User login
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /api/auth/refresh:
+    post:
+      description: Refresh a new access token using a valid refresh token
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/refreshToken_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/refreshToken_200_response"
+          description: New access token generated successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized (401 Unauthorized)
+      summary: Refresh access token
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /api/auth/forgot-password:
+    post:
+      description: Send password reset link to user email
+      operationId: forgotPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/forgotPassword_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/forgotPassword_200_response"
+          description: Successful response (200 OK)
+      summary: Forgot password
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /api/auth/reset-password:
+    post:
+      description: Reset user password using reset token
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/resetPassword_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/forgotPassword_200_response"
+          description: Successful response (200 OK)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+      summary: Reset password
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+components:
+  parameters:
+    Page:
+      description: The page number to retrieve in the paginated results.
+      example: 2
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+    Limit:
+      description: The maximum number of items to return per page.
+      example: 25
+      in: query
+      name: limit
+      required: false
+      schema:
+        default: 10
+        maximum: 100
+        minimum: 1
+        type: integer
+  responses:
+    Success:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/forgotPassword_200_response"
+      description: Successful response (200 OK)
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Bad request (400 Bad Request)
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Unauthorized (401 Unauthorized)
+    Created:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/registerUser_201_response"
+      description: Resource created successfully (201 Created)
+  schemas:
+    User:
+      properties:
+        id:
+          example: user01
+          readOnly: true
+          type: string
+        username:
+          example: lethanhthuong
+          maxLength: 30
+          minLength: 3
+          type: string
+        email:
+          example: lethanhthuong19423@gmail.com
+          format: email
+          type: string
+        phone:
+          example: "0123456789"
+          pattern: "^(\\+84|0)\\d{9,10}$"
+          type: string
+        fullName:
+          example: Lê Thanh Thưởng
+          maxLength: 50
+          minLength: 3
+          type: string
+        role:
+          enum:
+          - ADMIN
+          - RECRUITER
+          - RECTOR
+          - CANDIDATE
+          example: RECTOR
+          type: string
+        status:
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - PENDING
+          example: ACTIVE
+          type: string
+        isVerified:
+          description: Indicates if the user's email is verified
+          example: true
+          readOnly: true
+          type: boolean
+        createdAt:
+          example: 2023-10-01T12:00:00Z
+          format: date-time
+          readOnly: true
+          type: string
+        updatedAt:
+          example: 2023-10-10T12:00:00Z
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - createdAt
+      - email
+      - fullName
+      - id
+      - isVerified
+      - phone
+      - role
+      - status
+      - updatedAt
+      - username
+      type: object
+    LoginRequest:
+      example:
+        password: lethanhthuong123
+        UsernameOrEmail: lethanhthuong
+      properties:
+        UsernameOrEmail:
+          example: lethanhthuong
+          type: string
+        password:
+          example: lethanhthuong123
+          format: password
+          type: string
+      required:
+      - UsernameOrEmail
+      - password
+      type: object
+    RegisterRequest:
+      example:
+        password: lephuchai123
+        role: CANDIDATE
+        phone: "0987654321"
+        fullName: Lê Phú Hải
+        email: lephuchai@gmail.com
+        username: lephuchai
+      properties:
+        username:
+          example: lephuchai
+          maxLength: 30
+          minLength: 3
+          type: string
+        email:
+          example: lephuchai@gmail.com
+          format: email
+          type: string
+        phone:
+          example: "0987654321"
+          pattern: "^(\\+84|0)\\d{9,10}$"
+          type: string
+        fullName:
+          example: Lê Phú Hải
+          maxLength: 50
+          minLength: 3
+          type: string
+        password:
+          example: lephuchai123
+          format: password
+          minLength: 8
+          type: string
+        role:
+          enum:
+          - RECRUITER
+          - RECTOR
+          - CANDIDATE
+          example: CANDIDATE
+          type: string
+      required:
+      - email
+      - fullName
+      - password
+      - phone
+      - role
+      - username
+      type: object
+    AuthResponse:
+      example:
+        expiresIn: 3600
+        accessToken: eyJhbGciOiJIUzI1NiIsInR5
+        tokenType: Bearer
+        user:
+          role: RECTOR
+          fullName: Lê Thanh Thưởng
+          id: user01
+          email: lethanhthuong19423@gmail.com
+          username: lethanhthuong
+      properties:
+        accessToken:
+          example: eyJhbGciOiJIUzI1NiIsInR5
+          type: string
+        tokenType:
+          example: Bearer
+          type: string
+        expiresIn:
+          example: 3600
+          type: integer
+        user:
+          $ref: "#/components/schemas/UserBasicInfo"
+      required:
+      - accessToken
+      - expiresIn
+      - tokenType
+      - user
+      type: object
+    ErrorResponse:
+      example:
+        success: false
+        details:
+        - field: email
+          issue: Invalid email format
+        - field: email
+          issue: Invalid email format
+        message: User not found
+        errorcode: USER_NOT_FOUND
+      properties:
+        success:
+          example: false
+          type: boolean
+        errorcode:
+          example: USER_NOT_FOUND
+          type: string
+        message:
+          example: User not found
+          type: string
+        details:
+          items:
+            $ref: "#/components/schemas/ErrorDetail"
+          type: array
+      required:
+      - errorcode
+      - message
+      - success
+      type: object
+    ErrorDetail:
+      example:
+        field: email
+        issue: Invalid email format
+      properties:
+        field:
+          example: email
+          type: string
+        issue:
+          example: Invalid email format
+          type: string
+      required:
+      - field
+      - issue
+      type: object
+    UserBasicInfo:
+      example:
+        role: RECTOR
+        fullName: Lê Thanh Thưởng
+        id: user01
+        email: lethanhthuong19423@gmail.com
+        username: lethanhthuong
+      properties:
+        id:
+          example: user01
+          type: string
+        username:
+          example: lethanhthuong
+          type: string
+        email:
+          example: lethanhthuong19423@gmail.com
+          type: string
+        fullName:
+          example: Lê Thanh Thưởng
+          type: string
+        role:
+          example: RECTOR
+          type: string
+      required:
+      - email
+      - fullName
+      - id
+      - role
+      - username
+      type: object
+    registerUser_201_response:
+      example:
+        data: "{}"
+        success: true
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          description: The created resource data
+          type: object
+      required:
+      - data
+      - success
+      type: object
+    refreshToken_request:
+      properties:
+        refreshToken:
+          example: refresh-abc-123
+          type: string
+      type: object
+    refreshToken_200_response:
+      example:
+        expiresIn: 0
+        token: token
+      properties:
+        token:
+          type: string
+        expiresIn:
+          type: integer
+      type: object
+    forgotPassword_request:
+      properties:
+        email:
+          format: email
+          type: string
+      type: object
+    forgotPassword_200_response:
+      example:
+        data: "{}"
+        success: true
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          description: The response data
+          type: object
+      required:
+      - data
+      - success
+      type: object
+    resetPassword_request:
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+      type: object
+  securitySchemes:
+    BearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http

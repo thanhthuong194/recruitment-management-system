@@ -1,0 +1,115 @@
+# Auth module (login, register, refresh, password reset)
+
+auth_register:
+  post:
+    tags: [Auth]
+    summary: Register a new user
+    description: Create a new user account in the system
+    operationId: registerUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas.yaml#/components/schemas/RegisterRequest"
+    responses:
+      '201':
+        $ref: "../components/responses.yaml#/components/responses/Created"
+      '400':
+        $ref: "../components/responses.yaml#/components/responses/BadRequest"
+
+auth_login:
+  post:
+    tags: [Auth]
+    summary: User login
+    description: Authenticate user and return access token
+    operationId: loginUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas.yaml#/components/schemas/LoginRequest"
+    responses:
+      '200':
+        description: Login successful
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas.yaml#/components/schemas/AuthResponse"
+      '401':
+        $ref: "../components/responses.yaml#/components/responses/Unauthorized"
+
+auth_refresh:
+  post:
+    tags: [Auth]
+    summary: Refresh access token
+    description: Refresh a new access token using a valid refresh token
+    operationId: refreshToken
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              refreshToken:
+                type: string
+                example: "refresh-abc-123"
+    responses:
+      '200':
+        description: New access token generated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                expiresIn:
+                  type: integer
+      '401':
+        $ref: "../components/responses.yaml#/components/responses/Unauthorized"
+
+auth_forgot_password:
+  post:
+    tags: [Auth]
+    summary: Forgot password
+    description: Send password reset link to user email
+    operationId: forgotPassword
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+    responses:
+      '200':
+        $ref: "../components/responses.yaml#/components/responses/Success"
+
+auth_reset_password:
+  post:
+    tags: [Auth]
+    summary: Reset password
+    description: Reset user password using reset token
+    operationId: resetPassword
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              newPassword:
+                type: string
+    responses:
+      '200':
+        $ref: "../components/responses.yaml#/components/responses/Success"
+      '400':
+        $ref: "../components/responses.yaml#/components/responses/BadRequest"
