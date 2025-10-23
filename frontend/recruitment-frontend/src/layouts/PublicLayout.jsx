@@ -6,6 +6,7 @@ import Overlay from '../components/background/Overlay';
 import Header from '../components/common/Header';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
+import useScrollDirection from '../hooks/useScrollDirection';
 
 const MainContent = styled.main`
     position: relative;
@@ -19,12 +20,13 @@ const MainContent = styled.main`
 `;
 
 const PublicLayout = ({ children }) => {
+    const { isHidden } = useScrollDirection(80);
     return (
         <>
             <VideoBackground />
             <Overlay />           
-            <Header /> 
-            <Navbar isAuthenticated={false} />     
+            <Header $hidden={isHidden}/> 
+            <Navbar isAuthenticated={false} $hidden={isHidden} />     
             <MainContent>
                 {children}
             </MainContent>

@@ -8,22 +8,22 @@ const Container = styled.div`
     width: 95%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px 0;
+    padding: 0rem 0;
 `;
 
 const SectionTitle = styled.h2`
     font-size: 1.8rem;
     color: #3080c9;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     font-weight: 600;
 `;
 
 const DashboardCard = styled.div`
     background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
+    padding: 1.5rem;
+    border-radius: 0.6rem;
+    box-shadow: 0 0.2rem 0.7rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
 `;
 
 const WelcomeMessage = styled(DashboardCard)`
@@ -31,7 +31,7 @@ const WelcomeMessage = styled(DashboardCard)`
     h3 {
         color: #3080c9;
         font-size: 1.5rem;
-        margin-bottom: 10px;
+        margin-bottom: 0.6rem;
     }
     p {
         color: #555;
@@ -42,8 +42,8 @@ const WelcomeMessage = styled(DashboardCard)`
 const FunctionGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
+    gap: 1rem;
+    margin-bottom: 2rem;
 `;
 
 const FunctionItem = styled(DashboardCard)`
@@ -77,8 +77,8 @@ const HomePage = () => {
         <MainLayout>
             <Container>
                 <WelcomeMessage>
-                    <h3>Xin chào, {userName}! 👋</h3>
-                    <p>Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tổ chức Hành chính của Trường Đại học Sư phạm Kỹ thuật TP.HCM. Bạn có thể truy cập các chức năng chính bên dưới.</p>
+                    <h3>Hi bro, {userName}! 👋</h3>
+                    <p>Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tổ chức Hành chính của Trường Đại học Sư phạm Kỹ thuật TP.HCM.</p>
                 </WelcomeMessage>
 
                 <SectionTitle>Danh Mục Chức Năng Chính</SectionTitle>

@@ -27,9 +27,9 @@ const VideoIframe = styled.iframe`
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100vw;
-  height: 56.25vw; /* = 100vw * 9/16, để đúng tỉ lệ 16:9 */
+  height: 56.25vw; 
   min-height: 100vh;
-  min-width: 177.78vh; /* = 100vh * 16/9 */
+  min-width: 177.78vh; 
   pointer-events: none;
   border: none;
 
