@@ -65,27 +65,6 @@ const refreshToken = ({ refreshTokenRequest }) => new Promise(
   },
 );
 /**
-* Register a new user
-* Create a new user account in the system
-*
-* registerRequest RegisterRequest 
-* returns registerUser_201_response
-* */
-const registerUser = ({ registerRequest }) => new Promise(
-  async (resolve, reject) => {
-    try {
-      resolve(Service.successResponse({
-        registerRequest,
-      }));
-    } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
-/**
 * Reset password
 * Reset user password using reset token
 *
@@ -111,6 +90,5 @@ module.exports = {
   forgotPassword,
   loginUser,
   refreshToken,
-  registerUser,
   resetPassword,
 };

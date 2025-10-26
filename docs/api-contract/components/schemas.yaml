@@ -27,7 +27,7 @@ components:
           example: "Lê Thanh Thưởng"
         role:
           type: string
-          enum: [ADMIN, RECRUITER, RECTOR, CANDIDATE]
+          enum: [ADMIN, PERSONNEL MANAGER, RECTOR, UNIT MANAGER]
           example: "RECTOR"
         status:
           type: string
@@ -48,6 +48,37 @@ components:
           format: date-time
           readOnly: true
           example: "2023-10-10T12:00:00Z"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1990-05-15"
+        address:
+          type: string
+          example: "123 Main St, Ho Chi Minh City"
+        sex:
+          type: string 
+          enum: [MALE, FEMALE]
+          example: "MALE"
+        school:
+          type: string
+          example: "HCMUTE"
+        department:
+          type: string
+          example: "Computer Science"
+        position:
+          type: string
+          example: "Lecturer"
+        CPA:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 4.0
+          example: 3.5
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: "lethanhthuong123"
       required:
         - id
         - username
@@ -59,6 +90,14 @@ components:
         - isVerified
         - createdAt
         - updatedAt
+        - dateOfBirth
+        - address
+        - sex
+        - school
+        - department
+        - position
+        - CPA
+        - password
 
     UserBasicInfo:
       type: object
@@ -84,45 +123,7 @@ components:
         - email
         - fullName
         - role
-
-    RegisterRequest:
-      type: object
-      properties:
-        username:
-          type: string
-          minLength: 3
-          maxLength: 30
-          example: "lephuchai"
-        email:
-          type: string
-          format: email
-          example: "lephuchai@gmail.com"
-        phone:
-          type: string
-          pattern: "^(\\+84|0)\\d{9,10}$"
-          example: "0987654321"
-        fullName:
-          type: string
-          minLength: 3
-          maxLength: 50
-          example: "Lê Phú Hải"
-        password:
-          type: string
-          format: password
-          minLength: 8
-          example: "lephuchai123"
-        role:
-          type: string
-          enum: [RECRUITER, RECTOR, CANDIDATE]
-          example: "CANDIDATE"
-      required:
-        - username
-        - email
-        - phone
-        - fullName
-        - password
-        - role
-
+        
     LoginRequest:
       type: object
       properties:
@@ -190,3 +191,142 @@ components:
         - success
         - errorcode
         - message
+
+    UserCreateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        fullName:
+          type: string  
+        role:
+          type: string
+          enum: [ADMIN, PERSONNEL MANAGER, RECTOR, UNIT MANAGER]
+        position:
+          type: string
+        department:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        address:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - phone
+        - fullName
+        - role
+        - position
+        - department
+        - dateOfBirth
+        - address
+        - password
+
+    UserAdminUpdateRequest:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [ADMIN, PERSONNEL MANAGER, RECTOR, UNIT MANAGER]
+        position:
+          type: string
+        department:
+          type: string
+      required:
+        - role
+        - position
+        - department
+
+    UserSelfUpdateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+      required:
+        - username
+        - email
+        - phone
+        - address
+
+
+    PlanCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Giảng viên ngành Khoa học máy tính"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 3
+        jobDescription:
+          type: string
+          example: "Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp."
+        requiredCPA:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 4.0
+          example: 3.2
+      required:
+        - title
+        - quantity
+        - jobDescription
+        - requiredCPA
+
+    PlanResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "plan-001"
+        title:
+          type: string
+          example: "Giảng viên ngành Khoa học máy tính"
+        quantity:
+          type: integer
+          example: 3
+        jobDescription:
+          type: string
+          example: "Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp."
+        requiredCPA:
+          type: number
+          format: float
+          example: 3.2
+        status:
+          type: string
+          enum: [PENDING, APPROVED, REJECTED]
+          example: "PENDING"
+        createdBy:
+          $ref: "#/components/schemas/UserBasicInfo"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-20T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-10-22T12:00:00Z"
+      required:
+        - id
+        - title
+        - quantity
+        - jobDescription
+        - requiredCPA
+        - status
+        - createdBy
+        - createdAt

@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 
-import Header from '../components/common/Header';
-import Navbar from '../components/common/Navbar'; 
+import Header from '../components/common/Header'; 
 import Footer from '../components/common/Footer';
 import { AuthContext } from '../context/AuthContext';
 import useScrollDirection from '../hooks/useScrollDirection';
@@ -34,7 +33,6 @@ const MainLayout = ({ children }) => {
                 isAuthenticated={isAuthenticated} 
                 $hidden={isHidden}
                 onLogout={handleLogout}/> 
-            <Navbar isAuthenticated={isAuthenticated} $hidden={isHidden}/> 
             <ContentArea>
                 {children}
             </ContentArea>

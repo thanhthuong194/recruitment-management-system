@@ -96,9 +96,6 @@ const LoginForm = ({ formData, handleChange, handleSubmit, isLoading, error }) =
 
             <FooterLinks>
                 <Link to="/forgot-password" className="forgot-password">Quên mật khẩu?</Link>
-                <p className="register-link">
-                    Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
-                </p>
             </FooterLinks>
         </form>
     );

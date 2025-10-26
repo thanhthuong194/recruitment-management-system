@@ -14,6 +14,14 @@ Name | Type | Description | Notes
 **isVerified** | **Boolean** | Indicates if the user&#39;s email is verified | [readonly] 
 **createdAt** | **Date** |  | [readonly] 
 **updatedAt** | **Date** |  | [readonly] 
+**dateOfBirth** | **Date** |  | 
+**address** | **String** |  | 
+**sex** | **String** |  | 
+**school** | **String** |  | 
+**department** | **String** |  | 
+**position** | **String** |  | 
+**CPA** | **Number** |  | 
+**password** | **String** |  | 
 
 
 
@@ -22,11 +30,11 @@ Name | Type | Description | Notes
 
 * `ADMIN` (value: `"ADMIN"`)
 
-* `RECRUITER` (value: `"RECRUITER"`)
+* `PERSONNEL MANAGER` (value: `"PERSONNEL MANAGER"`)
 
 * `RECTOR` (value: `"RECTOR"`)
 
-* `CANDIDATE` (value: `"CANDIDATE"`)
+* `UNIT MANAGER` (value: `"UNIT MANAGER"`)
 
 
 
@@ -40,6 +48,17 @@ Name | Type | Description | Notes
 * `INACTIVE` (value: `"INACTIVE"`)
 
 * `PENDING` (value: `"PENDING"`)
+
+
+
+
+
+## Enum: SexEnum
+
+
+* `MALE` (value: `"MALE"`)
+
+* `FEMALE` (value: `"FEMALE"`)
 
 
 

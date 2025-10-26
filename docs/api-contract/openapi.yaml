@@ -32,8 +32,6 @@ tags:
     description: Endpoints for managing exams and assessments.
 
 paths:
-  /api/auth/register:
-    $ref: "./modules/auth.yaml#/auth_register"
   /api/auth/login:
     $ref: "./modules/auth.yaml#/auth_login"
   /api/auth/refresh:
@@ -42,6 +40,24 @@ paths:
     $ref: "./modules/auth.yaml#/auth_forgot_password"
   /api/auth/reset-password:
     $ref: "./modules/auth.yaml#/auth_reset_password"
+  /api/users:
+    $ref: "./modules/users.yaml#/users_root"
+  /api/users/{id}:
+    $ref: "./modules/users.yaml#/users_by_id"
+  /api/users/search:
+    $ref: "./modules/users.yaml#/users_search"
+  /api/users/me:
+    $ref: "./modules/users.yaml#/users_me"
+  /api/plans:
+    $ref: "./modules/plans.yaml#/plan_list"
+  /api/plans/create:
+    $ref: "./modules/plans.yaml#/plan_create"
+  /api/plans/{id}:
+    $ref: "./modules/plans.yaml#/plan_by_id"
+  /api/plans/{id}/status:
+    $ref: "./modules/plans.yaml#/plan_update_status"
+
+  
 
 components:
   securitySchemes:
@@ -55,10 +71,23 @@ components:
       $ref: './components/schemas.yaml#/components/schemas/User'
     LoginRequest:
       $ref: './components/schemas.yaml#/components/schemas/LoginRequest'
-    RegisterRequest:
-      $ref: './components/schemas.yaml#/components/schemas/RegisterRequest'
     AuthResponse:
       $ref: './components/schemas.yaml#/components/schemas/AuthResponse'
+    UserBasicInfo:
+      $ref: './components/schemas.yaml#/components/schemas/UserBasicInfo'
+
+    UserCreateRequest:
+      $ref: "./components/schemas.yaml#/components/schemas/UserCreateRequest"
+    UserAdminUpdateRequest:
+      $ref: "./components/schemas.yaml#/components/schemas/UserAdminUpdateRequest"
+    UserSelfUpdateRequest:
+      $ref: "./components/schemas.yaml#/components/schemas/UserSelfUpdateRequest"
+
+    PlanCreateRequest:
+      $ref: "./components/schemas.yaml#/components/schemas/PlanCreateRequest"
+    PlanResponse:
+      $ref: "./components/schemas.yaml#/components/schemas/PlanResponse"
+
 
   responses:
     Success:
@@ -73,6 +102,13 @@ components:
       $ref: './components/parameters.yaml#/components/parameters/Page'
     Limit:
       $ref: './components/parameters.yaml#/components/parameters/Limit'
+    SortBy:
+      $ref: './components/parameters.yaml#/components/parameters/SortBy'
+    SortOrder:
+      $ref: './components/parameters.yaml#/components/parameters/SortOrder'
+    SearchKeyword:
+      $ref: './components/parameters.yaml#/components/parameters/SearchKeyword'
+
 
 
 security:
