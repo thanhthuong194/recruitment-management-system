@@ -1,6 +1,12 @@
 import React, { useContext } from 'react'; 
 import styled from 'styled-components';
-import { FaUserFriends, FaRegCalendarAlt, FaChartLine, FaCogs } from 'react-icons/fa'; 
+import { 
+    FaUserFriends, 
+    FaClipboardCheck, 
+    FaBullhorn,
+    FaUser,
+    FaIdCard,
+    FaCalendarAlt } from 'react-icons/fa'; 
 import MainLayout from '../layouts/MainLayout'; 
 import { AuthContext } from '../context/AuthContext'; 
 
@@ -78,34 +84,46 @@ const HomePage = () => {
             <Container>
                 <WelcomeMessage>
                     <h3>Hi bro, {userName}! 👋</h3>
-                    <p>Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tổ chức Hành chính của Trường Đại học Sư phạm Kỹ thuật TP.HCM.</p>
+                    <p>Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tuyển dụng của Trường Đại học Sư phạm Kỹ thuật TP.HCM.</p>
                 </WelcomeMessage>
 
                 <SectionTitle>Danh Mục Chức Năng Chính</SectionTitle>
                 
                 <FunctionGrid>
                     <FunctionItem>
+                        <FaCalendarAlt size={36} />
+                        <h4>Lập kế hoạch tuyển dụng</h4>
+                        <p style={{fontSize: '0.9rem', color: '#888'}}>Đề xuất và phê duyệt nhu cầu tuyển dụng của đơn vị.</p>
+                    </FunctionItem>
+                    
+                    <FunctionItem>
+                        <FaBullhorn size={36} />
+                        <h4>Thông báo kế hoạch tuyển dụng</h4>
+                        <p style={{fontSize: '0.9rem', color: '#888'}}>Đăng tải các thông báo và tin tuyển dụng chính thức.</p>
+                    </FunctionItem>
+                    
+                    <FunctionItem>
+                        <FaIdCard size={36} />
+                        <h4>Hồ sơ</h4>
+                        <p style={{fontSize: '0.9rem', color: '#888'}}>Hồ sơ của ứng viên ứng tuyển.</p>
+                    </FunctionItem>
+                    
+                    <FunctionItem>
+                        <FaClipboardCheck size={36} />
+                        <h4>Kết quả</h4>
+                        <p style={{fontSize: '0.9rem', color: '#888'}}>Tổng hợp kết quả tuyển dụng.</p>
+                    </FunctionItem>
+
+                    <FunctionItem>
                         <FaUserFriends size={36} />
-                        <h4>Quản lý Nhân sự</h4>
+                        <h4>Quản lý nhân sự</h4>
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Thêm, sửa, xóa, tra cứu thông tin nhân viên.</p>
                     </FunctionItem>
-                    
+
                     <FunctionItem>
-                        <FaCogs size={36} />
-                        <h4>Quản lý Tài sản</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Theo dõi, kiểm kê và phân bổ tài sản cố định.</p>
-                    </FunctionItem>
-                    
-                    <FunctionItem>
-                        <FaRegCalendarAlt size={36} />
-                        <h4>Lịch Công tác</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Xem và duyệt lịch công tác, nghỉ phép của phòng ban.</p>
-                    </FunctionItem>
-                    
-                    <FunctionItem>
-                        <FaChartLine size={36} />
-                        <h4>Báo cáo & Thống kê</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Xem các báo cáo hoạt động và thống kê hiệu suất.</p>
+                        <FaUser size={36} />
+                        <h4>Cá nhân</h4>
+                        <p style={{fontSize: '0.9rem', color: '#888'}}>Thông tin và hồ sơ cá nhân.</p>
                     </FunctionItem>
                 </FunctionGrid>
 

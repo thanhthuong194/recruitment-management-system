@@ -32,10 +32,18 @@ class User {
      * @param isVerified {Boolean} Indicates if the user's email is verified
      * @param createdAt {Date} 
      * @param updatedAt {Date} 
+     * @param dateOfBirth {Date} 
+     * @param address {String} 
+     * @param sex {module:model/User.SexEnum} 
+     * @param school {String} 
+     * @param department {String} 
+     * @param position {String} 
+     * @param CPA {Number} 
+     * @param password {String} 
      */
-    constructor(id, username, email, phone, fullName, role, status, isVerified, createdAt, updatedAt) { 
+    constructor(id, username, email, phone, fullName, role, status, isVerified, createdAt, updatedAt, dateOfBirth, address, sex, school, department, position, CPA, password) { 
         
-        User.initialize(this, id, username, email, phone, fullName, role, status, isVerified, createdAt, updatedAt);
+        User.initialize(this, id, username, email, phone, fullName, role, status, isVerified, createdAt, updatedAt, dateOfBirth, address, sex, school, department, position, CPA, password);
     }
 
     /**
@@ -43,7 +51,7 @@ class User {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, id, username, email, phone, fullName, role, status, isVerified, createdAt, updatedAt) { 
+    static initialize(obj, id, username, email, phone, fullName, role, status, isVerified, createdAt, updatedAt, dateOfBirth, address, sex, school, department, position, CPA, password) { 
         obj['id'] = id;
         obj['username'] = username;
         obj['email'] = email;
@@ -54,6 +62,14 @@ class User {
         obj['isVerified'] = isVerified;
         obj['createdAt'] = createdAt;
         obj['updatedAt'] = updatedAt;
+        obj['dateOfBirth'] = dateOfBirth;
+        obj['address'] = address;
+        obj['sex'] = sex;
+        obj['school'] = school;
+        obj['department'] = department;
+        obj['position'] = position;
+        obj['CPA'] = CPA;
+        obj['password'] = password;
     }
 
     /**
@@ -96,6 +112,30 @@ class User {
             }
             if (data.hasOwnProperty('updatedAt')) {
                 obj['updatedAt'] = ApiClient.convertToType(data['updatedAt'], 'Date');
+            }
+            if (data.hasOwnProperty('dateOfBirth')) {
+                obj['dateOfBirth'] = ApiClient.convertToType(data['dateOfBirth'], 'Date');
+            }
+            if (data.hasOwnProperty('address')) {
+                obj['address'] = ApiClient.convertToType(data['address'], 'String');
+            }
+            if (data.hasOwnProperty('sex')) {
+                obj['sex'] = ApiClient.convertToType(data['sex'], 'String');
+            }
+            if (data.hasOwnProperty('school')) {
+                obj['school'] = ApiClient.convertToType(data['school'], 'String');
+            }
+            if (data.hasOwnProperty('department')) {
+                obj['department'] = ApiClient.convertToType(data['department'], 'String');
+            }
+            if (data.hasOwnProperty('position')) {
+                obj['position'] = ApiClient.convertToType(data['position'], 'String');
+            }
+            if (data.hasOwnProperty('CPA')) {
+                obj['CPA'] = ApiClient.convertToType(data['CPA'], 'Number');
+            }
+            if (data.hasOwnProperty('password')) {
+                obj['password'] = ApiClient.convertToType(data['password'], 'String');
             }
         }
         return obj;
@@ -141,6 +181,30 @@ class User {
         if (data['status'] && !(typeof data['status'] === 'string' || data['status'] instanceof String)) {
             throw new Error("Expected the field `status` to be a primitive type in the JSON string but got " + data['status']);
         }
+        // ensure the json data is a string
+        if (data['address'] && !(typeof data['address'] === 'string' || data['address'] instanceof String)) {
+            throw new Error("Expected the field `address` to be a primitive type in the JSON string but got " + data['address']);
+        }
+        // ensure the json data is a string
+        if (data['sex'] && !(typeof data['sex'] === 'string' || data['sex'] instanceof String)) {
+            throw new Error("Expected the field `sex` to be a primitive type in the JSON string but got " + data['sex']);
+        }
+        // ensure the json data is a string
+        if (data['school'] && !(typeof data['school'] === 'string' || data['school'] instanceof String)) {
+            throw new Error("Expected the field `school` to be a primitive type in the JSON string but got " + data['school']);
+        }
+        // ensure the json data is a string
+        if (data['department'] && !(typeof data['department'] === 'string' || data['department'] instanceof String)) {
+            throw new Error("Expected the field `department` to be a primitive type in the JSON string but got " + data['department']);
+        }
+        // ensure the json data is a string
+        if (data['position'] && !(typeof data['position'] === 'string' || data['position'] instanceof String)) {
+            throw new Error("Expected the field `position` to be a primitive type in the JSON string but got " + data['position']);
+        }
+        // ensure the json data is a string
+        if (data['password'] && !(typeof data['password'] === 'string' || data['password'] instanceof String)) {
+            throw new Error("Expected the field `password` to be a primitive type in the JSON string but got " + data['password']);
+        }
 
         return true;
     }
@@ -148,7 +212,7 @@ class User {
 
 }
 
-User.RequiredProperties = ["id", "username", "email", "phone", "fullName", "role", "status", "isVerified", "createdAt", "updatedAt"];
+User.RequiredProperties = ["id", "username", "email", "phone", "fullName", "role", "status", "isVerified", "createdAt", "updatedAt", "dateOfBirth", "address", "sex", "school", "department", "position", "CPA", "password"];
 
 /**
  * @member {String} id
@@ -201,6 +265,46 @@ User.prototype['createdAt'] = undefined;
  */
 User.prototype['updatedAt'] = undefined;
 
+/**
+ * @member {Date} dateOfBirth
+ */
+User.prototype['dateOfBirth'] = undefined;
+
+/**
+ * @member {String} address
+ */
+User.prototype['address'] = undefined;
+
+/**
+ * @member {module:model/User.SexEnum} sex
+ */
+User.prototype['sex'] = undefined;
+
+/**
+ * @member {String} school
+ */
+User.prototype['school'] = undefined;
+
+/**
+ * @member {String} department
+ */
+User.prototype['department'] = undefined;
+
+/**
+ * @member {String} position
+ */
+User.prototype['position'] = undefined;
+
+/**
+ * @member {Number} CPA
+ */
+User.prototype['CPA'] = undefined;
+
+/**
+ * @member {String} password
+ */
+User.prototype['password'] = undefined;
+
 
 
 
@@ -219,10 +323,10 @@ User['RoleEnum'] = {
     "ADMIN": "ADMIN",
 
     /**
-     * value: "RECRUITER"
+     * value: "PERSONNEL MANAGER"
      * @const
      */
-    "RECRUITER": "RECRUITER",
+    "PERSONNEL MANAGER": "PERSONNEL MANAGER",
 
     /**
      * value: "RECTOR"
@@ -231,10 +335,10 @@ User['RoleEnum'] = {
     "RECTOR": "RECTOR",
 
     /**
-     * value: "CANDIDATE"
+     * value: "UNIT MANAGER"
      * @const
      */
-    "CANDIDATE": "CANDIDATE"
+    "UNIT MANAGER": "UNIT MANAGER"
 };
 
 
@@ -262,6 +366,27 @@ User['StatusEnum'] = {
      * @const
      */
     "PENDING": "PENDING"
+};
+
+
+/**
+ * Allowed values for the <code>sex</code> property.
+ * @enum {String}
+ * @readonly
+ */
+User['SexEnum'] = {
+
+    /**
+     * value: "MALE"
+     * @const
+     */
+    "MALE": "MALE",
+
+    /**
+     * value: "FEMALE"
+     * @const
+     */
+    "FEMALE": "FEMALE"
 };
 
 

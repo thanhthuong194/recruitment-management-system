@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Button from '../common/Button';
-import { FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import { FaSignInAlt} from 'react-icons/fa';
 
 const DARK_SHADOW = 'rgba(0, 0, 0, 0.6)';
 const OFF_WHITE_COLOR = '#F5F5F5';
@@ -70,9 +70,6 @@ const HeroSection = () => {
             <ButtonGroup>
                 <Button to="/login" primary icon={FaSignInAlt}>
                     Đăng nhập
-                </Button>
-                <Button to="/register" icon={FaUserPlus}>
-                    Đăng ký ngay
                 </Button>
             </ButtonGroup>
         </HeroWrapper>

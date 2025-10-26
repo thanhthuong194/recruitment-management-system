@@ -20,8 +20,6 @@ import ForgotPasswordRequest from '../model/ForgotPasswordRequest';
 import LoginRequest from '../model/LoginRequest';
 import RefreshToken200Response from '../model/RefreshToken200Response';
 import RefreshTokenRequest from '../model/RefreshTokenRequest';
-import RegisterRequest from '../model/RegisterRequest';
-import RegisterUser201Response from '../model/RegisterUser201Response';
 import ResetPasswordRequest from '../model/ResetPasswordRequest';
 
 /**
@@ -164,48 +162,6 @@ export default class AuthApi {
       let returnType = RefreshToken200Response;
       return this.apiClient.callApi(
         '/api/auth/refresh', 'POST',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, null, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the registerUser operation.
-     * @callback module:api/AuthApi~registerUserCallback
-     * @param {String} error Error message, if any.
-     * @param {module:model/RegisterUser201Response} data The data returned by the service call.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Register a new user
-     * Create a new user account in the system
-     * @param {module:model/RegisterRequest} registerRequest 
-     * @param {module:api/AuthApi~registerUserCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/RegisterUser201Response}
-     */
-    registerUser(registerRequest, callback) {
-      let postBody = registerRequest;
-      // verify the required parameter 'registerRequest' is set
-      if (registerRequest === undefined || registerRequest === null) {
-        throw new Error("Missing the required parameter 'registerRequest' when calling registerUser");
-      }
-
-      let pathParams = {
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = ['BearerAuth'];
-      let contentTypes = ['application/json'];
-      let accepts = ['application/json'];
-      let returnType = RegisterUser201Response;
-      return this.apiClient.callApi(
-        '/api/auth/register', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );

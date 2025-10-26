@@ -1,109 +1,108 @@
-import React, { createContext, useState, useEffect } from "react";
-import {
-  loginService,
-  registerService,
-  forgotPasswordService,
-  verifyTokenService,
-} from "../services/AuthService";
+import React, { createContext, useState, useEffect } from 'react';
+
+import { 
+    loginService, 
+    registerService, 
+    forgotPasswordService 
+} from '../services/AuthService'; 
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isInitializing, setIsInitializing] = useState(true); // Trạng thái kiểm tra token
+    // Khai báo State
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-  // 🟢 Đăng nhập
-  const login = async (formData) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const authResponse = await loginService(formData);
-      setUser(authResponse.user);
-      localStorage.setItem("accessToken", authResponse.token);
-      return authResponse;
-    } catch (err) {
-      setError(err.message || "Đăng nhập thất bại.");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // --- 1. LOGIN ---
+    // Nhận đầu vào đơn giản (được trích xuất từ formData của hook useAuth)
+    const login = async (formData) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // Gọi Service Layer
+            const authResponse = await loginService(formData); 
 
-  // 🟢 Đăng ký
-  const register = async (formData) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const registerResponse = await registerService(formData);
-      return registerResponse;
-    } catch (err) {
-      setError(err.message || "Đăng ký thất bại.");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 🟢 Quên mật khẩu
-  const forgotPassword = async (formData) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await forgotPasswordService(formData);
-      return response;
-    } catch (err) {
-      setError(err.message || "Không thể gửi yêu cầu đặt lại mật khẩu.");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 🟢 Đăng xuất
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("accessToken");
-  };
-
-  // 🟢 Kiểm tra token khi app khởi động
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        setIsInitializing(false);
-        return;
-      }
-
-      try {
-        const userData = await verifyTokenService(token);
-        setUser(userData);
-      } catch (err) {
-        localStorage.removeItem("accessToken");
-        setUser(null);
-      } finally {
-        setIsInitializing(false);
-      }
+            // Cập nhật trạng thái và lưu token
+            setUser(authResponse);
+            localStorage.setItem('accessToken', authResponse.token); 
+            setIsLoading(false);
+            return authResponse;
+            
+        } catch (err) {
+            setError(err.message || "Đăng nhập thất bại.");
+            setIsLoading(false);
+            throw err; 
+        }
+    };
+    
+    // --- 2. REGISTER ---
+    const register = async (formData) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // Gọi Service Layer
+            const registerResponse = await registerService(formData); 
+            
+            setIsLoading(false);
+            // Trả về message để hook useAuth xử lý
+            return { message: "Đăng ký thành công. Vui lòng đăng nhập.", ...registerResponse }; 
+            
+        } catch (err) {
+            setError(err.message || "Đăng ký thất bại.");
+            setIsLoading(false);
+            throw err;
+        }
     };
 
-    checkAuth();
-  }, []);
+    // --- 3. FORGOT PASSWORD ---
+    const forgotPassword = async (formData) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // Gọi Service Layer
+            const forgotResponse = await forgotPasswordService(formData); 
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
+            setIsLoading(false);
+            // Trả về message để hook useAuth hiển thị
+            return { message: forgotResponse.message || "Đã gửi yêu cầu đặt lại mật khẩu.", ...forgotResponse }; 
+            
+        } catch (err) {
+            setError(err.message || "Không thể gửi yêu cầu đặt lại mật khẩu.");
+            setIsLoading(false);
+            throw err;
+        }
+    };
+    
+    // --- 4. LOGOUT ---
+    const logout = () => {
+        setUser(null);
+        localStorage.removeItem('accessToken');
+    };
+
+    // --- 5. INITIAL CHECK (Duy trì trạng thái đăng nhập) ---
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            // Có thể gọi API refresh token hoặc kiểm tra token tại đây
+            // Hiện tại: Tạm thời set user để duy trì trạng thái
+            setUser({ token: token, username: 'Authenticated User' });
+        }
+    }, []);
+
+    const authState = { 
+        user, 
+        login, 
         register,
         forgotPassword,
-        logout,
-        isLoading,
-        error,
-        isInitializing,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+        logout, 
+        isLoading, 
+        error 
+    };
+
+    return (
+        <AuthContext.Provider value={authState}>
+            {children}
+        </AuthContext.Provider>
+    );
 };

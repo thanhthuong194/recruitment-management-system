@@ -18,15 +18,22 @@ import ErrorDetail from './model/ErrorDetail';
 import ErrorResponse from './model/ErrorResponse';
 import ForgotPassword200Response from './model/ForgotPassword200Response';
 import ForgotPasswordRequest from './model/ForgotPasswordRequest';
+import GetAllPlans200Response from './model/GetAllPlans200Response';
 import LoginRequest from './model/LoginRequest';
+import PlanCreateRequest from './model/PlanCreateRequest';
+import PlanResponse from './model/PlanResponse';
 import RefreshToken200Response from './model/RefreshToken200Response';
 import RefreshTokenRequest from './model/RefreshTokenRequest';
-import RegisterRequest from './model/RegisterRequest';
-import RegisterUser201Response from './model/RegisterUser201Response';
 import ResetPasswordRequest from './model/ResetPasswordRequest';
+import UpdatePlanStatusRequest from './model/UpdatePlanStatusRequest';
 import User from './model/User';
+import UserAdminUpdateRequest from './model/UserAdminUpdateRequest';
 import UserBasicInfo from './model/UserBasicInfo';
+import UserCreateRequest from './model/UserCreateRequest';
+import UserSelfUpdateRequest from './model/UserSelfUpdateRequest';
 import AuthApi from './api/AuthApi';
+import PlansApi from './api/PlansApi';
+import UsersApi from './api/UsersApi';
 
 
 /**
@@ -98,10 +105,28 @@ export {
     ForgotPasswordRequest,
 
     /**
+     * The GetAllPlans200Response model constructor.
+     * @property {module:model/GetAllPlans200Response}
+     */
+    GetAllPlans200Response,
+
+    /**
      * The LoginRequest model constructor.
      * @property {module:model/LoginRequest}
      */
     LoginRequest,
+
+    /**
+     * The PlanCreateRequest model constructor.
+     * @property {module:model/PlanCreateRequest}
+     */
+    PlanCreateRequest,
+
+    /**
+     * The PlanResponse model constructor.
+     * @property {module:model/PlanResponse}
+     */
+    PlanResponse,
 
     /**
      * The RefreshToken200Response model constructor.
@@ -116,22 +141,16 @@ export {
     RefreshTokenRequest,
 
     /**
-     * The RegisterRequest model constructor.
-     * @property {module:model/RegisterRequest}
-     */
-    RegisterRequest,
-
-    /**
-     * The RegisterUser201Response model constructor.
-     * @property {module:model/RegisterUser201Response}
-     */
-    RegisterUser201Response,
-
-    /**
      * The ResetPasswordRequest model constructor.
      * @property {module:model/ResetPasswordRequest}
      */
     ResetPasswordRequest,
+
+    /**
+     * The UpdatePlanStatusRequest model constructor.
+     * @property {module:model/UpdatePlanStatusRequest}
+     */
+    UpdatePlanStatusRequest,
 
     /**
      * The User model constructor.
@@ -140,14 +159,44 @@ export {
     User,
 
     /**
+     * The UserAdminUpdateRequest model constructor.
+     * @property {module:model/UserAdminUpdateRequest}
+     */
+    UserAdminUpdateRequest,
+
+    /**
      * The UserBasicInfo model constructor.
      * @property {module:model/UserBasicInfo}
      */
     UserBasicInfo,
 
     /**
+     * The UserCreateRequest model constructor.
+     * @property {module:model/UserCreateRequest}
+     */
+    UserCreateRequest,
+
+    /**
+     * The UserSelfUpdateRequest model constructor.
+     * @property {module:model/UserSelfUpdateRequest}
+     */
+    UserSelfUpdateRequest,
+
+    /**
     * The AuthApi service constructor.
     * @property {module:api/AuthApi}
     */
-    AuthApi
+    AuthApi,
+
+    /**
+    * The PlansApi service constructor.
+    * @property {module:api/PlansApi}
+    */
+    PlansApi,
+
+    /**
+    * The UsersApi service constructor.
+    * @property {module:api/UsersApi}
+    */
+    UsersApi
 };

@@ -31,33 +31,6 @@ tags:
 - description: Endpoints for managing exams and assessments.
   name: Exams
 paths:
-  /api/auth/register:
-    post:
-      description: Create a new user account in the system
-      operationId: registerUser
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterRequest"
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/registerUser_201_response"
-          description: Resource created successfully (201 Created)
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-          description: Bad request (400 Bad Request)
-      summary: Register a new user
-      tags:
-      - Auth
-      x-eov-operation-handler: controllers/AuthController
   /api/auth/login:
     post:
       description: Authenticate user and return access token
@@ -160,6 +133,398 @@ paths:
       tags:
       - Auth
       x-eov-operation-handler: controllers/AuthController
+  /api/users:
+    get:
+      description: "Retrieve list of all users (basic info only, excluding sensitive\
+        \ data)"
+      operationId: getAllUsers
+      parameters:
+      - description: The page number to retrieve in the paginated results.
+        example: 2
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          type: integer
+      - description: The maximum number of items to return per page.
+        example: 25
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/UserBasicInfo_1"
+                type: array
+          description: Successfully retrieved users
+      summary: Get all users
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+    post:
+      description: Add a new user to the system (admin only)
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/forgotPassword_200_response"
+          description: Successful response (200 OK)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+      summary: Create new user
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+  /api/users/{id}:
+    delete:
+      description: Remove a user from the system by their ID
+      operationId: deleteUserById
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/forgotPassword_200_response"
+          description: Successful response (200 OK)
+        "404":
+          description: User not found
+      summary: Delete user by ID
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+    get:
+      description: Retrieve detailed information of a specific user by their ID
+      operationId: getUserById
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User found
+        "404":
+          description: User not found
+      summary: Get user by ID
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+    put:
+      description: "Update user's department, position, or role (restricted to admin)"
+      operationId: updateUserById
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAdminUpdateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/forgotPassword_200_response"
+          description: Successful response (200 OK)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+      summary: Update user by ID (admin only)
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+  /api/users/search:
+    get:
+      description: "Search for users by ID, email, or phone number"
+      operationId: searchUsers
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+      - in: query
+        name: email
+        schema:
+          type: string
+      - in: query
+        name: phone
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/UserBasicInfo_1"
+                type: array
+          description: List of users matching search criteria
+      summary: Search users
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+  /api/users/me:
+    get:
+      description: Retrieve the authenticated user's personal profile
+      operationId: getMyProfile
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: Personal profile retrieved successfully
+      summary: Get personal profile
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+    put:
+      description: "Update user’s own contact info (username, email, phone, address)"
+      operationId: updateMyProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSelfUpdateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/forgotPassword_200_response"
+          description: Successful response (200 OK)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+      summary: Update personal profile
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+  /api/plans:
+    get:
+      description: Retrieve a paginated list of all recruitment plans submitted by
+        unit managers.
+      operationId: getAllPlans
+      parameters:
+      - description: The page number to retrieve in the paginated results.
+        example: 2
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          type: integer
+      - description: The maximum number of items to return per page.
+        example: 25
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          maximum: 100
+          minimum: 1
+          type: integer
+      - description: "The field used to sort the results. Supported fields depend\
+          \ on the endpoint (e.g., 'createdAt', 'fullName', 'status')."
+        example: createdAt
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          type: string
+      - description: The order of sorting (ascending or descending).
+        example: desc
+        in: query
+        name: sortOrder
+        required: false
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
+      - description: "A general search term to filter resources across common fields\
+          \ (e.g., name, email, title)."
+        example: Thương
+        in: query
+        name: keyword
+        required: false
+        schema:
+          minLength: 3
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getAllPlans_200_response"
+          description: List of recruitment plans retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized (401 Unauthorized)
+      security:
+      - BearerAuth: []
+      summary: Get all recruitment plans
+      tags:
+      - Plans
+      x-eov-operation-handler: controllers/PlansController
+  /api/plans/create:
+    post:
+      description: Allows a Unit Manager to submit a recruitment plan proposal for
+        approval.
+      operationId: createRecruitmentPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanCreateRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanResponse"
+          description: Recruitment plan created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized (401 Unauthorized)
+      security:
+      - BearerAuth: []
+      summary: Submit recruitment plan
+      tags:
+      - Plans
+      x-eov-operation-handler: controllers/PlansController
+  /api/plans/{id}:
+    get:
+      description: Retrieve details of a specific recruitment plan.
+      operationId: getPlanById
+      parameters:
+      - example: plan-001
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanResponse"
+          description: Recruitment plan retrieved successfully
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+      security:
+      - BearerAuth: []
+      summary: Get plan by ID
+      tags:
+      - Plans
+      x-eov-operation-handler: controllers/PlansController
+  /api/plans/{id}/status:
+    patch:
+      description: "Rector or Personnel Manager updates the status (e.g., APPROVED\
+        \ / REJECTED)."
+      operationId: updatePlanStatus
+      parameters:
+      - example: plan-001
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updatePlanStatus_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanResponse"
+          description: Plan status updated successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized (401 Unauthorized)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request (400 Bad Request)
+      security:
+      - BearerAuth: []
+      summary: Update plan status
+      tags:
+      - Plans
+      x-eov-operation-handler: controllers/PlansController
 components:
   parameters:
     Page:
@@ -183,6 +548,36 @@ components:
         maximum: 100
         minimum: 1
         type: integer
+    SortBy:
+      description: "The field used to sort the results. Supported fields depend on\
+        \ the endpoint (e.g., 'createdAt', 'fullName', 'status')."
+      example: createdAt
+      in: query
+      name: sortBy
+      required: false
+      schema:
+        type: string
+    SortOrder:
+      description: The order of sorting (ascending or descending).
+      example: desc
+      in: query
+      name: sortOrder
+      required: false
+      schema:
+        enum:
+        - asc
+        - desc
+        type: string
+    SearchKeyword:
+      description: "A general search term to filter resources across common fields\
+        \ (e.g., name, email, title)."
+      example: Thương
+      in: query
+      name: keyword
+      required: false
+      schema:
+        minLength: 3
+        type: string
   responses:
     Success:
       content:
@@ -202,14 +597,27 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
       description: Unauthorized (401 Unauthorized)
-    Created:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/registerUser_201_response"
-      description: Resource created successfully (201 Created)
   schemas:
     User:
+      example:
+        role: RECTOR
+        address: "123 Main St, Ho Chi Minh City"
+        isVerified: true
+        sex: MALE
+        fullName: Lê Thanh Thưởng
+        dateOfBirth: 1990-05-15
+        createdAt: 2023-10-01T12:00:00Z
+        password: lethanhthuong123
+        phone: "0123456789"
+        school: HCMUTE
+        CPA: 3.5
+        id: user01
+        position: Lecturer
+        department: Computer Science
+        email: lethanhthuong19423@gmail.com
+        username: lethanhthuong
+        status: ACTIVE
+        updatedAt: 2023-10-10T12:00:00Z
       properties:
         id:
           example: user01
@@ -236,9 +644,9 @@ components:
         role:
           enum:
           - ADMIN
-          - RECRUITER
+          - PERSONNEL MANAGER
           - RECTOR
-          - CANDIDATE
+          - UNIT MANAGER
           example: RECTOR
           type: string
         status:
@@ -263,14 +671,55 @@ components:
           format: date-time
           readOnly: true
           type: string
+        dateOfBirth:
+          example: 1990-05-15
+          format: date
+          type: string
+        address:
+          example: "123 Main St, Ho Chi Minh City"
+          type: string
+        sex:
+          enum:
+          - MALE
+          - FEMALE
+          example: MALE
+          type: string
+        school:
+          example: HCMUTE
+          type: string
+        department:
+          example: Computer Science
+          type: string
+        position:
+          example: Lecturer
+          type: string
+        CPA:
+          example: 3.5
+          format: float
+          maximum: 4.0
+          minimum: 0.0
+          type: number
+        password:
+          example: lethanhthuong123
+          format: password
+          minLength: 8
+          type: string
       required:
+      - CPA
+      - address
       - createdAt
+      - dateOfBirth
+      - department
       - email
       - fullName
       - id
       - isVerified
+      - password
       - phone
+      - position
       - role
+      - school
+      - sex
       - status
       - updatedAt
       - username
@@ -290,53 +739,6 @@ components:
       required:
       - UsernameOrEmail
       - password
-      type: object
-    RegisterRequest:
-      example:
-        password: lephuchai123
-        role: CANDIDATE
-        phone: "0987654321"
-        fullName: Lê Phú Hải
-        email: lephuchai@gmail.com
-        username: lephuchai
-      properties:
-        username:
-          example: lephuchai
-          maxLength: 30
-          minLength: 3
-          type: string
-        email:
-          example: lephuchai@gmail.com
-          format: email
-          type: string
-        phone:
-          example: "0987654321"
-          pattern: "^(\\+84|0)\\d{9,10}$"
-          type: string
-        fullName:
-          example: Lê Phú Hải
-          maxLength: 50
-          minLength: 3
-          type: string
-        password:
-          example: lephuchai123
-          format: password
-          minLength: 8
-          type: string
-        role:
-          enum:
-          - RECRUITER
-          - RECTOR
-          - CANDIDATE
-          example: CANDIDATE
-          type: string
-      required:
-      - email
-      - fullName
-      - password
-      - phone
-      - role
-      - username
       type: object
     AuthResponse:
       example:
@@ -366,6 +768,220 @@ components:
       - expiresIn
       - tokenType
       - user
+      type: object
+    UserBasicInfo:
+      example:
+        role: RECTOR
+        fullName: Lê Thanh Thưởng
+        id: user01
+        email: lethanhthuong19423@gmail.com
+        username: lethanhthuong
+      properties:
+        id:
+          example: user01
+          type: string
+        username:
+          example: lethanhthuong
+          type: string
+        email:
+          example: lethanhthuong19423@gmail.com
+          type: string
+        fullName:
+          example: Lê Thanh Thưởng
+          type: string
+        role:
+          example: RECTOR
+          type: string
+      required:
+      - email
+      - fullName
+      - id
+      - role
+      - username
+      type: object
+    UserCreateRequest:
+      example:
+        password: password
+        role: ADMIN
+        address: address
+        phone: phone
+        fullName: fullName
+        dateOfBirth: 2000-01-23
+        position: position
+        department: department
+        email: email
+        username: username
+      properties:
+        username:
+          type: string
+        email:
+          format: email
+          type: string
+        phone:
+          type: string
+        fullName:
+          type: string
+        role:
+          enum:
+          - ADMIN
+          - PERSONNEL MANAGER
+          - RECTOR
+          - UNIT MANAGER
+          type: string
+        position:
+          type: string
+        department:
+          type: string
+        dateOfBirth:
+          format: date
+          type: string
+        address:
+          type: string
+        password:
+          type: string
+      required:
+      - address
+      - dateOfBirth
+      - department
+      - email
+      - fullName
+      - password
+      - phone
+      - position
+      - role
+      - username
+      type: object
+    UserAdminUpdateRequest:
+      example:
+        role: ADMIN
+        position: position
+        department: department
+      properties:
+        role:
+          enum:
+          - ADMIN
+          - PERSONNEL MANAGER
+          - RECTOR
+          - UNIT MANAGER
+          type: string
+        position:
+          type: string
+        department:
+          type: string
+      required:
+      - department
+      - position
+      - role
+      type: object
+    UserSelfUpdateRequest:
+      example:
+        address: address
+        phone: phone
+        email: email
+        username: username
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+      required:
+      - address
+      - email
+      - phone
+      - username
+      type: object
+    PlanCreateRequest:
+      example:
+        requiredCPA: 3.2
+        quantity: 3
+        jobDescription: Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp.
+        title: Giảng viên ngành Khoa học máy tính
+      properties:
+        title:
+          example: Giảng viên ngành Khoa học máy tính
+          type: string
+        quantity:
+          example: 3
+          minimum: 1
+          type: integer
+        jobDescription:
+          example: Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp.
+          type: string
+        requiredCPA:
+          example: 3.2
+          format: float
+          maximum: 4.0
+          minimum: 0.0
+          type: number
+      required:
+      - jobDescription
+      - quantity
+      - requiredCPA
+      - title
+      type: object
+    PlanResponse:
+      example:
+        requiredCPA: 3.2
+        createdAt: 2025-10-20T12:00:00Z
+        quantity: 3
+        createdBy:
+          role: RECTOR
+          fullName: Lê Thanh Thưởng
+          id: user01
+          email: lethanhthuong19423@gmail.com
+          username: lethanhthuong
+        jobDescription: Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp.
+        id: plan-001
+        title: Giảng viên ngành Khoa học máy tính
+        status: PENDING
+        updatedAt: 2025-10-22T12:00:00Z
+      properties:
+        id:
+          example: plan-001
+          type: string
+        title:
+          example: Giảng viên ngành Khoa học máy tính
+          type: string
+        quantity:
+          example: 3
+          type: integer
+        jobDescription:
+          example: Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp.
+          type: string
+        requiredCPA:
+          example: 3.2
+          format: float
+          type: number
+        status:
+          enum:
+          - PENDING
+          - APPROVED
+          - REJECTED
+          example: PENDING
+          type: string
+        createdBy:
+          $ref: "#/components/schemas/UserBasicInfo"
+        createdAt:
+          example: 2025-10-20T12:00:00Z
+          format: date-time
+          type: string
+        updatedAt:
+          example: 2025-10-22T12:00:00Z
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - createdBy
+      - id
+      - jobDescription
+      - quantity
+      - requiredCPA
+      - status
+      - title
       type: object
     ErrorResponse:
       example:
@@ -411,51 +1027,8 @@ components:
       - field
       - issue
       type: object
-    UserBasicInfo:
-      example:
-        role: RECTOR
-        fullName: Lê Thanh Thưởng
-        id: user01
-        email: lethanhthuong19423@gmail.com
-        username: lethanhthuong
-      properties:
-        id:
-          example: user01
-          type: string
-        username:
-          example: lethanhthuong
-          type: string
-        email:
-          example: lethanhthuong19423@gmail.com
-          type: string
-        fullName:
-          example: Lê Thanh Thưởng
-          type: string
-        role:
-          example: RECTOR
-          type: string
-      required:
-      - email
-      - fullName
-      - id
-      - role
-      - username
-      type: object
-    registerUser_201_response:
-      example:
-        data: "{}"
-        success: true
-      properties:
-        success:
-          example: true
-          type: boolean
-        data:
-          description: The created resource data
-          type: object
-      required:
-      - data
-      - success
-      type: object
+    UserBasicInfo_1:
+      $ref: "#/components/schemas/UserBasicInfo"
     refreshToken_request:
       properties:
         refreshToken:
@@ -498,6 +1071,60 @@ components:
         token:
           type: string
         newPassword:
+          type: string
+      type: object
+    getAllPlans_200_response:
+      example:
+        total: 25
+        items:
+        - requiredCPA: 3.2
+          createdAt: 2025-10-20T12:00:00Z
+          quantity: 3
+          createdBy:
+            role: RECTOR
+            fullName: Lê Thanh Thưởng
+            id: user01
+            email: lethanhthuong19423@gmail.com
+            username: lethanhthuong
+          jobDescription: Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp.
+          id: plan-001
+          title: Giảng viên ngành Khoa học máy tính
+          status: PENDING
+          updatedAt: 2025-10-22T12:00:00Z
+        - requiredCPA: 3.2
+          createdAt: 2025-10-20T12:00:00Z
+          quantity: 3
+          createdBy:
+            role: RECTOR
+            fullName: Lê Thanh Thưởng
+            id: user01
+            email: lethanhthuong19423@gmail.com
+            username: lethanhthuong
+          jobDescription: Giảng dạy các môn học lập trình và hướng dẫn đồ án tốt nghiệp.
+          id: plan-001
+          title: Giảng viên ngành Khoa học máy tính
+          status: PENDING
+          updatedAt: 2025-10-22T12:00:00Z
+      properties:
+        total:
+          example: 25
+          type: integer
+        items:
+          items:
+            $ref: "#/components/schemas/PlanResponse"
+          type: array
+      type: object
+    updatePlanStatus_request:
+      properties:
+        status:
+          enum:
+          - PENDING
+          - APPROVED
+          - REJECTED
+          example: APPROVED
+          type: string
+        feedback:
+          example: Approved by Rector
           type: string
       type: object
   securitySchemes:
