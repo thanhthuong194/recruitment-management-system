@@ -10,3 +10,4 @@ This is a full-stack web application designed to streamline the entire hiring pi
 | Le Phuc Hai | 20241727E |
 | Vu Ngoc Quan | 20250164E |
 | Tran Nhat Minh | 20241813E |
+# trigger CI again
