@@ -35,7 +35,56 @@ export const verifyTokenService = async (token) => {
 };
 
 export const loginService = async ({ username, password }, useMock = true) => {
-    if (useMock) return Promise.resolve(mockData.login(username)); // dữ liệu mock
+    // Validate input
+    if (!username || !password) {
+        throw new Error("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+    }
+
+    // Kiểm tra với danh sách tài khoản cho phép
+    const validAccounts = {
+        'admin': { 
+            password: 'admin123', 
+            role: 'admin',
+            id: '001',
+            name: 'Administrator',
+            email: 'admin@hcmute.edu.vn',
+            permissions: ['create_plan', 'edit_plan', 'delete_plan', 'view_all']
+        },
+        'headmaster': { 
+            password: 'head123', 
+            role: 'headmaster',
+            id: '002',
+            name: 'Nguyễn Văn A',
+            email: 'headmaster@hcmute.edu.vn',
+            permissions: ['approve_plan', 'reject_plan', 'delete_plan', 'view_all']
+        },
+        'staff': { 
+            password: 'staff123', 
+            role: 'staff',
+            id: '003',
+            name: 'Nhân viên',
+            email: 'staff@hcmute.edu.vn',
+            permissions: ['view_own']
+        }
+    };
+
+    if (useMock) {
+        const account = validAccounts[username];
+        if (!account || account.password !== password) {
+            throw new Error("Tên đăng nhập hoặc mật khẩu không đúng");
+        }
+        
+        const userData = {
+            token: `mocked-jwt-token-${account.role}`,
+            user: {
+                ...account,
+                username: username
+            }
+        };
+        
+        return Promise.resolve(userData);
+    }
+    
     const loginReq = new LoginRequest(username, password);
     return promisifyApiCall(authApiInstance.loginUser.bind(authApiInstance), loginReq);
 };

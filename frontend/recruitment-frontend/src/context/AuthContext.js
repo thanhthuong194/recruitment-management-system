@@ -23,9 +23,10 @@ export const AuthProvider = ({ children }) => {
             // Gọi Service Layer
             const authResponse = await loginService(formData); 
 
-            // Cập nhật trạng thái và lưu token
-            setUser(authResponse);
-            localStorage.setItem('accessToken', authResponse.token); 
+            // Cập nhật trạng thái và lưu thông tin
+            setUser(authResponse.user);
+            localStorage.setItem('accessToken', authResponse.token);
+            localStorage.setItem('user', JSON.stringify(authResponse.user));
             setIsLoading(false);
             return authResponse;
             
@@ -83,10 +84,16 @@ export const AuthProvider = ({ children }) => {
     // --- 5. INITIAL CHECK (Duy trì trạng thái đăng nhập) ---
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
-        if (token) {
-            // Có thể gọi API refresh token hoặc kiểm tra token tại đây
-            // Hiện tại: Tạm thời set user để duy trì trạng thái
-            setUser({ token: token, username: 'Authenticated User' });
+        const userStr = localStorage.getItem('user');
+        if (token && userStr) {
+            try {
+                const userData = JSON.parse(userStr);
+                setUser(userData);
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('user');
+            }
         }
     }, []);
 
