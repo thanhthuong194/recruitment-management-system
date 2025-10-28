@@ -1,0 +1,123 @@
+plan_create:
+  post:
+    tags: [Plans]
+    summary: Submit recruitment plan
+    description: Allows a Unit Manager to submit a recruitment plan proposal for approval.
+    operationId: createRecruitmentPlan
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../openapi.yaml#/components/schemas/PlanCreateRequest"
+    responses:
+      '201':
+        description: Recruitment plan created successfully
+        content:
+          application/json:
+            schema:
+              $ref: "../openapi.yaml#/components/schemas/PlanResponse"
+      '400':
+        $ref: "../openapi.yaml#/components/responses/BadRequest"
+      '401':
+        $ref: "../openapi.yaml#/components/responses/Unauthorized"
+
+plan_list:
+  get:
+    tags: [Plans]
+    summary: Get all recruitment plans
+    description: Retrieve a paginated list of all recruitment plans submitted by unit managers.
+    operationId: getAllPlans
+    security:
+      - BearerAuth: []
+    parameters:
+      - $ref: "../openapi.yaml#/components/parameters/Page"
+      - $ref: "../openapi.yaml#/components/parameters/Limit"
+      - $ref: "../openapi.yaml#/components/parameters/SortBy"
+      - $ref: "../openapi.yaml#/components/parameters/SortOrder"
+      - $ref: "../openapi.yaml#/components/parameters/SearchKeyword"
+    responses:
+      '200':
+        description: List of recruitment plans retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                total:
+                  type: integer
+                  example: 25
+                items:
+                  type: array
+                  items:
+                    $ref: "../openapi.yaml#/components/schemas/PlanResponse"
+      '401':
+        $ref: "../openapi.yaml#/components/responses/Unauthorized"
+
+plan_by_id:
+  get:
+    tags: [Plans]
+    summary: Get plan by ID
+    description: Retrieve details of a specific recruitment plan.
+    operationId: getPlanById
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "plan-001"
+    responses:
+      '200':
+        description: Recruitment plan retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: "../openapi.yaml#/components/schemas/PlanResponse"
+      '404':
+        $ref: "../openapi.yaml#/components/responses/BadRequest"
+
+plan_update_status:
+  patch:
+    tags: [Plans]
+    summary: Update plan status
+    description: Rector or Personnel Manager updates the status (e.g., APPROVED / REJECTED).
+    operationId: updatePlanStatus
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "plan-001"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [PENDING, APPROVED, REJECTED]
+                example: "APPROVED"
+              feedback:
+                type: string
+                example: "Approved by Rector"
+    responses:
+      '200':
+        description: Plan status updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: "../openapi.yaml#/components/schemas/PlanResponse"
+      '401':
+        $ref: "../openapi.yaml#/components/responses/Unauthorized"
+      '400':
+        $ref: "../openapi.yaml#/components/responses/BadRequest"

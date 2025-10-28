@@ -128,8 +128,19 @@ Class | Method | HTTP request | Description
 *RecruitmentManagementSystemApi.AuthApi* | [**forgotPassword**](docs/AuthApi.md#forgotPassword) | **POST** /api/auth/forgot-password | Forgot password
 *RecruitmentManagementSystemApi.AuthApi* | [**loginUser**](docs/AuthApi.md#loginUser) | **POST** /api/auth/login | User login
 *RecruitmentManagementSystemApi.AuthApi* | [**refreshToken**](docs/AuthApi.md#refreshToken) | **POST** /api/auth/refresh | Refresh access token
-*RecruitmentManagementSystemApi.AuthApi* | [**registerUser**](docs/AuthApi.md#registerUser) | **POST** /api/auth/register | Register a new user
 *RecruitmentManagementSystemApi.AuthApi* | [**resetPassword**](docs/AuthApi.md#resetPassword) | **POST** /api/auth/reset-password | Reset password
+*RecruitmentManagementSystemApi.PlansApi* | [**createRecruitmentPlan**](docs/PlansApi.md#createRecruitmentPlan) | **POST** /api/plans/create | Submit recruitment plan
+*RecruitmentManagementSystemApi.PlansApi* | [**getAllPlans**](docs/PlansApi.md#getAllPlans) | **GET** /api/plans | Get all recruitment plans
+*RecruitmentManagementSystemApi.PlansApi* | [**getPlanById**](docs/PlansApi.md#getPlanById) | **GET** /api/plans/{id} | Get plan by ID
+*RecruitmentManagementSystemApi.PlansApi* | [**updatePlanStatus**](docs/PlansApi.md#updatePlanStatus) | **PATCH** /api/plans/{id}/status | Update plan status
+*RecruitmentManagementSystemApi.UsersApi* | [**createUser**](docs/UsersApi.md#createUser) | **POST** /api/users | Create new user
+*RecruitmentManagementSystemApi.UsersApi* | [**deleteUserById**](docs/UsersApi.md#deleteUserById) | **DELETE** /api/users/{id} | Delete user by ID
+*RecruitmentManagementSystemApi.UsersApi* | [**getAllUsers**](docs/UsersApi.md#getAllUsers) | **GET** /api/users | Get all users
+*RecruitmentManagementSystemApi.UsersApi* | [**getMyProfile**](docs/UsersApi.md#getMyProfile) | **GET** /api/users/me | Get personal profile
+*RecruitmentManagementSystemApi.UsersApi* | [**getUserById**](docs/UsersApi.md#getUserById) | **GET** /api/users/{id} | Get user by ID
+*RecruitmentManagementSystemApi.UsersApi* | [**searchUsers**](docs/UsersApi.md#searchUsers) | **GET** /api/users/search | Search users
+*RecruitmentManagementSystemApi.UsersApi* | [**updateMyProfile**](docs/UsersApi.md#updateMyProfile) | **PUT** /api/users/me | Update personal profile
+*RecruitmentManagementSystemApi.UsersApi* | [**updateUserById**](docs/UsersApi.md#updateUserById) | **PUT** /api/users/{id} | Update user by ID (admin only)
 
 
 ## Documentation for Models
@@ -139,14 +150,19 @@ Class | Method | HTTP request | Description
  - [RecruitmentManagementSystemApi.ErrorResponse](docs/ErrorResponse.md)
  - [RecruitmentManagementSystemApi.ForgotPassword200Response](docs/ForgotPassword200Response.md)
  - [RecruitmentManagementSystemApi.ForgotPasswordRequest](docs/ForgotPasswordRequest.md)
+ - [RecruitmentManagementSystemApi.GetAllPlans200Response](docs/GetAllPlans200Response.md)
  - [RecruitmentManagementSystemApi.LoginRequest](docs/LoginRequest.md)
+ - [RecruitmentManagementSystemApi.PlanCreateRequest](docs/PlanCreateRequest.md)
+ - [RecruitmentManagementSystemApi.PlanResponse](docs/PlanResponse.md)
  - [RecruitmentManagementSystemApi.RefreshToken200Response](docs/RefreshToken200Response.md)
  - [RecruitmentManagementSystemApi.RefreshTokenRequest](docs/RefreshTokenRequest.md)
- - [RecruitmentManagementSystemApi.RegisterRequest](docs/RegisterRequest.md)
- - [RecruitmentManagementSystemApi.RegisterUser201Response](docs/RegisterUser201Response.md)
  - [RecruitmentManagementSystemApi.ResetPasswordRequest](docs/ResetPasswordRequest.md)
+ - [RecruitmentManagementSystemApi.UpdatePlanStatusRequest](docs/UpdatePlanStatusRequest.md)
  - [RecruitmentManagementSystemApi.User](docs/User.md)
+ - [RecruitmentManagementSystemApi.UserAdminUpdateRequest](docs/UserAdminUpdateRequest.md)
  - [RecruitmentManagementSystemApi.UserBasicInfo](docs/UserBasicInfo.md)
+ - [RecruitmentManagementSystemApi.UserCreateRequest](docs/UserCreateRequest.md)
+ - [RecruitmentManagementSystemApi.UserSelfUpdateRequest](docs/UserSelfUpdateRequest.md)
 
 
 ## Documentation for Authorization

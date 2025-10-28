@@ -7,7 +7,6 @@ Method | HTTP request | Description
 [**forgotPassword**](AuthApi.md#forgotPassword) | **POST** /api/auth/forgot-password | Forgot password
 [**loginUser**](AuthApi.md#loginUser) | **POST** /api/auth/login | User login
 [**refreshToken**](AuthApi.md#refreshToken) | **POST** /api/auth/refresh | Refresh access token
-[**registerUser**](AuthApi.md#registerUser) | **POST** /api/auth/register | Register a new user
 [**resetPassword**](AuthApi.md#resetPassword) | **POST** /api/auth/reset-password | Reset password
 
 
@@ -148,55 +147,6 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**RefreshToken200Response**](RefreshToken200Response.md)
-
-### Authorization
-
-[BearerAuth](../README.md#BearerAuth)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-
-## registerUser
-
-> RegisterUser201Response registerUser(registerRequest)
-
-Register a new user
-
-Create a new user account in the system
-
-### Example
-
-```javascript
-import RecruitmentManagementSystemApi from 'recruitment_management_system_api';
-let defaultClient = RecruitmentManagementSystemApi.ApiClient.instance;
-// Configure Bearer (JWT) access token for authorization: BearerAuth
-let BearerAuth = defaultClient.authentications['BearerAuth'];
-BearerAuth.accessToken = "YOUR ACCESS TOKEN"
-
-let apiInstance = new RecruitmentManagementSystemApi.AuthApi();
-let registerRequest = new RecruitmentManagementSystemApi.RegisterRequest(); // RegisterRequest | 
-apiInstance.registerUser(registerRequest, (error, data, response) => {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-  }
-});
-```
-
-### Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **registerRequest** | [**RegisterRequest**](RegisterRequest.md)|  | 
-
-### Return type
-
-[**RegisterUser201Response**](RegisterUser201Response.md)
 
 ### Authorization
 

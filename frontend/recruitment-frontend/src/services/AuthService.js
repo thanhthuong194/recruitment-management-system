@@ -23,6 +23,16 @@ const promisifyApiCall = (apiMethod, requestData) => {
     });
 };
 
+export const verifyTokenService = async (token) => {
+    if (token) {
+        return Promise.resolve({
+            token: token,
+            id: 'mock-id-001',
+            username: 'mock_user_restored',
+        });
+    }
+    return Promise.reject(new Error("Token không tồn tại hoặc đã hết hạn."));
+};
 
 export const loginService = async ({ username, password }, useMock = true) => {
     if (useMock) return Promise.resolve(mockData.login(username)); // dữ liệu mock

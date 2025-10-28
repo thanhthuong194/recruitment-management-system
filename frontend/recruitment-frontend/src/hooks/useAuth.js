@@ -1,12 +1,6 @@
-// File: src/hooks/useAuth.js (ĐÃ SỬA LỖI)
-
 import { useState, useCallback, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext'; 
 
-/**
- * Hook tùy chỉnh để quản lý form và luồng xác thực (Login, Register, Forgot Password).
- * ...
- */
 const useAuth = (initialState, successCallback, apiFunction) => {
     const [formData, setFormData] = useState(initialState);
     const [error, setError] = useState(null); 

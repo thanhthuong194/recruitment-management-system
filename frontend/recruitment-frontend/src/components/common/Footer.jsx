@@ -1,4 +1,3 @@
-// src/components/Common/Footer.jsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -6,10 +5,10 @@ const FooterWrapper = styled.footer`
     width: 100%;
     background: linear-gradient(to right, #007bff, #00c6ff, #00c776); 
     color: white;
-    padding: 20px 0;
+    padding: 0.3rem 0;
     text-align: center;
-    font-size: 1.2rem;
-    line-height: 1.5;
+    font-size: 0.8rem;
+    line-height: 1;
     position: relative; 
     z-index: 10;
 `;
@@ -17,11 +16,11 @@ const FooterWrapper = styled.footer`
 const FooterContent = styled.div`
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 1.25rem;
 `;
 
 const FooterText = styled.p`
-    margin: 5px 0;
+    margin: 0.3rem 0;
 `;
 
 const Footer = () => {

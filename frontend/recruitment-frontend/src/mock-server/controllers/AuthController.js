@@ -20,10 +20,6 @@ const refreshToken = async (request, response) => {
   await Controller.handleRequest(request, response, service.refreshToken);
 };
 
-const registerUser = async (request, response) => {
-  await Controller.handleRequest(request, response, service.registerUser);
-};
-
 const resetPassword = async (request, response) => {
   await Controller.handleRequest(request, response, service.resetPassword);
 };
@@ -33,6 +29,5 @@ module.exports = {
   forgotPassword,
   loginUser,
   refreshToken,
-  registerUser,
   resetPassword,
 };

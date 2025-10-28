@@ -17,21 +17,19 @@ const AuthContainer = styled.div`
     
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     position: relative;
     padding-top: 0;
-    padding-bottom: 50px;
+    padding-bottom: 2rem;
 `;
 
 const ContentWrapper = styled.div`
-    /* Bù đắp chiều cao Header cố định (140px) */
-    padding-top: 140px; 
     width: 100%;
-    height: 100%;
+    margin-top: 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column; /* Đảm bảo nội dung căn giữa và không bị trôi */
+    flex-direction: column; 
 `;
 
 

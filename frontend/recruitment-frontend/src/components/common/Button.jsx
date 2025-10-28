@@ -53,7 +53,6 @@ const StyledButton = styled.button`
 const Button = ({ children, primary, to, onClick, type = 'button', icon: IconComponent, ...props }) => {
     const ButtonContent = (
         <>
-            {/* 💡 Hiển thị Icon nếu có */}
             {IconComponent && <IconComponent />} 
             {children}
         </>

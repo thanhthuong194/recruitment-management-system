@@ -1,7 +1,5 @@
-// File: src/context/AuthContext.js
-
 import React, { createContext, useState, useEffect } from 'react';
-// 💡 LƯU Ý: Đảm bảo đường dẫn tới AuthService là chính xác
+
 import { 
     loginService, 
     registerService, 
@@ -34,7 +32,7 @@ export const AuthProvider = ({ children }) => {
         } catch (err) {
             setError(err.message || "Đăng nhập thất bại.");
             setIsLoading(false);
-            throw err; // Ném lỗi để useAuth bắt và hiển thị
+            throw err; 
         }
     };
     
