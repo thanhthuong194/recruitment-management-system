@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import MainLayout from '../layouts/MainLayout';
@@ -116,6 +117,11 @@ const PlanCard = styled.div`
     &:hover {
         transform: ${props => (props.canEdit || props.canApprove) ? 'translateY(-3px)' : 'none'};
         box-shadow: ${props => (props.canEdit || props.canApprove) ? '0 4px 8px rgba(0, 0, 0, 0.1)' : '0 2px 4px rgba(0, 0, 0, 0.05)'};
+    cursor: ${props => props.isHeadmaster ? 'pointer' : 'default'};
+
+    &:hover {
+        transform: ${props => props.isHeadmaster ? 'translateY(-3px)' : 'none'};
+        box-shadow: ${props => props.isHeadmaster ? '0 4px 8px rgba(0, 0, 0, 0.1)' : '0 2px 4px rgba(0, 0, 0, 0.05)'};
     }
 `;
 
@@ -192,6 +198,34 @@ const RecruitmentPlanPage = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+const mockPlans = [
+    {
+        id: 1,
+        title: 'Tuyển dụng giảng viên khoa CNTT',
+        department: 'Khoa Công nghệ thông tin',
+        positions: 3,
+        status: 'approved',
+        deadline: '2025-12-31',
+    },
+    {
+        id: 2,
+        title: 'Tuyển dụng nhân viên phòng đào tạo',
+        department: 'Phòng Đào tạo',
+        positions: 2,
+        status: 'pending',
+        deadline: '2025-11-30',
+    },
+    {
+        id: 3,
+        title: 'Tuyển dụng giảng viên khoa Điện-Điện tử',
+        department: 'Khoa Điện-Điện tử',
+        positions: 4,
+        status: 'rejected',
+        deadline: '2025-11-15',
+    },
+];
+
+const RecruitmentPlanPage = () => {
     const { user } = useContext(AuthContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -230,6 +264,11 @@ const RecruitmentPlanPage = () => {
 
     const handlePlanClick = (plan) => {
         if (canEditPlan || canApprovePlan) {
+    // Kiểm tra người dùng có phải là hiệu trưởng
+    const isHeadmaster = user?.role === 'headmaster';
+
+    const handlePlanClick = (plan) => {
+        if (isHeadmaster) {
             setEditingPlan(plan);
             setIsModalOpen(true);
         }
@@ -291,6 +330,33 @@ const RecruitmentPlanPage = () => {
                 alert('Có lỗi xảy ra khi từ chối kế hoạch');
             }
         }
+        setEditingPlan(null);
+        setIsModalOpen(true);
+    };
+
+    const handleSubmit = (data) => {
+        if (editingPlan) {
+            // Cập nhật kế hoạch hiện có
+            console.log('Updating plan:', { ...editingPlan, ...data });
+        } else {
+            // Tạo kế hoạch mới
+            console.log('Creating new plan:', data);
+        }
+        setIsModalOpen(false);
+    };
+
+    const handleDelete = (planId) => {
+        if (window.confirm('Bạn có chắc muốn xóa kế hoạch này?')) {
+            console.log('Deleting plan:', planId);
+        }
+    };
+
+    const handleApprove = (planId) => {
+        console.log('Approving plan:', planId);
+    };
+
+    const handleReject = (planId) => {
+        console.log('Rejecting plan:', planId);
     };
 
     return (
@@ -304,6 +370,10 @@ const RecruitmentPlanPage = () => {
                             Thêm kế hoạch mới
                         </ActionButton>
                     )}
+                    <ActionButton onClick={handleAddPlan}>
+                        <FaPlus />
+                        Thêm kế hoạch mới
+                    </ActionButton>
                 </PageHeader>
 
                 <SearchBar>
@@ -412,6 +482,75 @@ const RecruitmentPlanPage = () => {
                         ))}
                     </PlanGrid>
                 )}
+                <PlanGrid>
+                    {mockPlans.map(plan => (
+                        <PlanCard 
+                            key={plan.id} 
+                            isHeadmaster={isHeadmaster}
+                            onClick={() => handlePlanClick(plan)}
+                        >
+                            <PlanStatus status={plan.status}>
+                                {plan.status === 'approved' && 'Đã duyệt'}
+                                {plan.status === 'pending' && 'Chờ duyệt'}
+                                {plan.status === 'rejected' && 'Từ chối'}
+                            </PlanStatus>
+                            <PlanTitle>{plan.title}</PlanTitle>
+                            <PlanInfo>Đơn vị: {plan.department}</PlanInfo>
+                            <PlanInfo>Số lượng: {plan.positions} vị trí</PlanInfo>
+                            <PlanInfo>Hạn nộp: {new Date(plan.deadline).toLocaleDateString('vi-VN')}</PlanInfo>
+                            
+                            {plan.status === 'pending' && isHeadmaster && (
+                                <CardActions>
+                                    <CardActionButton
+                                        approve
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleApprove(plan.id);
+                                        }}
+                                        title="Phê duyệt"
+                                    >
+                                        <FaCheck />
+                                    </CardActionButton>
+                                    <CardActionButton
+                                        reject
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleReject(plan.id);
+                                        }}
+                                        title="Từ chối"
+                                    >
+                                        <FaTimes />
+                                    </CardActionButton>
+                                </CardActions>
+                            )}
+                            
+                            {(user?.id === plan.createdBy || isHeadmaster) && plan.status !== 'approved' && (
+                                <CardActions>
+                                    <CardActionButton
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setEditingPlan(plan);
+                                            setIsModalOpen(true);
+                                        }}
+                                        title="Chỉnh sửa"
+                                    >
+                                        <FaEdit />
+                                    </CardActionButton>
+                                    <CardActionButton
+                                        delete
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDelete(plan.id);
+                                        }}
+                                        title="Xóa"
+                                    >
+                                        <FaTrash />
+                                    </CardActionButton>
+                                </CardActions>
+                            )}
+                        </PlanCard>
+                    ))}
+                </PlanGrid>
 
                 <RecruitmentPlanModal 
                     isOpen={isModalOpen}
