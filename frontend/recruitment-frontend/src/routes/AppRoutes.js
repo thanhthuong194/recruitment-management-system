@@ -6,6 +6,7 @@ import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import HomePage from "../pages/HomePage";
+import RecruitmentPlanPage from "../pages/RecruitmentPlanPage";
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/recruitment/plan"
+        element={
+          <ProtectedRoute>
+            <RecruitmentPlanPage />
           </ProtectedRoute>
         }
       />

@@ -1,12 +1,33 @@
 export const mockData = {
-  login: (UsernameOrEmail) => ({
-    token: "mocked-jwt-token",
-    user: {
-      UsernameOrEmail,
-      FullName: "Lê Thanh Thưởng",
-      Email: `${UsernameOrEmail}@example.com`,
-    },
-  }),
+  login: (username) => {
+    // Tài khoản hiệu trưởng
+    if (username === "headmaster" || username === "hieu_truong") {
+      return {
+        token: "mocked-jwt-token-headmaster",
+        user: {
+          id: "001",
+          username,
+          name: "Nguyễn Văn A",
+          email: "headmaster@hcmute.edu.vn",
+          role: "headmaster",
+          position: "Hiệu trưởng"
+        }
+      };
+    }
+    
+    // Tài khoản thường
+    return {
+      token: "mocked-jwt-token-user",
+      user: {
+        id: "002",
+        username,
+        name: "Lê Thanh Thưởng",
+        email: `${username}@hcmute.edu.vn`,
+        role: "staff",
+        position: "Giảng viên"
+      }
+    };
+  },
 
   register: (username) => ({
     message: "User registered successfully",
