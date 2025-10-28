@@ -121,6 +121,7 @@ const HomePage = () => {
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Thêm, sửa, xóa, tra cứu thông tin nhân viên.</p>
                     </FunctionItem>
 
+                    <FunctionItem>
                     <FunctionItem as={Link} to="/profile">
                         <FaUser size={36} />
                         <h4>Cá nhân</h4>

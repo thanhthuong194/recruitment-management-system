@@ -49,12 +49,3 @@ src/model/UserAdminUpdateRequest.js
 src/model/UserBasicInfo.js
 src/model/UserCreateRequest.js
 src/model/UserSelfUpdateRequest.js
-test/api/PlansApi.spec.js
-test/api/UsersApi.spec.js
-test/model/GetAllPlans200Response.spec.js
-test/model/PlanCreateRequest.spec.js
-test/model/PlanResponse.spec.js
-test/model/UpdatePlanStatusRequest.spec.js
-test/model/UserAdminUpdateRequest.spec.js
-test/model/UserCreateRequest.spec.js
-test/model/UserSelfUpdateRequest.spec.js
