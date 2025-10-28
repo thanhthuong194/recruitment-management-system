@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'; 
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { 
     FaUserFriends, 
     FaClipboardCheck, 
@@ -90,7 +91,7 @@ const HomePage = () => {
                 <SectionTitle>Danh Mục Chức Năng Chính</SectionTitle>
                 
                 <FunctionGrid>
-                    <FunctionItem>
+                    <FunctionItem as={Link} to="/recruitment/plan">
                         <FaCalendarAlt size={36} />
                         <h4>Lập kế hoạch tuyển dụng</h4>
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Đề xuất và phê duyệt nhu cầu tuyển dụng của đơn vị.</p>
