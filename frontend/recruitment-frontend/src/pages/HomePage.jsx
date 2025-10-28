@@ -92,6 +92,7 @@ const HomePage = () => {
                 
                 <FunctionGrid>
                     <FunctionItem as={Link} to="/recruitment/plan">
+                    <FunctionItem>
                         <FaCalendarAlt size={36} />
                         <h4>Lập kế hoạch tuyển dụng</h4>
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Đề xuất và phê duyệt nhu cầu tuyển dụng của đơn vị.</p>
