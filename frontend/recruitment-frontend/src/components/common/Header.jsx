@@ -32,11 +32,20 @@ const HeaderContent = styled.div`
     padding: 0 10rem;
 `;
 
-const LogoWrapper = styled.div`
+const LogoLinkWrapper = styled(Link)`
     position: absolute;
     left: 0;
     display: flex;
     align-items: center;
+    /* Loại bỏ gạch chân của Link */
+    text-decoration: none; 
+    /* Tăng độ tương tác khi hover */
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 0.85;
+    }
 `;
 
 const Title = styled.div`
@@ -106,9 +115,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
     return (
         <HeaderContainer $hidden={isHidden}>
             <HeaderContent>
-                <LogoWrapper>
+                <LogoLinkWrapper to="/home">
                     <Logo />
-                </LogoWrapper>
+                </LogoLinkWrapper>
                 <Title>
                     <h1>TRƯỜNG ĐẠI HỌC SƯ PHẠM KỸ THUẬT TP.HCM</h1>
                     <h2>PHÒNG TỔ CHỨC HÀNH CHÍNH</h2>

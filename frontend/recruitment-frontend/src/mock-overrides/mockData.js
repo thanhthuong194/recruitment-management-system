@@ -30,38 +30,25 @@ export const mockData = {
       }
     };
 
-    const user = users[role] || users.staff;
-    return {
-      token: `mocked-jwt-token-${role}`,
-      user: user
-    };
-  login: (username) => {
-    // Tài khoản hiệu trưởng
-    if (username === "headmaster" || username === "hieu_truong") {
+    // Ưu tiên phân biệt theo role hoặc username
+    if (username === "headmaster" || username === "hieu_truong" || role === "headmaster") {
       return {
         token: "mocked-jwt-token-headmaster",
-        user: {
-          id: "001",
-          username,
-          name: "Nguyễn Văn A",
-          email: "headmaster@hcmute.edu.vn",
-          role: "headmaster",
-          position: "Hiệu trưởng"
-        }
+        user: users.headmaster
       };
     }
-    
-    // Tài khoản thường
+
+    if (role === "admin" || username === "admin") {
+      return {
+        token: "mocked-jwt-token-admin",
+        user: users.admin
+      };
+    }
+
+    // Mặc định là staff
     return {
-      token: "mocked-jwt-token-user",
-      user: {
-        id: "002",
-        username,
-        name: "Lê Thanh Thưởng",
-        email: `${username}@hcmute.edu.vn`,
-        role: "staff",
-        position: "Giảng viên"
-      }
+      token: "mocked-jwt-token-staff",
+      user: users.staff
     };
   },
 

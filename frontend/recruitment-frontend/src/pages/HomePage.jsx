@@ -58,6 +58,10 @@ const FunctionItem = styled(DashboardCard)`
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
     border-bottom: 5px solid #1877f2;
+    text-decoration: none;
+    p {
+        text-decoration: none;
+    }
     
     &:hover {
         transform: translateY(-5px);
@@ -84,7 +88,7 @@ const HomePage = () => {
         <MainLayout>
             <Container>
                 <WelcomeMessage>
-                    <h3>Hi bro, {userName}! 👋</h3>
+                    <h3>Hi! Welcome, {userName}! 👋</h3>
                     <p>Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tuyển dụng của Trường Đại học Sư phạm Kỹ thuật TP.HCM.</p>
                 </WelcomeMessage>
 
@@ -121,7 +125,6 @@ const HomePage = () => {
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Thêm, sửa, xóa, tra cứu thông tin nhân viên.</p>
                     </FunctionItem>
 
-                    <FunctionItem>
                     <FunctionItem as={Link} to="/profile">
                         <FaUser size={36} />
                         <h4>Cá nhân</h4>

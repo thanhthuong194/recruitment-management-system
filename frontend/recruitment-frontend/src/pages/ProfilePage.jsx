@@ -69,7 +69,6 @@ const EditButton = styled.button`
 const ProfilePage = () => {
   const { user } = useContext(AuthContext);
 
-  // Mock data based on img2.png, will replace with user data from context/API
   const profileData = {
     fullName: user?.name || "Chưa có thông tin",
     dob: "01/01/1990",
