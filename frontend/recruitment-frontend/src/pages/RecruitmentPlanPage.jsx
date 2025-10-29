@@ -1,4 +1,4 @@
-import React, { useState, useContext /*, useEffect */ } from 'react'; // Bỏ useEffect nếu không dùng fetch
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import MainLayout from '../layouts/MainLayout';
@@ -114,6 +114,12 @@ const PlanCard = styled.div`
     transition: transform 0.2s, box-shadow 0.2s;
     /* Điều chỉnh cursor dựa trên quyền edit hoặc approve */
     cursor: ${props => (props.canEdit || props.canApprove) ? 'pointer' : 'default'};
+    cursor: ${props => (props.canEdit || props.canApprove) ? 'pointer' : 'default'};
+
+    &:hover {
+        transform: ${props => (props.canEdit || props.canApprove) ? 'translateY(-3px)' : 'none'};
+        box-shadow: ${props => (props.canEdit || props.canApprove) ? '0 4px 8px rgba(0, 0, 0, 0.1)' : '0 2px 4px rgba(0, 0, 0, 0.05)'};
+    cursor: ${props => props.isHeadmaster ? 'pointer' : 'default'};
 
     &:hover {
         transform: ${props => (props.canEdit || props.canApprove) ? 'translateY(-3px)' : 'none'};
@@ -186,6 +192,39 @@ const PlanInfo = styled.div`
 
 // const plansApi = new PlansApi(); // Tạm thời không tạo instance API
 
+const plansApi = new PlansApi();
+
+const RecruitmentPlanPage = () => {
+    const [plans, setPlans] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+const mockPlans = [
+    {
+        id: 1,
+        title: 'Tuyển dụng giảng viên khoa CNTT',
+        department: 'Khoa Công nghệ thông tin',
+        positions: 3,
+        status: 'approved',
+        deadline: '2025-12-31',
+    },
+    {
+        id: 2,
+        title: 'Tuyển dụng nhân viên phòng đào tạo',
+        department: 'Phòng Đào tạo',
+        positions: 2,
+        status: 'pending',
+        deadline: '2025-11-30',
+    },
+    {
+        id: 3,
+        title: 'Tuyển dụng giảng viên khoa Điện-Điện tử',
+        department: 'Khoa Điện-Điện tử',
+        positions: 4,
+        status: 'rejected',
+        deadline: '2025-11-15',
+    },
+];
+
 const RecruitmentPlanPage = () => {
     // Không dùng state cho plans, loading, error nữa
     const { user } = useContext(AuthContext);
@@ -230,6 +269,41 @@ const RecruitmentPlanPage = () => {
 
     // Kiểm tra role và quyền (Giữ nguyên)
     const isAdmin = user?.role === 'admin';
+    
+    // Fetch plans on component mount
+    useEffect(() => {
+        fetchPlans();
+    }, []);
+
+    const fetchPlans = async () => {
+        try {
+            setLoading(true);
+            const response = await plansApi.getPlans();
+            setPlans(response);
+            setError(null);
+        } catch (err) {
+            setError('Không thể tải danh sách kế hoạch');
+            console.error('Error fetching plans:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Kiểm tra role
+    const isAdmin = user?.role === 'admin';
+    const isHeadmaster = user?.role === 'headmaster';
+    const isStaff = user?.role === 'staff';
+
+    // Define permissions based on role
+    const canCreatePlan = isAdmin;
+    const canEditPlan = isAdmin;
+    const canDeletePlan = isAdmin || isHeadmaster;
+    const canApprovePlan = isHeadmaster;
+    const canRejectPlan = isHeadmaster;
+
+    const handlePlanClick = (plan) => {
+        if (canEditPlan || canApprovePlan) {
+    // Kiểm tra người dùng có phải là hiệu trưởng
     const isHeadmaster = user?.role === 'headmaster';
     const canCreatePlan = isAdmin;
     const canEditPlan = isAdmin;
@@ -256,6 +330,60 @@ const RecruitmentPlanPage = () => {
         } else {
             alert("Bạn không có quyền thêm kế hoạch mới.");
         }
+        }
+    };
+
+    const handleSubmit = async (data) => {
+        try {
+            if (editingPlan && canEditPlan) {
+                await plansApi.updatePlan(editingPlan.id, data);
+            } else if (canCreatePlan) {
+                await plansApi.createPlan(data);
+            }
+            await fetchPlans(); // Refresh the list
+            setIsModalOpen(false);
+        } catch (err) {
+            console.error('Error submitting plan:', err);
+            alert('Có lỗi xảy ra khi lưu kế hoạch');
+        }
+    };
+
+    const handleDelete = async (planId) => {
+        if (canDeletePlan && window.confirm('Bạn có chắc muốn xóa kế hoạch này?')) {
+            try {
+                await plansApi.deletePlan(planId);
+                await fetchPlans(); // Refresh the list
+            } catch (err) {
+                console.error('Error deleting plan:', err);
+                alert('Có lỗi xảy ra khi xóa kế hoạch');
+            }
+        }
+    };
+
+    const handleApprove = async (planId) => {
+        if (canApprovePlan) {
+            try {
+                await plansApi.updatePlanStatus(planId, { status: 'approved' });
+                await fetchPlans(); // Refresh the list
+            } catch (err) {
+                console.error('Error approving plan:', err);
+                alert('Có lỗi xảy ra khi phê duyệt kế hoạch');
+            }
+        }
+    };
+
+    const handleReject = async (planId) => {
+        if (canRejectPlan) {
+            try {
+                await plansApi.updatePlanStatus(planId, { status: 'rejected' });
+                await fetchPlans(); // Refresh the list
+            } catch (err) {
+                console.error('Error rejecting plan:', err);
+                alert('Có lỗi xảy ra khi từ chối kế hoạch');
+            }
+        }
+        setEditingPlan(null);
+        setIsModalOpen(true);
     };
 
     const handleSubmit = (data) => {
@@ -302,6 +430,10 @@ const RecruitmentPlanPage = () => {
                             Thêm kế hoạch mới
                         </ActionButton>
                     )}
+                    <ActionButton onClick={handleAddPlan}>
+                        <FaPlus />
+                        Thêm kế hoạch mới
+                    </ActionButton>
                 </PageHeader>
 
                 <SearchBar>
@@ -322,6 +454,96 @@ const RecruitmentPlanPage = () => {
 
                 {/* Bỏ qua loading, error, plans.length === 0 check */}
                 {/* Trực tiếp render PlanGrid với mockPlans */}
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '2rem' }}>
+                        Đang tải dữ liệu...
+                    </div>
+                ) : error ? (
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#dc3545' }}>
+                        {error}
+                    </div>
+                ) : plans.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                        Chưa có kế hoạch tuyển dụng nào
+                    </div>
+                ) : (
+                    <PlanGrid>
+                        {plans.map(plan => (
+                            <PlanCard 
+                                key={plan.id}
+                                canEdit={canEditPlan}
+                                canApprove={canApprovePlan}
+                                onClick={() => handlePlanClick(plan)}
+                            >
+                                <PlanStatus status={plan.status}>
+                                    {plan.status === 'approved' && 'Đã duyệt'}
+                                    {plan.status === 'pending' && 'Chờ duyệt'}
+                                    {plan.status === 'rejected' && 'Từ chối'}
+                                </PlanStatus>
+                                <PlanTitle>{plan.title}</PlanTitle>
+                                <PlanInfo>Đơn vị: {plan.department}</PlanInfo>
+                                <PlanInfo>Số lượng: {plan.positions} vị trí</PlanInfo>
+                                <PlanInfo>Hạn nộp: {new Date(plan.deadline).toLocaleDateString('vi-VN')}</PlanInfo>
+                                
+                                {/* Hiển thị nút phê duyệt/từ chối cho hiệu trưởng */}
+                                {plan.status === 'pending' && canApprovePlan && (
+                                    <CardActions>
+                                        <CardActionButton
+                                            approve
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleApprove(plan.id);
+                                            }}
+                                            title="Phê duyệt"
+                                        >
+                                            <FaCheck />
+                                        </CardActionButton>
+                                        <CardActionButton
+                                            reject
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleReject(plan.id);
+                                            }}
+                                            title="Từ chối"
+                                        >
+                                            <FaTimes />
+                                        </CardActionButton>
+                                    </CardActions>
+                                )}
+                                
+                                {/* Hiển thị nút chỉnh sửa/xóa cho admin */}
+                                {(isAdmin || (user?.id === plan.createdBy && canEditPlan)) && plan.status !== 'approved' && (
+                                    <CardActions>
+                                        {canEditPlan && (
+                                            <CardActionButton
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setEditingPlan(plan);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                title="Chỉnh sửa"
+                                            >
+                                                <FaEdit />
+                                            </CardActionButton>
+                                        )}
+                                        {canDeletePlan && (
+                                            <CardActionButton
+                                                delete
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(plan.id);
+                                                }}
+                                                title="Xóa"
+                                            >
+                                                <FaTrash />
+                                            </CardActionButton>
+                                        )}
+                                    </CardActions>
+                                )}
+                            </PlanCard>
+                        ))}
+                    </PlanGrid>
+                )}
                 <PlanGrid>
                     {/* Thêm bộ lọc tìm kiếm đơn giản */}
                     {mockPlans
