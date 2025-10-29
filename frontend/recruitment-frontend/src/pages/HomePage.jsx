@@ -31,7 +31,7 @@ const DashboardCard = styled.div`
     border-radius: 0.6rem;
     box-shadow: 0 0.2rem 0.7rem rgba(0, 0, 0, 0.1);
     margin-bottom: 1.5rem;
-`;
+`
 
 const WelcomeMessage = styled(DashboardCard)`
     border-left: 5px solid #4ac4d3;
@@ -59,6 +59,7 @@ const FunctionItem = styled(DashboardCard)`
     cursor: pointer;
     border-bottom: 5px solid #1877f2;
     text-decoration: none;
+
     p {
         text-decoration: none;
     }
@@ -78,7 +79,6 @@ const FunctionItem = styled(DashboardCard)`
         color: #333;
     }
 `;
-
 
 const HomePage = () => {
     const { user } = useContext(AuthContext); 
@@ -119,7 +119,7 @@ const HomePage = () => {
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Tổng hợp kết quả tuyển dụng.</p>
                     </FunctionItem>
 
-                    <FunctionItem>
+                    <FunctionItem as={Link} to="/personnel-management">
                         <FaUserFriends size={36} />
                         <h4>Quản lý nhân sự</h4>
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Thêm, sửa, xóa, tra cứu thông tin nhân viên.</p>
@@ -131,10 +131,10 @@ const HomePage = () => {
                         <p style={{fontSize: '0.9rem', color: '#888'}}>Thông tin và hồ sơ cá nhân.</p>
                     </FunctionItem>
                 </FunctionGrid>
-
             </Container>
         </MainLayout>
     );
 };
 
 export default HomePage;
+
