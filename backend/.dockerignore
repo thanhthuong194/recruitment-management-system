@@ -1,0 +1,10 @@
+# Ignore tất cả bên trong target, trừ file jar cần dùng
+target/*
+!target/recruitment-backend.jar
+
+.git
+.gitignore
+README.md
+*.md
+*.iml
+.idea/

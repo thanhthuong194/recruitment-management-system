@@ -17,8 +17,10 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
 
+    // Logic này sẽ được gọi khi AuthContext báo thành công
     const handleLoginSuccess = (result) => {
-        if (result && result.token) {
+        if (result) { // Chỉ cần kết quả tồn tại là đủ (vì lỗi logic token đã được xử lý trong Context)
+            console.log("Đăng nhập thành công, chuyển hướng!");
             navigate('/home'); 
         }
     };
@@ -32,7 +34,7 @@ const LoginPage = () => {
     } = useAuth(
         initialLoginState, 
         handleLoginSuccess, 
-        login          
+        login             
     );
 
     return (

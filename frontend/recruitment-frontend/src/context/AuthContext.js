@@ -15,15 +15,33 @@ export const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     // --- 1. LOGIN ---
-    // Nhận đầu vào đơn giản (được trích xuất từ formData của hook useAuth)
     const login = async (formData) => {
         setIsLoading(true);
         setError(null);
         try {
-            // Gọi Service Layer
             const authResponse = await loginService(formData); 
+            
+            // =========================================================================
+            // ✅ PHẦN SỬA CHỮA: XỬ LÝ KHI BACKEND TRẢ VỀ CHUỖI VĂN BẢN (STRING)
+            // =========================================================================
+            if (typeof authResponse === 'string' && authResponse.startsWith("✅")) {
+                // Backend trả về chuỗi thành công, không có token/user. 
+                const username = formData.username; 
+                const tempToken = 'logged_in'; 
+                
+                // 1. Lưu token và user tạm thời (token/user/role giả)
+                localStorage.setItem('accessToken', tempToken);
+                // Lưu role admin để logic FE phân quyền có thể hoạt động
+                localStorage.setItem('user', JSON.stringify({username: username, role: 'admin'})); 
+                setUser({username: username, role: 'admin'});
+                
+                setIsLoading(false);
+                return { success: true }; // Trả về thành công và NGẮT LUỒNG Ở ĐÂY
+            }
+            // =========================================================================
 
-            // Cập nhật trạng thái và lưu thông tin
+            // Cập nhật trạng thái và lưu thông tin (Chỉ chạy nếu Backend trả về JSON chuẩn)
+            // (Nếu khối if trên chạy, luồng sẽ không bao giờ tới đây)
             setUser(authResponse.user);
             localStorage.setItem('accessToken', authResponse.token);
             localStorage.setItem('user', JSON.stringify(authResponse.user));
