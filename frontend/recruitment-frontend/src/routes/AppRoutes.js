@@ -8,6 +8,7 @@ import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import HomePage from "../pages/HomePage";
 import RecruitmentPlanPage from "../pages/RecruitmentPlanPage";
 import ProfilePage from "../pages/ProfilePage";
+import PersonnelManagementPage from "../pages/PersonnelManagementPage";
 
 const AppRoutes = () => {
   return (
@@ -39,6 +40,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/personnel-management"
+        element={
+          <ProtectedRoute>
+            <PersonnelManagementPage />
           </ProtectedRoute>
         }
       />
