@@ -82,7 +82,7 @@ const GuestLinks = () => (
         </NavLinkItem>
 
         <NavLinkItem to="/co-hoi-viec-lam">
-            <FaBriefcase /> Cơ hội việc làm
+            <FaBriefcase /> Thông báo tuyển dụng
         </NavLinkItem>
 
         <NavLinkItem to="/bieu-mau">

@@ -127,7 +127,7 @@ components:
     LoginRequest:
       type: object
       properties:
-        UsernameOrEmail:
+        username:
           type: string
           example: "lethanhthuong"
         password:
@@ -135,7 +135,7 @@ components:
           format: password
           example: "lethanhthuong123"
       required:
-        - UsernameOrEmail
+        - username
         - password  
 
     AuthResponse:

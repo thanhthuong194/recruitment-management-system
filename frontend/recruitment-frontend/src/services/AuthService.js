@@ -3,24 +3,39 @@ import LoginRequest from '../api-client/src/model/LoginRequest';
 import RegisterRequest from '../api-client/src/model/RegisterRequest';
 import ForgotPasswordRequest from '../api-client/src/model/ForgotPasswordRequest';
 import ApiClient from '../api-client/src/ApiClient'; 
-import apiClient from './ApiConfig'; // Đảm bảo đường dẫn này đúng
+import apiClient from './ApiConfig'; 
 
-const authApiInstance = new AuthApi(ApiClient.instance); 
+const authApiInstance = new AuthApi(apiClient);
 
 const promisifyApiCall = (apiMethod, requestData) => {
     return new Promise((resolve, reject) => {
-        // Hàm callback của API được cung cấp bởi thư viện tự tạo (ApiClient)
-        apiMethod(requestData, (error, data, response) => {
+        const callback = (error, data, response) => {
             if (error) {
-                // Xử lý lỗi API
+                if (error.status === 401) {
+                    reject(new Error('Tên đăng nhập hoặc mật khẩu không chính xác'));
+                    return;
+                }
+                if (error.message && error.message.includes('Origin is not allowed')) {
+                    reject(new Error('Lỗi CORS: Vui lòng kiểm tra cấu hình CORS của server'));
+                    return;
+                }
                 const message = error.response 
-                                ? (error.response.body || error.response.text || `Lỗi ${error.status}: Yêu cầu thất bại.`) 
-                                : (error.message || "Lỗi kết nối máy chủ.");
-                reject(new Error(message)); 
+                    ? (error.response.body || error.response.text || `Lỗi ${error.status}: Yêu cầu thất bại.`) 
+                    : (error.message || "Lỗi kết nối máy chủ.");
+                reject(new Error(message));
                 return;
             }
+            
+            if (response && response.status === 401) {
+                reject(new Error('Tên đăng nhập hoặc mật khẩu không chính xác'));
+                return;
+            }
+
+            // Response is already parsed by ApiClient
             resolve(data);
-        });
+        };
+
+        apiMethod(requestData, callback);
     });
 };
 
@@ -34,18 +49,14 @@ export const verifyTokenService = async (token) => {
     }
     return Promise.reject(new Error("Token không tồn tại hoặc đã hết hạn."));
 };
-
-// Hàm loginService đã được dọn dẹp, chỉ gọi API thật
 export const loginService = async ({ username, password }) => {
-    // Validate input
+
     if (!username || !password) {
         throw new Error("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
     }
-    
-    // Tạo đối tượng yêu cầu đăng nhập
+
     const loginReq = new LoginRequest(username, password); 
-    
-    // Gọi API Backend
+
     return promisifyApiCall(authApiInstance.loginUser.bind(authApiInstance), loginReq); 
 };
 

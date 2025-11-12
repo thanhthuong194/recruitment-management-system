@@ -19,7 +19,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # 1. Kết nối vào 'master'
       - SPRING_DATASOURCE_URL=jdbc:sqlserver://sqlserver:1433;databaseName=RMS;encrypt=true;trustServerCertificate=true
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=Password@2025
@@ -28,7 +27,6 @@ services:
       - sqlserver
     networks:
       - app-network
-    # 2. Tự động khởi động lại
     restart: on-failure
 
   recruitment-frontend:
@@ -37,7 +35,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_API_BASE_URL=/api 
+      - REACT_APP_API_BASE_URL=http://recruitment-backend:8080/api
     depends_on:
       - recruitment-backend
     networks:

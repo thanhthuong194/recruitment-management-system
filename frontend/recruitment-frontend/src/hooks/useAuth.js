@@ -17,13 +17,9 @@ const useAuth = (initialState, successCallback, apiFunction) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         setError(null);
-        setSuccessMessage(null); // Xóa thông báo thành công khi người dùng nhập lại
+        setSuccessMessage(null); 
 
-        // ❌ XÓA DÒNG NÀY: Việc gọi successCallback trong handleChange gây ra lỗi điều hướng không mong muốn.
-        // if (successCallback) {
-        //     successCallback(null); 
-        // }
-    }, []); // 💡 DEPENDECY ĐÃ ĐƯỢC CẬP NHẬT
+    }, []); 
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
@@ -34,11 +30,9 @@ const useAuth = (initialState, successCallback, apiFunction) => {
             const result = await apiFunction(formData); 
             
             if (successCallback) {
-                // Xử lý thành công (Đăng nhập/Đăng ký)
                 if (result && (result.token || result.user)) {
-                    successCallback(result); // GỌI ĐIỀU HƯỚNG CHỈ KHI THÀNH CÔNG API
+                    successCallback(result); 
                 } 
-                // Xử lý tin nhắn thành công (Quên mật khẩu)
                 else if (result && result.message) {
                     setSuccessMessage(result.message);
                 } else {

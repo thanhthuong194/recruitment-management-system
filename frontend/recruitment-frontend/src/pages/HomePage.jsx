@@ -88,7 +88,7 @@ const HomePage = () => {
         <MainLayout>
             <Container>
                 <WelcomeMessage>
-                    <h3>Hi! Welcome, {userName}! 👋</h3>
+                    <h3>Hi! Welcome, {fullName}! 👋</h3>
                     <p>Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tuyển dụng của Trường Đại học Sư phạm Kỹ thuật TP.HCM.</p>
                 </WelcomeMessage>
 

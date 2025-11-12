@@ -4,11 +4,13 @@ import com.recruitment.recruitment_backend.dto.LoginRequest;
 import com.recruitment.recruitment_backend.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AuthController {
 
     private final AuthService authService;
@@ -22,16 +24,28 @@ public class AuthController {
      * @param loginRequest username + password
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest) {
         try {
             String response = authService.login(loginRequest);
 
-            // Nếu AuthService trả lỗi, gửi HTTP 401
             if (response.startsWith("❌")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
-            return ResponseEntity.ok(response);
+            // Build a JSON response compatible with the frontend ApiClient's AuthResponse model
+            Map<String, Object> body = new HashMap<>();
+            body.put("accessToken", "dummy-token-for-" + loginRequest.getUsername());
+            body.put("tokenType", "Bearer");
+            body.put("expiresIn", 3600);
+
+            Map<String, Object> user = new HashMap<>();
+            user.put("username", loginRequest.getUsername());
+            user.put("name", loginRequest.getUsername());
+            user.put("role", "admin");
+
+            body.put("user", user);
+
+            return ResponseEntity.ok(body);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -55,9 +69,6 @@ public class AuthController {
         }
     }
 
-    /**
-     * ✅ API ĐĂNG XUẤT (tạm thời mock, sau này nếu dùng JWT sẽ chỉ cần xóa token client)
-     */
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         return ResponseEntity.ok("✅ Logged out successfully");

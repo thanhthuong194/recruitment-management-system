@@ -22,12 +22,12 @@ class LoginRequest {
     /**
      * Constructs a new <code>LoginRequest</code>.
      * @alias module:model/LoginRequest
-     * @param usernameOrEmail {String} 
+     * @param username {String} 
      * @param password {String} 
      */
-    constructor(usernameOrEmail, password) { 
+    constructor(username, password) { 
         
-        LoginRequest.initialize(this, usernameOrEmail, password);
+        LoginRequest.initialize(this, username, password);
     }
 
     /**
@@ -35,8 +35,8 @@ class LoginRequest {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, usernameOrEmail, password) { 
-        obj['UsernameOrEmail'] = usernameOrEmail;
+    static initialize(obj, username, password) { 
+        obj['username'] = username;
         obj['password'] = password;
     }
 
@@ -51,8 +51,8 @@ class LoginRequest {
         if (data) {
             obj = obj || new LoginRequest();
 
-            if (data.hasOwnProperty('UsernameOrEmail')) {
-                obj['UsernameOrEmail'] = ApiClient.convertToType(data['UsernameOrEmail'], 'String');
+            if (data.hasOwnProperty('username')) {
+                obj['username'] = ApiClient.convertToType(data['username'], 'String');
             }
             if (data.hasOwnProperty('password')) {
                 obj['password'] = ApiClient.convertToType(data['password'], 'String');
@@ -74,8 +74,8 @@ class LoginRequest {
             }
         }
         // ensure the json data is a string
-        if (data['UsernameOrEmail'] && !(typeof data['UsernameOrEmail'] === 'string' || data['UsernameOrEmail'] instanceof String)) {
-            throw new Error("Expected the field `UsernameOrEmail` to be a primitive type in the JSON string but got " + data['UsernameOrEmail']);
+        if (data['username'] && !(typeof data['username'] === 'string' || data['username'] instanceof String)) {
+            throw new Error("Expected the field `username` to be a primitive type in the JSON string but got " + data['username']);
         }
         // ensure the json data is a string
         if (data['password'] && !(typeof data['password'] === 'string' || data['password'] instanceof String)) {
@@ -88,12 +88,12 @@ class LoginRequest {
 
 }
 
-LoginRequest.RequiredProperties = ["UsernameOrEmail", "password"];
+LoginRequest.RequiredProperties = ["username", "password"];
 
 /**
- * @member {String} UsernameOrEmail
+ * @member {String} username
  */
-LoginRequest.prototype['UsernameOrEmail'] = undefined;
+LoginRequest.prototype['username'] = undefined;
 
 /**
  * @member {String} password
