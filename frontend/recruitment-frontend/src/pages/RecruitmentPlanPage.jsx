@@ -2,11 +2,10 @@ import React, { useState, useContext /*, useEffect */ } from 'react'; // Bỏ us
 import styled from 'styled-components';
 import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import MainLayout from '../layouts/MainLayout';
-import { AuthContext } from '../context/AuthContext';
 import RecruitmentPlanModal from '../components/recruitment/RecruitmentPlanModal';
-// import { PlansApi } from '../api-client'; // Tạm thời không cần import API
+import { AuthContext } from '../context/AuthContext';
 
-// --- Giữ nguyên các styled components ---
+// --- Styled Components ---
 const Container = styled.div`
     width: 95%;
     max-width: 1200px;
@@ -21,7 +20,7 @@ const PageHeader = styled.div`
     margin-bottom: 2rem;
 `;
 
-const Title = styled.h2`
+const Title = styled.h1`
     font-size: 1.8rem;
     color: #3080c9;
     font-weight: 600;
@@ -99,209 +98,122 @@ const FilterButton = styled.button`
     }
 `;
 
-const PlanGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-`;
-
-const PlanCard = styled.div`
+const TableWrapper = styled.div`
+    overflow-x: auto;
     background: white;
     border-radius: 0.6rem;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-    /* Điều chỉnh cursor dựa trên quyền edit hoặc approve */
-    cursor: ${props => (props.canEdit || props.canApprove) ? 'pointer' : 'default'};
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+`;
 
-    &:hover {
-        transform: ${props => (props.canEdit || props.canApprove) ? 'translateY(-3px)' : 'none'};
-        box-shadow: ${props => (props.canEdit || props.canApprove) ? '0 4px 8px rgba(0, 0, 0, 0.1)' : '0 2px 4px rgba(0, 0, 0, 0.05)'};
+const StyledTable = styled.table`
+    min-width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+
+    tbody tr:hover {
+        background-color: #f5f5f5;
     }
 `;
 
-const CardActions = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1rem;
-`;
-
-const CardActionButton = styled.button`
-    padding: 0.4rem;
-    border: none;
-    background: none;
-    color: ${props => {
-        if (props.approve) return '#28a745';
-        if (props.reject) return '#dc3545';
-        if (props.delete) return '#dc3545';
-        return '#1877f2'; // Edit color
-    }};
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-
-    &:hover {
-        opacity: 1;
-    }
-
-    &:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-    }
-`;
-
-const PlanStatus = styled.span`
-    display: inline-block;
-    padding: 0.3rem 0.8rem;
+const StatusBadge = styled.span`
+    padding: 0.3rem 0.6rem;
     border-radius: 1rem;
-    font-size: 0.8rem;
     font-weight: 500;
-    margin-bottom: 1rem;
-    
-    ${({ status }) => {
-        switch (status) {
-            case 'approved': return 'background: #e6f4ea; color: #1e7e34;';
-            case 'pending': return 'background: #fff3e0; color: #f57c00;';
-            case 'rejected': return 'background: #feeced; color: #d32f2f;';
-            default: return 'background: #f8f9fa; color: #666;';
+    font-size: 0.8rem;
+    color: white;
+    background-color: ${props => {
+        switch (props.status) {
+            case 'Đã duyệt': return '#28a745'; // Green
+            case 'Chờ duyệt': return '#ffc107'; // Yellow
+            case 'Từ chối': return '#dc3545'; // Red
+            default: return '#6c757d'; // Gray
         }
-    }}
+    }};
 `;
 
-const PlanTitle = styled.h3`
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 0.5rem;
+const ActionButtons = styled.div`
+    display: flex;
+    gap: 0.8rem;
+
+    button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #555;
+        font-size: 1rem;
+        transition: color 0.2s;
+
+        &:hover {
+            color: #1877f2;
+        }
+        
+        &.delete:hover {
+            color: #dc3545;
+        }
+    }
 `;
 
-const PlanInfo = styled.div`
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0.3rem;
-`;
-// --- Kết thúc styled components ---
-
-
-// const plansApi = new PlansApi(); // Tạm thời không tạo instance API
+// --- Mock Data ---
+const mockPlans = [
+    { id: 1, position: 'Giảng viên Khoa CNTT', quantity: 2, department: 'Khoa Công nghệ thông tin', status: 'Đã duyệt' },
+    { id: 2, position: 'Chuyên viên Phòng Đào tạo', quantity: 1, department: 'Phòng Đào tạo', status: 'Chờ duyệt' },
+    { id: 3, position: 'Kỹ sư phòng thí nghiệm', quantity: 3, department: 'Khoa Điện - Điện tử', status: 'Từ chối' },
+];
 
 const RecruitmentPlanPage = () => {
-    // Không dùng state cho plans, loading, error nữa
-    const { user } = useContext(AuthContext);
-    const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPlan, setEditingPlan] = useState(null);
+    const [plans, setPlans] = useState(mockPlans);
+    const [searchQuery, setSearchQuery] = useState('');
+    const { user } = useContext(AuthContext);
 
-    // Dữ liệu giả (mock data)
-    const mockPlans = [
-        {
-            id: 1,
-            title: 'Tuyển dụng giảng viên khoa CNTT',
-            department: 'Khoa Công nghệ thông tin',
-            positions: 3,
-            status: 'approved',
-            deadline: '2025-12-31',
-            createdBy: 'admin-id-placeholder' // Thêm ID người tạo giả định
-        },
-        {
-            id: 2,
-            title: 'Tuyển dụng nhân viên phòng đào tạo',
-            department: 'Phòng Đào tạo',
-            positions: 2,
-            status: 'pending',
-            deadline: '2025-11-30',
-            createdBy: 'admin-id-placeholder'
-        },
-        {
-            id: 3,
-            title: 'Tuyển dụng giảng viên khoa Điện-Điện tử',
-            department: 'Khoa Điện-Điện tử',
-            positions: 4,
-            status: 'rejected',
-            deadline: '2025-11-15',
-            createdBy: 'admin-id-placeholder'
-        },
-    ];
-
-    // Không cần fetchPlans nữa
-    // useEffect(() => { fetchPlans(); }, []);
-    // const fetchPlans = async () => { /* ... */ };
-
-    // Kiểm tra role và quyền (Giữ nguyên)
-    const isAdmin = user?.role === 'admin';
-    const isHeadmaster = user?.role === 'headmaster';
-    const canCreatePlan = isAdmin;
-    const canEditPlan = isAdmin;
-    const canDeletePlan = isAdmin || isHeadmaster;
-    const canApprovePlan = isHeadmaster;
-    const canRejectPlan = isHeadmaster;
-
-    // Các hàm xử lý sự kiện (Giữ nguyên nhưng chỉ log hoặc alert)
-    const handlePlanClick = (plan) => {
-        if (canEditPlan || canApprovePlan) {
-            console.log("Clicked plan:", plan);
-            setEditingPlan(plan);
-            setIsModalOpen(true);
-        } else {
-             console.log("Clicked plan (read-only):", plan);
-             // Có thể hiển thị chi tiết plan ở đây nếu muốn
-        }
+    const handleOpenModal = (plan = null) => {
+        setEditingPlan(plan);
+        setIsModalOpen(true);
     };
 
-    const handleAddPlan = () => {
-        if (canCreatePlan) {
-            setEditingPlan(null);
-            setIsModalOpen(true);
-        } else {
-            alert("Bạn không có quyền thêm kế hoạch mới.");
-        }
-    };
-
-    const handleSubmit = (data) => {
-        // Chỉ log, không gọi API
-        if (editingPlan) {
-            console.log('Updating mock plan (simulation):', { ...editingPlan, ...data });
-        } else {
-            console.log('Creating new mock plan (simulation):', { id: Date.now(), ...data, status: 'pending', createdBy: user?.id });
-        }
+    const handleCloseModal = () => {
         setIsModalOpen(false);
-        alert('Lưu ý: Chức năng này chỉ mô phỏng, dữ liệu thực tế chưa được lưu.');
+        setEditingPlan(null);
     };
 
-    const handleDelete = (planId) => {
-        if (canDeletePlan && window.confirm('Bạn có chắc muốn xóa kế hoạch này?')) {
-            console.log('Deleting mock plan (simulation):', planId);
-            alert('Lưu ý: Chức năng này chỉ mô phỏng, dữ liệu thực tế chưa được xóa.');
+    const handleSubmitPlan = (data) => {
+        if (editingPlan) {
+            // Logic to update plan
+            setPlans(plans.map(p => p.id === editingPlan.id ? { ...p, ...data, department: user.department } : p));
+        } else {
+            // Logic to add new plan
+            const newPlan = { ...data, id: plans.length + 1, department: user.department, status: 'Chờ duyệt' };
+            setPlans([...plans, newPlan]);
         }
+        handleCloseModal();
     };
 
-    const handleApprove = (planId) => {
-        if (canApprovePlan) {
-            console.log('Approving mock plan (simulation):', planId);
-            alert('Lưu ý: Chức năng này chỉ mô phỏng, trạng thái thực tế chưa được cập nhật.');
-        }
-    };
-
-    const handleReject = (planId) => {
-        if (canRejectPlan) {
-            console.log('Rejecting mock plan (simulation):', planId);
-            alert('Lưu ý: Chức năng này chỉ mô phỏng, trạng thái thực tế chưa được cập nhật.');
-        }
-    };
+    const filteredPlans = plans.filter(p =>
+        p.position.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <MainLayout>
             <Container>
                 <PageHeader>
-                    <Title>Lập kế hoạch tuyển dụng</Title>
-                    {/* Nút thêm kế hoạch chỉ hiển thị nếu có quyền */}
-                    {canCreatePlan && (
-                        <ActionButton onClick={handleAddPlan}>
-                            <FaPlus />
-                            Thêm kế hoạch mới
-                        </ActionButton>
-                    )}
+                    <Title>Lập Kế Hoạch Tuyển Dụng</Title>
+                    <ActionButton onClick={() => handleOpenModal()}>
+                        <FaPlus />
+                        Tạo kế hoạch
+                    </ActionButton>
                 </PageHeader>
 
                 <SearchBar>
@@ -309,7 +221,7 @@ const RecruitmentPlanPage = () => {
                         <FaSearch />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm kế hoạch tuyển dụng..."
+                            placeholder="Tìm kiếm theo chức vụ..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -320,82 +232,44 @@ const RecruitmentPlanPage = () => {
                     </FilterButton>
                 </SearchBar>
 
-                {/* Bỏ qua loading, error, plans.length === 0 check */}
-                {/* Trực tiếp render PlanGrid với mockPlans */}
-                <PlanGrid>
-                    {/* Thêm bộ lọc tìm kiếm đơn giản */}
-                    {mockPlans
-                        .filter(plan => plan.title.toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map(plan => (
-                        <PlanCard
-                            key={plan.id}
-                            canEdit={canEditPlan}
-                            canApprove={canApprovePlan}
-                            onClick={() => handlePlanClick(plan)}
-                        >
-                            <PlanStatus status={plan.status}>
-                                {plan.status === 'approved' && 'Đã duyệt'}
-                                {plan.status === 'pending' && 'Chờ duyệt'}
-                                {plan.status === 'rejected' && 'Từ chối'}
-                            </PlanStatus>
-                            <PlanTitle>{plan.title}</PlanTitle>
-                            <PlanInfo>Đơn vị: {plan.department}</PlanInfo>
-                            <PlanInfo>Số lượng: {plan.positions} vị trí</PlanInfo>
-                            <PlanInfo>Hạn nộp: {new Date(plan.deadline).toLocaleDateString('vi-VN')}</PlanInfo>
-
-                            {/* Nút Duyệt/Từ chối cho Headmaster */}
-                            {plan.status === 'pending' && canApprovePlan && (
-                                <CardActions>
-                                    <CardActionButton
-                                        approve
-                                        onClick={(e) => { e.stopPropagation(); handleApprove(plan.id); }}
-                                        title="Phê duyệt"
-                                    > <FaCheck /> </CardActionButton>
-                                    <CardActionButton
-                                        reject
-                                        onClick={(e) => { e.stopPropagation(); handleReject(plan.id); }}
-                                        title="Từ chối"
-                                    > <FaTimes /> </CardActionButton>
-                                </CardActions>
-                            )}
-
-                            {/* Nút Sửa/Xóa */}
-                            {/* Điều kiện: Chưa duyệt VÀ (là admin HOẶC (người tạo VÀ có quyền sửa) HOẶC có quyền xóa) */}
-                            {plan.status !== 'approved' && (isAdmin || (user?.id === plan.createdBy && canEditPlan) || canDeletePlan) && (
-                                <CardActions>
-                                    {/* Chỉ hiện nút Sửa nếu là admin HOẶC (người tạo VÀ có quyền sửa) */}
-                                    {(isAdmin || (user?.id === plan.createdBy && canEditPlan)) && (
-                                         <CardActionButton
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setEditingPlan(plan);
-                                                setIsModalOpen(true);
-                                            }}
-                                            title="Chỉnh sửa"
-                                        > <FaEdit /> </CardActionButton>
-                                    )}
-                                    {/* Chỉ hiện nút Xóa nếu có quyền xóa */}
-                                    {canDeletePlan && (
-                                        <CardActionButton
-                                            delete
-                                            onClick={(e) => { e.stopPropagation(); handleDelete(plan.id); }}
-                                            title="Xóa"
-                                        > <FaTrash /> </CardActionButton>
-                                    )}
-                                </CardActions>
-                            )}
-                        </PlanCard>
-                    ))}
-                </PlanGrid>
-
-                {/* Modal vẫn giữ nguyên */}
-                <RecruitmentPlanModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    initialData={editingPlan}
-                    onSubmit={handleSubmit}
-                />
+                <TableWrapper>
+                    <StyledTable>
+                        <thead>
+                            <tr>
+                                <th>Chức vụ</th>
+                                <th>Số lượng</th>
+                                <th>Đơn vị/Phòng ban</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredPlans.map(plan => (
+                                <tr key={plan.id}>
+                                    <td>{plan.position}</td>
+                                    <td>{plan.quantity}</td>
+                                    <td>{plan.department}</td>
+                                    <td><StatusBadge status={plan.status}>{plan.status}</StatusBadge></td>
+                                    <td>
+                                        <ActionButtons>
+                                            <button title="Duyệt" onClick={() => alert('Duyệt kế hoạch')}><FaCheck /></button>
+                                            <button title="Từ chối" onClick={() => alert('Từ chối kế hoạch')}><FaTimes /></button>
+                                            <button title="Chỉnh sửa" onClick={() => handleOpenModal(plan)}><FaEdit /></button>
+                                            <button title="Xóa" className="delete" onClick={() => window.confirm('Xóa kế hoạch?')}><FaTrash /></button>
+                                        </ActionButtons>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </StyledTable>
+                </TableWrapper>
             </Container>
+            <RecruitmentPlanModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                initialData={editingPlan}
+                onSubmit={handleSubmitPlan}
+            />
         </MainLayout>
     );
 };

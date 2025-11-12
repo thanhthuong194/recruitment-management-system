@@ -17,6 +17,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
 
+    // Logic này sẽ được gọi khi AuthContext báo thành công
     const handleLoginSuccess = (result) => {
         if (result) { 
             console.log("Đăng nhập thành công, chuyển hướng!");
