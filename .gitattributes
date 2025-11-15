@@ -1,1 +1,11 @@
-backend/** text eol=crlf
+# Tự động phát hiện file text và xử lý line ending
+# Đây là thiết lập được khuyến nghị
+* text=auto
+
+# Các file script BẮT BUỘC phải là LF (Linux)
+*.sh        text eol=lf
+Dockerfile* text eol=lf
+
+# Các file batch của Windows BẮT BUỘC phải là CRLF (Windows)
+*.cmd       text eol=crlf
+*.bat       text eol=crlf

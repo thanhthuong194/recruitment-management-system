@@ -1,0 +1,73 @@
+# NỘI DUNG FILE: docker-compose.dev.yaml (Đã sửa lỗi)
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: RMS
+    environment:
+      SA_PASSWORD: "Password@2025"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql 
+    networks:
+      - app-network
+
+  recruitment-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev   # <-- Dùng file Dockerfile.dev
+    container_name: recruitment-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://sqlserver:1433;databaseName=RMS;encrypt=true;trustServerCertificate=true
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=Password@2025
+      - SPRING_FLYWAY_ENABLED=true
+    volumes:
+      # <-- Ánh xạ code Java của bạn vào container
+      - ./backend:/app
+      # <-- Dùng cache của Maven để build nhanh hơn
+      - ~/.m2:/root/.m2
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+    restart: on-failure
+
+  recruitment-frontend:
+    build:
+      context: ./frontend/recruitment-frontend
+      dockerfile: Dockerfile
+      target: build            # <-- SỬA LỖI: Chỉ build tầng "build"
+    container_name: recruitment-frontend
+    ports:
+      # <-- Map cổng React Dev Server (3000)
+      - "3000:3000"
+    environment:
+      # <-- Ép React nhận diện thay đổi file
+      - WATCHPACK_POLLING=true
+    
+    # <-- Ghi đè lệnh CMD (chạy 'npm start' thay vì 'nginx')
+    command: ["npm", "start"]
+    
+    volumes:
+      # <-- Ánh xạ code React của bạn vào container
+      - ./frontend/recruitment-frontend:/app
+      # <-- "Cú lừa" node_modules
+      - /app/node_modules
+    
+    depends_on:
+      - recruitment-backend
+    networks:
+      - app-network
+
+volumes:
+  sql_data:
+
+networks:
+  app-network:
+    driver: bridge

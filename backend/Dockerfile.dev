@@ -1,0 +1,31 @@
+# NỘI DUNG FILE: backend/Dockerfile.dev (Đã cập nhật)
+
+# Dùng image có sẵn Maven & Java 21 (giống trong pom.xml)
+FROM maven:3.9.6-eclipse-temurin-21
+
+# ❗ SỬA LỖI 1: Cài đặt 'netcat' để script wait-for-it hoạt động
+RUN apt-get update && apt-get install -y netcat-traditional
+
+WORKDIR /app
+
+# 1. Copy CHỈ file pom.xml để tải dependencies
+COPY pom.xml .
+
+# 2. Tải dependencies trước.
+RUN mvn dependency:go-offline
+
+# 3. Copy toàn bộ code
+COPY . .
+
+# ❗ SỬA LỖI 2: Copy script chờ vào container và cấp quyền thực thi
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-it.sh
+
+# 4. Mở cổng 8080
+EXPOSE 8080
+
+# ❗ SỬA LỖI 3: Dùng ENTRYPOINT để chạy script chờ
+ENTRYPOINT ["wait-for-it.sh"]
+
+# ❗ SỬA LỖI 4: Lệnh CMD gốc (sẽ được script 'wait-for-it.sh' gọi sau khi DB sẵn sàng)
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Dspring-boot.devtools.restart.poll-interval=2s -Dspring-boot.devtools.restart.quiet-period=1s"]
