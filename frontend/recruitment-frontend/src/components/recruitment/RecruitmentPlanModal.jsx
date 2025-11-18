@@ -131,11 +131,12 @@ const RecruitmentPlanModal = ({ isOpen, onClose, initialData, onSubmit }) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = {
+            title: formData.get('title'),
             position: formData.get('position'),
+            school: formData.get('school'),
             quantity: parseInt(formData.get('quantity')),
-            responsibilities: formData.get('responsibilities'),
-            degreeRequired: formData.get('degreeRequired'),
-            cpaRequired: parseFloat(formData.get('cpaRequired'))
+            cpa: parseFloat(formData.get('cpa')),
+            creatDate: formData.get('creatDate') || new Date().toISOString().split('T')[0]
         };
         onSubmit(data);
     };
@@ -153,12 +154,32 @@ const RecruitmentPlanModal = ({ isOpen, onClose, initialData, onSubmit }) => {
 
                 <Form onSubmit={handleSubmit}>
                     <FormGroup>
-                        <Label htmlFor="position">Chức Vụ Tuyển Dụng</Label>
+                        <Label htmlFor="title">Tiêu đề kế hoạch</Label>
+                        <Input
+                            id="title"
+                            name="title"
+                            required
+                            defaultValue={initialData?.title}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="position">Vị trí tuyển dụng</Label>
                         <Input
                             id="position"
                             name="position"
                             required
                             defaultValue={initialData?.position}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="school">Trường</Label>
+                        <Input
+                            id="school"
+                            name="school"
+                            required
+                            defaultValue={initialData?.school}
                         />
                     </FormGroup>
 
@@ -175,36 +196,26 @@ const RecruitmentPlanModal = ({ isOpen, onClose, initialData, onSubmit }) => {
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="responsibilities">Công việc đảm nhiệm</Label>
-                        <TextArea
-                            id="responsibilities"
-                            name="responsibilities"
-                            required
-                            defaultValue={initialData?.responsibilities}
-                        />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Label htmlFor="degreeRequired">Yêu cầu bằng cấp</Label>
+                        <Label htmlFor="cpa">Yêu cầu CPA</Label>
                         <Input
-                            id="degreeRequired"
-                            name="degreeRequired"
-                            required
-                            defaultValue={initialData?.degreeRequired}
-                        />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Label htmlFor="cpaRequired">Yêu cầu CPA</Label>
-                        <Input
-                            id="cpaRequired"
-                            name="cpaRequired"
+                            id="cpa"
+                            name="cpa"
                             type="number"
-                            step="0.1"
+                            step="0.01"
                             min="0"
                             max="4"
                             required
-                            defaultValue={initialData?.cpaRequired}
+                            defaultValue={initialData?.cpa}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="creatDate">Ngày tạo</Label>
+                        <Input
+                            id="creatDate"
+                            name="creatDate"
+                            type="date"
+                            defaultValue={initialData?.creatDate?.split('T')[0] || new Date().toISOString().split('T')[0]}
                         />
                     </FormGroup>
 

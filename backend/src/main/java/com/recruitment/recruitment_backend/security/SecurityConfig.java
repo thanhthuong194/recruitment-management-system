@@ -45,12 +45,12 @@ public class SecurityConfig {
             )
             
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()  // Temporarily allow all requests
             )
             
-            .httpBasic(httpBasic -> httpBasic.disable())
+            .httpBasic(httpBasic -> {
+                // Enable HTTP Basic authentication
+            })
             
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint((request, response, ex) -> {

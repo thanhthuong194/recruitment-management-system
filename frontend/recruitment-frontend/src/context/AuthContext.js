@@ -21,9 +21,11 @@ export const AuthProvider = ({ children }) => {
 
             if (typeof authResponse === 'string') {
                 const username = formData.username;
+                const password = formData.password;
                 const tempToken = 'Bearer dummy-token'; 
 
                 localStorage.setItem('accessToken', tempToken);
+                localStorage.setItem('userPassword', password); // Save password for Basic Auth
                 const userData = {
                     username: username, 
                     role: 'admin',
@@ -39,6 +41,7 @@ export const AuthProvider = ({ children }) => {
             
             const token = authResponse.token;
             localStorage.setItem('accessToken', token);
+            localStorage.setItem('userPassword', formData.password); // Save password for Basic Auth
             localStorage.setItem('user', JSON.stringify(authResponse.user));
             
             apiService.setupToken(token);
@@ -50,6 +53,21 @@ export const AuthProvider = ({ children }) => {
             setError(err.message || "Đăng nhập thất bại.");
             setIsLoading(false);
             throw err; 
+        }
+    };
+
+    // --- 1.b REGISTER (nếu có) ---
+    const register = async (formData) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const resp = await registerService(formData);
+            setIsLoading(false);
+            return resp;
+        } catch (err) {
+            setError(err.message || 'Đăng ký thất bại.');
+            setIsLoading(false);
+            throw err;
         }
     };
     
@@ -75,6 +93,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('user');
+        localStorage.removeItem('userPassword');
         
         apiService.setupToken(null);
     };
