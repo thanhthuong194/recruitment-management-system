@@ -28,7 +28,7 @@ public class UserManagementController {
     /**
      * Get all users (Admin only)
      */
-    @GetMapping
+    @GetMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = usersRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -49,7 +49,7 @@ public class UserManagementController {
     /**
      * Create new user (Admin only - can only create UNIT_MANAGER)
      */
-    @PostMapping
+    @PostMapping(consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
     public ResponseEntity<Object> createUser(@RequestBody CreateUserRequest request) {
         try {
             // Validate: Only allow creating UNIT_MANAGER
@@ -96,7 +96,7 @@ public class UserManagementController {
     /**
      * Update user
      */
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
     public ResponseEntity<Object> updateUser(@PathVariable Integer id, @RequestBody CreateUserRequest request) {
         try {
             return usersRepository.findById(id)
@@ -125,16 +125,22 @@ public class UserManagementController {
     }
 
     /**
-     * Delete user
+     * Delete user (Only allow deleting UNIT_MANAGER)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
         try {
-            if (!usersRepository.existsById(id)) {
-                return ResponseEntity.notFound().build();
-            }
-            usersRepository.deleteById(id);
-            return ResponseEntity.ok("Xóa người dùng thành công");
+            return usersRepository.findById(id)
+                    .map(user -> {
+                        // Only allow deleting UNIT_MANAGER accounts
+                        if (!"UNIT_MANAGER".equals(user.getRole())) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                    .body("Chỉ được phép xóa tài khoản Trưởng đơn vị (UNIT_MANAGER)");
+                        }
+                        usersRepository.deleteById(id);
+                        return ResponseEntity.ok("Xóa người dùng thành công");
+                    })
+                    .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi khi xóa người dùng: " + e.getMessage());

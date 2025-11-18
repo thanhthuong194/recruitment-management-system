@@ -41,7 +41,7 @@ services:
       sh -c "
       echo 'Waiting for SQL Server to be ready...' &&
       sleep 5 &&
-      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P Password@2025 -C -Q 'IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N''RMS'') CREATE DATABASE RMS' || echo 'Database RMS already exists or created' &&
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P Password@2025 -C -Q \"IF DB_ID('RMS') IS NULL CREATE DATABASE RMS\" || echo 'Database RMS already exists or created' &&
       java -jar /app/backend.jar
       "
 
