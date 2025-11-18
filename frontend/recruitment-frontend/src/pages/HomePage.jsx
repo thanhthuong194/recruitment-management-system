@@ -1,137 +1,177 @@
-import React, { useContext } from 'react'; 
+import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { 
-    FaUserFriends, 
-    FaClipboardCheck, 
-    FaBullhorn,
-    FaUser,
-    FaIdCard,
-    FaCalendarAlt } from 'react-icons/fa'; 
-import MainLayout from '../layouts/MainLayout'; 
-import { AuthContext } from '../context/AuthContext'; 
+import { useNavigate } from 'react-router-dom';
+import { FaCalendarAlt, FaBullhorn, FaIdCard, FaClipboardCheck, FaUsers, FaUser } from 'react-icons/fa';
+import MainLayout from '../layouts/MainLayout';
+import { AuthContext } from '../context/AuthContext';
 
 const Container = styled.div`
     width: 95%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 0rem 0;
+    padding: 2rem 0;
+`;
+
+const WelcomeSection = styled.div`
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 3rem;
+    border-left: 6px solid #ffd700;
+`;
+
+const WelcomeTitle = styled.h1`
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+`;
+
+const WelcomeText = styled.p`
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
 `;
 
 const SectionTitle = styled.h2`
     font-size: 1.8rem;
-    color: #3080c9;
-    margin-bottom: 1rem;
+    color: #1877f2;
+    margin-bottom: 2rem;
     font-weight: 600;
 `;
 
-const DashboardCard = styled.div`
-    background: white;
-    padding: 1.5rem;
-    border-radius: 0.6rem;
-    box-shadow: 0 0.2rem 0.7rem rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
-`;
-
-const WelcomeMessage = styled(DashboardCard)`
-    border-left: 5px solid #4ac4d3;
-    h3 {
-        color: #3080c9;
-        font-size: 1.5rem;
-        margin-bottom: 0.6rem;
-    }
-    p {
-        color: #555;
-        line-height: 1.6;
-    }
-`;
-
-const FunctionGrid = styled.div`
+const FeaturesGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
 `;
 
-const FunctionItem = styled(DashboardCard)`
-    text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
+const FeatureCard = styled.div`
+    background: white;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     cursor: pointer;
-    border-bottom: 5px solid #1877f2;
-    text-decoration: none;
-    p {
-        text-decoration: none;
-    }
+    transition: all 0.3s ease;
+    border-bottom: 4px solid #1877f2;
     
     &:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    
-    svg {
-        color: #1877f2;
-        margin-bottom: 10px;
-    }
-    
-    h4 {
-        font-size: 1.1rem;
-        color: #333;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 `;
 
+const IconWrapper = styled.div`
+    font-size: 3rem;
+    color: #1877f2;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+`;
+
+const CardTitle = styled.h3`
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 0.8rem;
+    text-align: center;
+    font-weight: 600;
+`;
+
+const CardDescription = styled.p`
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    line-height: 1.6;
+`;
 
 const HomePage = () => {
-    const { user } = useContext(AuthContext); 
-    const userName = user?.name || user?.username || "Người dùng";
-    
+    const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const features = [
+        {
+            icon: FaCalendarAlt,
+            title: 'Lập kế hoạch tuyển dụng',
+            description: 'Để xuất và phê duyệt nhu cầu tuyển dụng của đơn vị.',
+            path: '/recruitment/plan',
+            roles: ['RECTOR', 'UNIT_MANAGER', 'PERSONNEL_MANAGER']
+        },
+        {
+            icon: FaBullhorn,
+            title: 'Thông báo kế hoạch tuyển dụng',
+            description: 'Đăng tải các thông báo và tin tuyển dụng chính thức.',
+            path: '/recruitment/notifications',
+            roles: ['PERSONNEL_MANAGER', 'ADMIN', 'RECTOR']
+        },
+        {
+            icon: FaIdCard,
+            title: 'Hồ sơ',
+            description: 'Hồ sơ của ứng viên ứng tuyển.',
+            path: '/candidates',
+            roles: ['ADMIN', 'PERSONNEL_MANAGER', 'RECTOR']
+        },
+        {
+            icon: FaClipboardCheck,
+            title: 'Kết quả',
+            description: 'Tổng hợp kết quả tuyển dụng.',
+            path: '/results',
+            roles: ['ADMIN', 'PERSONNEL_MANAGER', 'RECTOR']
+        },
+        {
+            icon: FaUsers,
+            title: 'Người dùng',
+            description: 'Quản lý người dùng hệ thống.',
+            path: '/users',
+            roles: ['ADMIN']
+        },
+        {
+            icon: FaUser,
+            title: 'Cá nhân',
+            description: 'Thông tin và cài đặt cá nhân.',
+            path: '/profile',
+            roles: ['ADMIN', 'RECTOR', 'UNIT_MANAGER', 'PERSONNEL_MANAGER']
+        }
+    ];
+
+    const handleCardClick = (path) => {
+        navigate(path);
+    };
+
+    const visibleFeatures = features.filter(feature => 
+        !feature.roles || feature.roles.includes(user?.role)
+    );
+
     return (
         <MainLayout>
             <Container>
-                <WelcomeMessage>
-                    <h3>Hi! Welcome, {fullName}! 👋</h3>
-                    <p>Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tuyển dụng của Trường Đại học Sư phạm Kỹ thuật TP.HCM.</p>
-                </WelcomeMessage>
+                <WelcomeSection>
+                    <WelcomeTitle>
+                        Hi! Welcome, {user?.username}! 👋
+                    </WelcomeTitle>
+                    <WelcomeText>
+                        Chào mừng bạn đã đăng nhập vào hệ thống Quản lý Tuyển dụng của Trường Đại học Sư phạm Kỹ thuật TP.HCM.
+                    </WelcomeText>
+                </WelcomeSection>
 
                 <SectionTitle>Danh Mục Chức Năng Chính</SectionTitle>
-                
-                <FunctionGrid>
-                    <FunctionItem as={Link} to="/recruitment/plan">
-                        <FaCalendarAlt size={36} />
-                        <h4>Lập kế hoạch tuyển dụng</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Đề xuất và phê duyệt nhu cầu tuyển dụng của đơn vị.</p>
-                    </FunctionItem>
-                    
-                    <FunctionItem>
-                        <FaBullhorn size={36} />
-                        <h4>Thông báo kế hoạch tuyển dụng</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Đăng tải các thông báo và tin tuyển dụng chính thức.</p>
-                    </FunctionItem>
-                    
-                    <FunctionItem>
-                        <FaIdCard size={36} />
-                        <h4>Hồ sơ</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Hồ sơ của ứng viên ứng tuyển.</p>
-                    </FunctionItem>
-                    
-                    <FunctionItem>
-                        <FaClipboardCheck size={36} />
-                        <h4>Kết quả</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Tổng hợp kết quả tuyển dụng.</p>
-                    </FunctionItem>
 
-                    <FunctionItem>
-                        <FaUserFriends size={36} />
-                        <h4>Quản lý nhân sự</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Thêm, sửa, xóa, tra cứu thông tin nhân viên.</p>
-                    </FunctionItem>
-
-                    <FunctionItem as={Link} to="/profile">
-                        <FaUser size={36} />
-                        <h4>Cá nhân</h4>
-                        <p style={{fontSize: '0.9rem', color: '#888'}}>Thông tin và hồ sơ cá nhân.</p>
-                    </FunctionItem>
-                </FunctionGrid>
-
+                <FeaturesGrid>
+                    {visibleFeatures.map((feature, index) => {
+                        const Icon = feature.icon;
+                        return (
+                            <FeatureCard key={index} onClick={() => handleCardClick(feature.path)}>
+                                <IconWrapper>
+                                    <Icon />
+                                </IconWrapper>
+                                <CardTitle>{feature.title}</CardTitle>
+                                <CardDescription>{feature.description}</CardDescription>
+                            </FeatureCard>
+                        );
+                    })}
+                </FeaturesGrid>
             </Container>
         </MainLayout>
     );

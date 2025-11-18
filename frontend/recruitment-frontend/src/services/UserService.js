@@ -1,5 +1,5 @@
 import ApiClient from '../api-client/src/ApiClient';
-import { UsersApi } from '../api-client/src/api/UsersApi';
+import UsersApi from '../api-client/src/api/UsersApi';
 
 // Quan trọng: Phải import 'ApiClient.instance' để đảm bảo dùng chung 1 đối tượng
 // đã được ApiService cài đặt token.

@@ -53,14 +53,14 @@ public class RecruitmentPlan {
     @Column(nullable = false, length = 255)
     private String school;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDate approvDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "createdBy", nullable = false)
     private UnitManager createdBy;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "approvedBy", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approvedBy")
     private Rector approvedBy;
 }

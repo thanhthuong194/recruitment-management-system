@@ -9,9 +9,15 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - sql_data:/var/opt/mssql 
+      - sql_data:/var/opt/mssql
     networks:
       - app-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Password@2025" -C -Q "SELECT 1"
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 60s
 
   recruitment-backend:
     build: ./backend
@@ -23,11 +29,21 @@ services:
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=Password@2025
       - SPRING_FLYWAY_ENABLED=true
+      - SPRING_FLYWAY_CREATE_SCHEMAS=true
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     networks:
       - app-network
     restart: on-failure
+    command: >
+      sh -c "
+      echo 'Waiting for SQL Server to be ready...' &&
+      sleep 5 &&
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P Password@2025 -C -Q 'IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N''RMS'') CREATE DATABASE RMS' || echo 'Database RMS already exists or created' &&
+      java -jar /app/backend.jar
+      "
 
   recruitment-frontend:
     build: ./frontend/recruitment-frontend 

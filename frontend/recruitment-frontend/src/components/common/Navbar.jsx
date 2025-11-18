@@ -12,7 +12,8 @@ import {
         FaUsers,
         FaClipboardCheck,
         FaIdCard,
-        FaNewspaper } from 'react-icons/fa';
+        FaNewspaper,
+        FaBullhorn } from 'react-icons/fa';
 
 const NavWrapper = styled.nav`
     position: fixed; 
@@ -81,7 +82,7 @@ const GuestLinks = () => (
             <FaInfoCircle /> Giới thiệu
         </NavLinkItem>
 
-        <NavLinkItem to="/co-hoi-viec-lam">
+        <NavLinkItem to="/notifications">
             <FaBriefcase /> Thông báo tuyển dụng
         </NavLinkItem>
 
@@ -107,6 +108,10 @@ const AuthLinks = () => (
 
         <NavLinkItem to="/ke-hoach-tuyen-dung">
             <FaCalendarAlt /> Kế hoạch tuyển dụng
+        </NavLinkItem>
+
+        <NavLinkItem to="/notifications">
+            <FaBullhorn /> Thông báo tuyển dụng
         </NavLinkItem>
 
         <NavLinkItem to="/ho-so">
