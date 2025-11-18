@@ -53,10 +53,18 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<!-- PostgreSQL Driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Keep SQL Server driver for local development (optional) -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
 			<scope>runtime</scope>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -77,9 +85,16 @@
     		<groupId>org.flywaydb</groupId>
     		<artifactId>flyway-core</artifactId>
 		</dependency>
+		<!-- PostgreSQL Flyway support -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+		<!-- Keep SQL Server Flyway for local (optional) -->
 		<dependency>
     		<groupId>org.flywaydb</groupId>
     		<artifactId>flyway-sqlserver</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 	</dependencies>

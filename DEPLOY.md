@@ -16,19 +16,21 @@
 
 3. **Deploy từng service riêng:**
 
-   **Service 1: SQL Server Database**
-   - Click "New Service" → "Database" → "Add SQL Server"
+   **Service 1: PostgreSQL Database**
+   - Click "New Service" → "Database" → **"Add PostgreSQL"**
    - Railway sẽ tự động provision database
    - Copy connection string từ "Variables" tab
+   - ✅ Miễn phí trong free tier ($5 credit/tháng)
 
    **Service 2: Backend (Spring Boot)**
    - Click "New Service" → "GitHub Repo"
    - Chọn root path: `/backend`
    - Set environment variables:
      ```
-     SPRING_DATASOURCE_URL=<connection string from SQL Server service>
-     SPRING_DATASOURCE_USERNAME=<from Railway>
-     SPRING_DATASOURCE_PASSWORD=<from Railway>
+     SPRING_PROFILES_ACTIVE=postgres
+     DATABASE_URL=<PostgreSQL connection URL from Railway>
+     DATABASE_USER=<from Railway PostgreSQL service>
+     DATABASE_PASSWORD=<from Railway PostgreSQL service>
      SPRING_FLYWAY_ENABLED=true
      PORT=8080
      ```
