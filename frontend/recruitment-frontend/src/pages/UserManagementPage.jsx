@@ -339,7 +339,13 @@ const UserManagementPage = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (userId) => {
+  const handleDelete = async (userId, userRole) => {
+    // Only allow deleting UNIT_MANAGER
+    if (userRole !== 'UNIT_MANAGER') {
+      setError('Chỉ được phép xóa tài khoản Trưởng đơn vị');
+      return;
+    }
+
     if (!window.confirm('Bạn có chắc muốn xóa người dùng này?')) {
       return;
     }
@@ -348,7 +354,7 @@ const UserManagementPage = () => {
       await UsersManagementService.deleteUser(userId);
       await fetchUsers();
     } catch (error) {
-      setError('Không thể xóa người dùng');
+      setError(error.message || 'Không thể xóa người dùng');
     }
   };
 
@@ -373,11 +379,11 @@ const UserManagementPage = () => {
     const roleMap = {
       'ADMIN': 'Quản trị viên',
       'RECTOR': 'Hiệu trưởng',
-      'UNIT_MANAGER': 'Trưởng bộ phận',
-      'PERSONNEL_MANAGER': 'Quản lý nhân sự'
+      'UNIT_MANAGER': 'Trưởng đơn vị',
+      'PERSONNEL_MANAGER': 'Trưởng phòng Tổ chức Cán bộ'
+    };
+    return roleMap[role] || role;
   };
-  return roleMap[role] || role;
-};
 
 return (
   <MainLayout>
@@ -422,12 +428,19 @@ return (
                   </Td>
                   <Td>
                     <ActionButtons>
-                      <IconButton edit onClick={() => handleEdit(user)}>
-                        <FaEdit /> Sửa
-                      </IconButton>
-                      <IconButton delete onClick={() => handleDelete(user.userID)}>
-                        <FaTrash /> Xóa
-                      </IconButton>
+                      {user.role === 'UNIT_MANAGER' && (
+                        <>
+                          <IconButton edit onClick={() => handleEdit(user)}>
+                            <FaEdit /> Sửa
+                          </IconButton>
+                          <IconButton delete onClick={() => handleDelete(user.userID, user.role)}>
+                            <FaTrash /> Xóa
+                          </IconButton>
+                        </>
+                      )}
+                      {user.role !== 'UNIT_MANAGER' && (
+                        <span style={{ color: '#95a5a6', fontSize: '13px' }}>Không thể sửa/xóa</span>
+                      )}
                     </ActionButtons>
                   </Td>
                 </Tr>
@@ -553,8 +566,11 @@ return (
                     onChange={handleInputChange}
                     disabled
                   >
-                    <option value="UNIT_MANAGER">Trưởng bộ phận</option>
+                    <option value="UNIT_MANAGER">Trưởng đơn vị</option>
                   </Select>
+                  <small style={{ color: '#95a5a6', fontSize: '12px', marginTop: '4px' }}>
+                    * Chỉ có thể tạo tài khoản Trưởng đơn vị
+                  </small>
                 </FormGroup>
               )}
 
