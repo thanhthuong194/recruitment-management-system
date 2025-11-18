@@ -3,7 +3,9 @@ package com.recruitment.recruitment_backend.controller;
 import com.recruitment.recruitment_backend.dto.CreateUserRequest;
 import com.recruitment.recruitment_backend.dto.UserDTO;
 import com.recruitment.recruitment_backend.model.User;
+import com.recruitment.recruitment_backend.model.UnitManager;
 import com.recruitment.recruitment_backend.repository.UsersRepository;
+import com.recruitment.recruitment_backend.repository.UnitManagerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,10 +20,14 @@ import java.util.stream.Collectors;
 public class UserManagementController {
 
     private final UsersRepository usersRepository;
+    private final UnitManagerRepository unitManagerRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserManagementController(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
+    public UserManagementController(UsersRepository usersRepository, 
+                                   UnitManagerRepository unitManagerRepository,
+                                   PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
+        this.unitManagerRepository = unitManagerRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -57,6 +63,14 @@ public class UserManagementController {
                 return ResponseEntity.badRequest().body("Chỉ được tạo tài khoản UNIT_MANAGER");
             }
 
+            // Validate required fields for UNIT_MANAGER
+            if (request.getDepartment() == null || request.getDepartment().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Phòng ban là bắt buộc");
+            }
+            if (request.getPosition() == null || request.getPosition().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Chức vụ là bắt buộc");
+            }
+
             // Check if username already exists
             if (usersRepository.existsByUsername(request.getUsername())) {
                 return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại");
@@ -86,6 +100,15 @@ public class UserManagementController {
                     .build();
 
             User savedUser = usersRepository.save(newUser);
+
+            // Create UnitManager record
+            UnitManager unitManager = UnitManager.builder()
+                    .user(savedUser)
+                    .department(request.getDepartment())
+                    .position(request.getPosition())
+                    .build();
+            unitManagerRepository.save(unitManager);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(savedUser));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
