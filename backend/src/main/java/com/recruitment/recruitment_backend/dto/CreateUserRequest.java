@@ -19,4 +19,7 @@ public class CreateUserRequest {
     private String address;
     private String role;
     private String sex;
+    // UNIT_MANAGER specific fields
+    private String department;
+    private String position;
 }
