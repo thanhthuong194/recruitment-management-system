@@ -4,7 +4,24 @@ class ApiService {
     constructor() {
         this.apiClient = ApiClient.instance;
         // Cấu hình chung cho ApiClient, ví dụ: basePath
+        // Note: API routes already include /api prefix, so basePath should be just the host
         this.apiClient.basePath = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+    }
+
+    /**
+     * Cài đặt credentials cho HTTP Basic Authentication
+     * Sẽ được gọi bởi AuthContext sau khi đăng nhập.
+     */
+    setupCredentials(username, password) {
+        if (username && password) {
+            this.apiClient.authentications.BasicAuth.username = username;
+            this.apiClient.authentications.BasicAuth.password = password;
+            console.log('BasicAuth credentials set for user:', username);
+        } else {
+            delete this.apiClient.authentications.BasicAuth.username;
+            delete this.apiClient.authentications.BasicAuth.password;
+            console.log('BasicAuth credentials cleared');
+        }
     }
 
     /**
@@ -21,9 +38,17 @@ class ApiService {
     }
 
     /**
-     * Khởi tạo service, lấy token từ localStorage (nếu có)
+     * Khởi tạo service, lấy credentials từ localStorage (nếu có)
      */
     init() {
+        const username = localStorage.getItem('username');
+        const password = localStorage.getItem('password');
+        
+        if (username && password) {
+            this.setupCredentials(username, password);
+        }
+        
+        // Keep token support for backward compatibility
         const token = localStorage.getItem('accessToken');
         if (token) {
             this.setupToken(token);

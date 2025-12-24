@@ -3,8 +3,10 @@ package com.recruitment.recruitment_backend.controller;
 import com.recruitment.recruitment_backend.dto.NotificationRequest;
 import com.recruitment.recruitment_backend.dto.NotificationResponse;
 import com.recruitment.recruitment_backend.model.RecruitmentNotification;
+import com.recruitment.recruitment_backend.model.RecruitmentPlan;
 import com.recruitment.recruitment_backend.model.User;
 import com.recruitment.recruitment_backend.repository.RecruitmentNotificationRepository;
+import com.recruitment.recruitment_backend.repository.RecruitmentPlanRepository;
 import com.recruitment.recruitment_backend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,14 @@ public class NotificationController {
 
     private final RecruitmentNotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final RecruitmentPlanRepository planRepository;
 
     public NotificationController(RecruitmentNotificationRepository notificationRepository,
-                                   UserRepository userRepository) {
+                                   UserRepository userRepository,
+                                   RecruitmentPlanRepository planRepository) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.planRepository = planRepository;
     }
 
     // GET all active notifications (public - for landing page)
@@ -65,12 +70,25 @@ public class NotificationController {
                         .body("Chỉ nhân viên HR mới có quyền đăng thông báo");
             }
 
+            RecruitmentPlan plan = null;
+            if (request.getPlanID() != null) {
+                plan = planRepository.findById(request.getPlanID())
+                        .orElseThrow(() -> new RuntimeException("Kế hoạch tuyển dụng không tồn tại"));
+                
+                // Kiểm tra xem kế hoạch đã được đăng tin chưa
+                if (notificationRepository.existsByPlanPlanID(request.getPlanID())) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body("Kế hoạch này đã được đăng tin rồi");
+                }
+            }
+
             RecruitmentNotification notification = RecruitmentNotification.builder()
                     .title(request.getTitle())
                     .content(request.getContent())
                     .createdDate(LocalDateTime.now())
                     .isActive(true)
                     .createdBy(user)
+                    .plan(plan)
                     .build();
 
             RecruitmentNotification saved = notificationRepository.save(notification);
@@ -140,6 +158,14 @@ public class NotificationController {
                 .createdDate(notification.getCreatedDate())
                 .isActive(notification.getIsActive())
                 .createdBy(notification.getCreatedBy() != null ? notification.getCreatedBy().getUsername() : null)
+                .planID(notification.getPlan() != null ? notification.getPlan().getPlanID() : null)
                 .build();
+    }
+
+    // CHECK if plan is already posted
+    @GetMapping("/check-plan/{planId}")
+    public ResponseEntity<Boolean> isPlanPosted(@PathVariable Integer planId) {
+        boolean isPosted = notificationRepository.existsByPlanPlanID(planId);
+        return ResponseEntity.ok(isPosted);
     }
 }

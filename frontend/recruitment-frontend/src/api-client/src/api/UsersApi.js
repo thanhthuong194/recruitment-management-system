@@ -194,12 +194,12 @@ export default class UsersApi {
       let formParams = {
       };
 
-      let authNames = ['BearerAuth'];
+      let authNames = ['BasicAuth'];
       let contentTypes = [];
       let accepts = ['application/json'];
       let returnType = User;
       return this.apiClient.callApi(
-        '/api/users/me', 'GET',
+        '/users/me', 'GET',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );
@@ -324,12 +324,12 @@ export default class UsersApi {
       let formParams = {
       };
 
-      let authNames = ['BearerAuth'];
+      let authNames = ['BasicAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
       let returnType = ForgotPassword200Response;
       return this.apiClient.callApi(
-        '/api/users/me', 'PUT',
+        '/users/me', 'PUT',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );

@@ -48,9 +48,10 @@ public class SecurityConfig {
                 .anyRequest().permitAll()  // Temporarily allow all requests
             )
             
-            .httpBasic(httpBasic -> {
-                // Enable HTTP Basic authentication
-            })
+            // Disable automatic HTTP Basic authentication since we parse it manually in UserController
+            // .httpBasic(httpBasic -> {
+            //     // Enable HTTP Basic authentication
+            // })
             
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint((request, response, ex) -> {

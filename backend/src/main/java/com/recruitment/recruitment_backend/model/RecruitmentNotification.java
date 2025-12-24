@@ -33,4 +33,8 @@ public class RecruitmentNotification {
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "userid")
     private User createdBy;
+    
+    @ManyToOne
+    @JoinColumn(name = "planID", referencedColumnName = "planID")
+    private RecruitmentPlan plan;
 }

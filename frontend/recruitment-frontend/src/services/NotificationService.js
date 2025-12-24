@@ -74,6 +74,19 @@ class NotificationService {
             throw error;
         }
     }
+
+    // Check if plan is already posted
+    async isPlanPosted(planId) {
+        try {
+            const response = await axios.get(`${API_URL}/notifications/check-plan/${planId}`, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error checking plan status:', error);
+            return false;
+        }
+    }
 }
 
 export default new NotificationService();

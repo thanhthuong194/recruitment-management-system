@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface RecruitmentNotificationRepository extends JpaRepository<RecruitmentNotification, Integer> {
     List<RecruitmentNotification> findByIsActiveTrueOrderByCreatedDateDesc();
+    
+    // Kiểm tra xem kế hoạch đã được đăng tin chưa
+    boolean existsByPlanPlanID(Integer planID);
 }

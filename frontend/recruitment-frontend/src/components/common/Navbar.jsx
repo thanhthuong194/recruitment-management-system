@@ -93,10 +93,6 @@ const GuestLinks = () => (
         <NavLinkItem to="/tin-tuc">
             <FaNewspaper /> Tin tức
         </NavLinkItem>
-
-        <NavLinkItem to="/ung-tuyen">
-            <FaFileSignature /> Ứng tuyển
-        </NavLinkItem>
     </>
 );
 

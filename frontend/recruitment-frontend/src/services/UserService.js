@@ -10,18 +10,39 @@ const promisifyApiCall = (apiMethod, ...args) => {
         // Dùng .call() để đảm bảo 'this' là 'usersApiInstance'
         apiMethod.call(usersApiInstance, ...args, (error, data, response) => {
             if (error) {
-                const message = error.response 
-                                ? (error.response.body || error.response.text || `Lỗi ${error.status}: Yêu cầu thất bại.`) 
-                                : (error.message || "Lỗi kết nối máy chủ.");
+                console.error('[UserService] API Error:', error);
+                console.error('[UserService] Response:', response);
+                
+                let message = "Lỗi kết nối máy chủ.";
+                
+                if (error.response) {
+                    if (error.response.body) {
+                        // Try to extract error message from body
+                        if (typeof error.response.body === 'string') {
+                            message = error.response.body;
+                        } else if (error.response.body.message) {
+                            message = error.response.body.message;
+                        } else if (error.response.body.error) {
+                            message = error.response.body.error;
+                        } else {
+                            message = JSON.stringify(error.response.body);
+                        }
+                    } else if (error.response.text) {
+                        message = error.response.text;
+                    } else if (error.status) {
+                        message = `Lỗi ${error.status}: ${error.statusText || 'Yêu cầu thất bại'}`;
+                    }
+                } else if (error.message) {
+                    message = error.message;
+                }
+                
                 reject(new Error(message)); 
                 return;
             }
             resolve(data);
         });
     });
-};
-
-/**
+};/**
  * Lấy thông tin cá nhân của người dùng hiện tại (gọi GET /api/users/me)
  */
 export const getUserProfile = async () => {
@@ -32,10 +53,30 @@ export const getUserProfile = async () => {
         const data = await promisifyApiCall(usersApiInstance.getMyProfile);
         
         console.debug('[UserService] Nhận được profile:', data);
+        
         if (!data) {
             throw new Error('Không nhận được dữ liệu từ server');
         }
-        return data; // Trả về UserDTO
+        
+        // Map backend response to frontend format
+        // Backend uses: userID, phoneNumber
+        // Frontend expects: id, phone
+        const mappedData = {
+            id: data.userID || data.id,
+            username: data.username,
+            email: data.email,
+            phone: data.phoneNumber || data.phone,
+            fullName: data.fullName,
+            role: data.role,
+            dateOfBirth: data.dateOfBirth,
+            address: data.address,
+            sex: data.sex,
+            department: data.department,
+            position: data.position
+        };
+        
+        console.debug('[UserService] Mapped data:', mappedData);
+        return mappedData;
     } catch (error) {
         console.error('Error getting user profile:', error);
         throw error;

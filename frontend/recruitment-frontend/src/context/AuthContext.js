@@ -25,7 +25,11 @@ export const AuthProvider = ({ children }) => {
                 const tempToken = 'Bearer dummy-token'; 
 
                 localStorage.setItem('accessToken', tempToken);
-                localStorage.setItem('userPassword', password); // Save password for Basic Auth
+                localStorage.setItem('username', username);
+                localStorage.setItem('password', password);
+                
+                apiService.setupCredentials(username, password);
+                
                 const userData = {
                     username: username, 
                     role: 'admin',
@@ -41,10 +45,12 @@ export const AuthProvider = ({ children }) => {
             
             const token = authResponse.token;
             localStorage.setItem('accessToken', token);
-            localStorage.setItem('userPassword', formData.password); // Save password for Basic Auth
+            localStorage.setItem('username', formData.username);
+            localStorage.setItem('password', formData.password);
             localStorage.setItem('user', JSON.stringify(authResponse.user));
             
             apiService.setupToken(token);
+            apiService.setupCredentials(formData.username, formData.password);
             
             setIsLoading(false);
             return authResponse;
@@ -93,9 +99,11 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('user');
-        localStorage.removeItem('userPassword');
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
         
         apiService.setupToken(null);
+        apiService.setupCredentials(null, null);
     };
 
     useEffect(() => {

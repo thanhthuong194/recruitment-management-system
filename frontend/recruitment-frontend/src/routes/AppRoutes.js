@@ -11,6 +11,9 @@ import ProfilePage from "../pages/ProfilePage";
 import NotificationManagementPage from "../pages/NotificationManagementPage";
 import PublicNotificationsPage from "../pages/PublicNotificationsPage";
 import UserManagementPage from "../pages/UserManagementPage";
+import PublicJobsPage from "../pages/PublicJobsPage";
+import ApplicationFormPage from "../pages/ApplicationFormPage";
+import CandidatesManagementPage from "../pages/CandidatesManagementPage";
 
 const AppRoutes = () => {
   return (
@@ -19,6 +22,10 @@ const AppRoutes = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/notifications" element={<PublicNotificationsPage />} />
+      
+      {/* Public routes for job applications */}
+      <Route path="/jobs" element={<PublicJobsPage />} />
+      <Route path="/apply/:jobId" element={<ApplicationFormPage />} />
 
       <Route
         path="/home"
@@ -61,6 +68,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <UserManagementPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/candidates"
+        element={
+          <ProtectedRoute>
+            <CandidatesManagementPage />
           </ProtectedRoute>
         }
       />

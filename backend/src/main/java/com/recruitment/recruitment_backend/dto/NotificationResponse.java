@@ -15,4 +15,5 @@ public class NotificationResponse {
     private LocalDateTime createdDate;
     private Boolean isActive;
     private String createdBy;
+    private Integer planID; // ID của kế hoạch tuyển dụng (nếu có)
 }

@@ -10,4 +10,5 @@ import lombok.*;
 public class NotificationRequest {
     private String title;
     private String content;
+    private Integer planID; // ID của kế hoạch tuyển dụng (nếu đăng từ kế hoạch)
 }

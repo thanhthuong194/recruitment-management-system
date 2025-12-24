@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import { FaPlus, FaBullhorn, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaBullhorn, FaTrash } from 'react-icons/fa';
 import MainLayout from '../layouts/MainLayout';
 import { AuthContext } from '../context/AuthContext';
 import NotificationService from '../services/NotificationService';
@@ -222,9 +222,6 @@ const NotificationManagementPage = () => {
     const { user } = useContext(AuthContext);
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showModal, setShowModal] = useState(false);
-    const [editingNotification, setEditingNotification] = useState(null);
-    const [formData, setFormData] = useState({ title: '', content: '' });
 
     const isHR = user?.role === 'PERSONNEL_MANAGER';
 
@@ -242,36 +239,6 @@ const NotificationManagementPage = () => {
             alert('Không thể tải danh sách thông báo');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleAddNew = () => {
-        setEditingNotification(null);
-        setFormData({ title: '', content: '' });
-        setShowModal(true);
-    };
-
-    const handleEdit = (notification) => {
-        setEditingNotification(notification);
-        setFormData({ title: notification.title, content: notification.content });
-        setShowModal(true);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            if (editingNotification) {
-                await NotificationService.updateNotification(editingNotification.id, formData);
-                alert('Đã cập nhật thông báo thành công!');
-            } else {
-                await NotificationService.createNotification(formData);
-                alert('Đã tạo thông báo mới thành công!');
-            }
-            setShowModal(false);
-            fetchNotifications();
-        } catch (error) {
-            console.error('Error saving notification:', error);
-            alert('Không thể lưu thông báo. Vui lòng thử lại.');
         }
     };
 
@@ -296,12 +263,6 @@ const NotificationManagementPage = () => {
                         <FaBullhorn />
                         Quản lý thông báo tuyển dụng
                     </Title>
-                    {isHR && (
-                        <ActionButton onClick={handleAddNew}>
-                            <FaPlus />
-                            Tạo thông báo mới
-                        </ActionButton>
-                    )}
                 </PageHeader>
 
                 {loading && <div>Đang tải...</div>}
@@ -318,9 +279,6 @@ const NotificationManagementPage = () => {
                                     <CardTitle>{notification.title}</CardTitle>
                                     {isHR && (
                                         <CardActions>
-                                            <IconButton onClick={() => handleEdit(notification)}>
-                                                <FaEdit />
-                                            </IconButton>
                                             <IconButton delete onClick={() => handleDelete(notification.id)}>
                                                 <FaTrash />
                                             </IconButton>
@@ -342,42 +300,7 @@ const NotificationManagementPage = () => {
                     </NotificationsList>
                 )}
 
-                {showModal && (
-                    <Modal onClick={() => setShowModal(false)}>
-                        <ModalContent onClick={(e) => e.stopPropagation()}>
-                            <ModalTitle>
-                                {editingNotification ? 'Chỉnh sửa thông báo' : 'Tạo thông báo mới'}
-                            </ModalTitle>
-                            <Form onSubmit={handleSubmit}>
-                                <FormGroup>
-                                    <Label>Tiêu đề *</Label>
-                                    <Input
-                                        type="text"
-                                        value={formData.title}
-                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        required
-                                    />
-                                </FormGroup>
-                                <FormGroup>
-                                    <Label>Nội dung *</Label>
-                                    <TextArea
-                                        value={formData.content}
-                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        required
-                                    />
-                                </FormGroup>
-                                <ButtonGroup>
-                                    <Button type="button" secondary onClick={() => setShowModal(false)}>
-                                        Hủy
-                                    </Button>
-                                    <Button type="submit" primary>
-                                        {editingNotification ? 'Cập nhật' : 'Tạo mới'}
-                                    </Button>
-                                </ButtonGroup>
-                            </Form>
-                        </ModalContent>
-                    </Modal>
-                )}
+
             </Container>
         </MainLayout>
     );

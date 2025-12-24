@@ -45,19 +45,19 @@ class ApiClient {
          * @type {Array.<String>}
          */
         this.authentications = {
-            'BearerAuth': {type: 'bearer'} // JWT
+            'BearerAuth': {type: 'bearer'}, // JWT
+            'BasicAuth': {type: 'basic'}    // HTTP Basic
         }
 
-	/**
+        /**
          * The default HTTP headers to be included for all API calls.
          * @type {Array.<String>}
          * @default {}
          */
         this.defaultHeaders = {
-            'User-Agent': 'OpenAPI-Generator/1.0.0/Javascript'
-        };
-
-        /**
+            // 'User-Agent' is managed by the browser automatically
+            // Setting it manually causes "Refused to set unsafe header" warning
+        };        /**
          * The default HTTP timeout for all API calls.
          * @type {Number}
          * @default 60000
@@ -239,8 +239,8 @@ class ApiClient {
     * <li>remove nils</li>
     * <li>keep files and arrays</li>
     * <li>format to string with `paramToString` for other cases</li>
-    * </ul>
-    * @param {Object.<String, Object>} params The parameters as object properties.
+    /**
+    * @param {Object} params The parameters to be normalized.
     * @returns {Object.<String, Object>} normalized parameters.
     */
     normalizeParams(params) {
@@ -258,6 +258,40 @@ class ApiClient {
 
         return newParams;
     }
+
+    /**
+    * Filters out unsafe headers that browsers manage automatically.
+    * Prevents "Refused to set unsafe header" warnings.
+    * @param {Object} headers The headers object to filter.
+    * @returns {Object} Filtered headers object.
+    */
+    filterUnsafeHeaders(headers) {
+        if (!headers) return {};
+        
+        var unsafeHeaders = [
+            'user-agent', 'referer', 'host', 'accept-charset', 
+            'accept-encoding', 'connection', 'content-length', 
+            'cookie', 'cookie2', 'date', 'dnt', 'expect', 
+            'keep-alive', 'origin', 'trailer', 'transfer-encoding', 
+            'upgrade', 'via'
+        ];
+        
+        var safeHeaders = {};
+        for (var key in headers) {
+            if (headers.hasOwnProperty(key)) {
+                var lowerKey = key.toLowerCase();
+                if (unsafeHeaders.indexOf(lowerKey) === -1) {
+                    safeHeaders[key] = headers[key];
+                } else {
+                    console.warn('Attempted to set forbidden header "' + key + '". Skipping.');
+                }
+            }
+        }
+        return safeHeaders;
+    }
+
+    /**
+    * Builds a string representation of an array-type actual parameter, according to the given collection format.
 
     /**
     * Builds a string representation of an array-type actual parameter, according to the given collection format.
@@ -419,7 +453,10 @@ class ApiClient {
         request.query(this.normalizeParams(queryParams));
 
         // set header parameters
-        request.set(this.defaultHeaders).set(this.normalizeParams(headerParams));
+        // Filter out unsafe headers that browsers manage automatically
+        var safeHeaders = this.filterUnsafeHeaders(this.defaultHeaders);
+        var safeHeaderParams = this.filterUnsafeHeaders(this.normalizeParams(headerParams));
+        request.set(safeHeaders).set(safeHeaderParams);
 
         // set requestAgent if it is set by user
         if (this.requestAgent) {

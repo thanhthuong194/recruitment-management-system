@@ -1,8 +1,11 @@
 package com.recruitment.recruitment_backend.service;
 
+import com.recruitment.recruitment_backend.dto.UserProfileDTO;
 import com.recruitment.recruitment_backend.dto.UserSelfUpdateRequest;
 import com.recruitment.recruitment_backend.model.User;
+import com.recruitment.recruitment_backend.model.UnitManager;
 import com.recruitment.recruitment_backend.repository.UserRepository;
+import com.recruitment.recruitment_backend.repository.UnitManagerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,14 +13,41 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final UnitManagerRepository unitManagerRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UnitManagerRepository unitManagerRepository) {
         this.userRepository = userRepository;
+        this.unitManagerRepository = unitManagerRepository;
     }
 
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+    }
+
+    public UserProfileDTO getUserProfile(String username) {
+        User user = getUserByUsername(username);
+        
+        UserProfileDTO.UserProfileDTOBuilder builder = UserProfileDTO.builder()
+                .userID(user.getUserID())
+                .username(user.getUsername())
+                .fullName(user.getFullName())
+                .dateOfBirth(user.getDateOfBirth())
+                .sex(user.getSex())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .address(user.getAddress())
+                .role(user.getRole());
+        
+        // If user is UNIT_MANAGER, get department and position
+        if ("UNIT_MANAGER".equals(user.getRole())) {
+            unitManagerRepository.findById(user.getUserID()).ifPresent(um -> {
+                builder.department(um.getDepartment());
+                builder.position(um.getPosition());
+            });
+        }
+        
+        return builder.build();
     }
 
     @Transactional

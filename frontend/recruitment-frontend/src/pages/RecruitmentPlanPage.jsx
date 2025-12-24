@@ -1,10 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaCheck, FaTimes, FaBullhorn } from 'react-icons/fa';
 import MainLayout from '../layouts/MainLayout';
 import { AuthContext } from '../context/AuthContext';
 import RecruitmentPlanModal from '../components/recruitment/RecruitmentPlanModal';
 import PlansService from '../services/PlansService';
+import NotificationService from '../services/NotificationService';
 
 const Container = styled.div`
     width: 95%;
@@ -250,7 +251,116 @@ const Btn = styled.button`
     ${props => props.reject && `background: #dc3545;`}
     ${props => props.edit && `background: #007bff;`}
     ${props => props.delete && `background: #dc3545;`}
+    ${props => props.post && `background: #17a2b8;`}
 `;
+
+const NotificationModal = styled.div`
+    display: ${props => props.show ? 'block' : 'none'};
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+`;
+
+const NotificationModalContent = styled.div`
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 2rem;
+    border: 1px solid #888;
+    border-radius: 0.5rem;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+`;
+
+const NotificationModalHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    h2 {
+        margin: 0;
+        color: #333;
+    }
+`;
+
+const CloseButton = styled.button`
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    
+    &:hover {
+        color: #333;
+    }
+`;
+
+const NotificationForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`;
+
+const FormGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+
+const Label = styled.label`
+    font-weight: 500;
+    color: #333;
+`;
+
+const Input = styled.input`
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+`;
+
+const TextArea = styled.textarea`
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+    min-height: 200px;
+    resize: vertical;
+    font-family: inherit;
+`;
+
+const SubmitButton = styled.button`
+    padding: 0.7rem 1.5rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: flex-end;
+    
+    &:hover {
+        background: #0056b3;
+    }
+`;
+
+const PostedBadge = styled.span`
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.7rem;
+    background: #28a745;
+    color: white;
+    border-radius: 0.3rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+`;
+
 
 const RecruitmentPlanPage = () => {
     const { user } = useContext(AuthContext);
@@ -261,10 +371,45 @@ const RecruitmentPlanPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('pending'); // pending, approved, rejected
+    const [showNotificationModal, setShowNotificationModal] = useState(false);
+    const [notificationFormData, setNotificationFormData] = useState({ title: '', content: '', planID: null });
+    const [postedPlans, setPostedPlans] = useState(new Set()); // Track which plans have been posted
+
+    // Define roles first before using in useEffect
+    const isAdmin = user?.role === 'ADMIN';
+    const isRector = user?.role === 'RECTOR'; // Hiệu trưởng
+    const isHR = user?.role === 'PERSONNEL_MANAGER'; // HR
+    const isUM = user?.role === 'UNIT_MANAGER'; // Trưởng bộ phận
+    const canCreatePlan = isUM; // Chỉ UM được tạo kế hoạch
+    const canEditPlan = isUM; // Chỉ UM được sửa kế hoạch
+    const canDeletePlan = isRector; // Chỉ Rector được xóa kế hoạch chờ duyệt
+    const canPermanentDelete = isHR; // Chỉ HR mới được xóa vĩnh viễn
+    const canApprovePlan = isRector; // Chỉ Rector được phê duyệt
 
     useEffect(() => {
         fetchPlans();
     }, []);
+
+    useEffect(() => {
+        // Check posted status for approved plans
+        if (plans.length > 0 && isHR) {
+            checkPostedStatus();
+        }
+    }, [plans, isHR]);
+
+    const checkPostedStatus = async () => {
+        const approvedPlans = plans.filter(p => (p.status || '').toLowerCase() === 'approved');
+        const posted = new Set();
+        
+        for (const plan of approvedPlans) {
+            const isPosted = await NotificationService.isPlanPosted(plan.planid);
+            if (isPosted) {
+                posted.add(plan.planid);
+            }
+        }
+        
+        setPostedPlans(posted);
+    };
 
     const fetchPlans = async () => {
         try {
@@ -279,16 +424,6 @@ const RecruitmentPlanPage = () => {
             setLoading(false);
         }
     };
-
-    const isAdmin = user?.role === 'ADMIN';
-    const isRector = user?.role === 'RECTOR'; // Hiệu trưởng
-    const isHR = user?.role === 'PERSONNEL_MANAGER'; // HR
-    const isUM = user?.role === 'UNIT_MANAGER'; // Trưởng bộ phận
-    const canCreatePlan = isUM; // Chỉ UM được tạo kế hoạch
-    const canEditPlan = isUM; // Chỉ UM được sửa kế hoạch
-    const canDeletePlan = isRector; // Chỉ Rector được xóa kế hoạch chờ duyệt
-    const canPermanentDelete = isHR; // Chỉ HR mới được xóa vĩnh viễn
-    const canApprovePlan = isRector; // Chỉ Rector được phê duyệt
 
     const handleAddPlan = () => {
         setEditingPlan(null);
@@ -387,6 +522,49 @@ const RecruitmentPlanPage = () => {
     const approvedCount = plans.filter(p => (p.status || 'pending').toLowerCase() === 'approved').length;
     const rejectedCount = plans.filter(p => (p.status || 'pending').toLowerCase() === 'rejected').length;
 
+    const handlePostNotification = (plan) => {
+        // Tạo nội dung thông báo từ thông tin kế hoạch
+        const notificationTitle = `Thông báo tuyển dụng: ${plan.title}`;
+        const notificationContent = `
+${plan.title}
+
+Vị trí tuyển dụng: ${plan.position}
+Đơn vị: ${plan.school}
+Số lượng cần tuyển: ${plan.quantity} người
+Yêu cầu về chuyên ngành: ${plan.cpa || 'Không yêu cầu'}
+
+Mô tả công việc:
+${plan.description || 'Vui lòng liên hệ để biết thêm chi tiết'}
+
+Thời gian bắt đầu dự kiến: ${plan.creatDate ? new Date(plan.creatDate).toLocaleDateString('vi-VN') : 'Sớm nhất có thể'}
+
+Ứng viên quan tâm vui lòng nộp hồ sơ theo hướng dẫn.
+        `.trim();
+
+        setNotificationFormData({
+            title: notificationTitle,
+            content: notificationContent,
+            planID: plan.planid // Lưu planID
+        });
+        setShowNotificationModal(true);
+    };
+
+    const handleSubmitNotification = async (e) => {
+        e.preventDefault();
+        try {
+            await NotificationService.createNotification(notificationFormData);
+            alert('Đã đăng thông báo tuyển dụng thành công!');
+            setShowNotificationModal(false);
+            setNotificationFormData({ title: '', content: '', planID: null });
+            // Cập nhật trạng thái đã đăng
+            setPostedPlans(prev => new Set([...prev, notificationFormData.planID]));
+        } catch (error) {
+            console.error('Error creating notification:', error);
+            const errorMsg = error.response?.data || 'Không thể đăng thông báo. Vui lòng thử lại.';
+            alert(errorMsg);
+        }
+    };
+
     return (
         <MainLayout>
             <Container>
@@ -481,6 +659,18 @@ const RecruitmentPlanPage = () => {
                                         </Td>
                                         <Td>
                                             <ActionButtons>
+                                                {activeTab === 'approved' && isHR && (
+                                                    postedPlans.has(plan.planid) ? (
+                                                        <PostedBadge>
+                                                            <FaBullhorn /> Đã đăng tin
+                                                        </PostedBadge>
+                                                    ) : (
+                                                        <Btn post onClick={() => handlePostNotification(plan)}>
+                                                            <FaBullhorn /> Đăng tin
+                                                        </Btn>
+                                                    )
+                                                )}
+                                                
                                                 {activeTab === 'pending' && canApprovePlan && (
                                                     <>
                                                         <Btn approve onClick={() => handleApprove(plan.planid)}>
@@ -507,13 +697,7 @@ const RecruitmentPlanPage = () => {
                                                     </Btn>
                                                 )}
                                                 
-                                                {(activeTab === 'approved' || activeTab === 'rejected') && canPermanentDelete && (
-                                                    <Btn delete onClick={() => handlePermanentDelete(plan.planid)}>
-                                                        <FaTrash /> Xóa vĩnh viễn
-                                                    </Btn>
-                                                )}
-                                                
-                                                {activeTab !== 'pending' && !canDeletePlan && !canPermanentDelete && (
+                                                {activeTab !== 'pending' && !canDeletePlan && !isHR && (
                                                     <span style={{ color: '#999', fontSize: '0.85rem' }}>-</span>
                                                 )}
                                             </ActionButtons>
@@ -531,6 +715,43 @@ const RecruitmentPlanPage = () => {
                     initialData={editingPlan}
                     onSubmit={handleSubmit}
                 />
+
+                <NotificationModal show={showNotificationModal}>
+                    <NotificationModalContent>
+                        <NotificationModalHeader>
+                            <h2>Đăng thông báo tuyển dụng</h2>
+                            <CloseButton onClick={() => setShowNotificationModal(false)}>
+                                ×
+                            </CloseButton>
+                        </NotificationModalHeader>
+                        <NotificationForm onSubmit={handleSubmitNotification}>
+                            <FormGroup>
+                                <Label>Tiêu đề *</Label>
+                                <Input
+                                    type="text"
+                                    value={notificationFormData.title}
+                                    onChange={(e) => setNotificationFormData({
+                                        ...notificationFormData,
+                                        title: e.target.value
+                                    })}
+                                    required
+                                />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label>Nội dung *</Label>
+                                <TextArea
+                                    value={notificationFormData.content}
+                                    onChange={(e) => setNotificationFormData({
+                                        ...notificationFormData,
+                                        content: e.target.value
+                                    })}
+                                    required
+                                />
+                            </FormGroup>
+                            <SubmitButton type="submit">Đăng thông báo</SubmitButton>
+                        </NotificationForm>
+                    </NotificationModalContent>
+                </NotificationModal>
             </Container>
         </MainLayout>
     );
