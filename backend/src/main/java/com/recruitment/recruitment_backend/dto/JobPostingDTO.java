@@ -20,4 +20,5 @@ public class JobPostingDTO {
     private String school;
     private Integer quantity;
     private Float requiredCpa;
+    private Integer positionID; // Job position ID for applications
 }

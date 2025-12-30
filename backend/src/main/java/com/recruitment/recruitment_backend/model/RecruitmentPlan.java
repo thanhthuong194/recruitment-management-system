@@ -56,6 +56,9 @@ public class RecruitmentPlan {
     @Column(nullable = true)
     private LocalDate approvDate;
 
+    @Column(length = 500)
+    private String rejectReason;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "createdBy", nullable = false)
     private UnitManager createdBy;

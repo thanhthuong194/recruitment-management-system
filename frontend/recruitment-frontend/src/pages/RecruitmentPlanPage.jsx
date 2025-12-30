@@ -374,6 +374,11 @@ const RecruitmentPlanPage = () => {
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [notificationFormData, setNotificationFormData] = useState({ title: '', content: '', planID: null });
     const [postedPlans, setPostedPlans] = useState(new Set()); // Track which plans have been posted
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectingPlanId, setRejectingPlanId] = useState(null);
+    const [rejectReason, setRejectReason] = useState('');
+    const [showRejectReasonModal, setShowRejectReasonModal] = useState(false);
+    const [viewingRejectReason, setViewingRejectReason] = useState({ title: '', reason: '' });
 
     // Define roles first before using in useEffect
     const isAdmin = user?.role === 'ADMIN';
@@ -476,16 +481,35 @@ const RecruitmentPlanPage = () => {
     };
 
     const handleReject = async (planId) => {
-        if (window.confirm('Bạn có chắc muốn từ chối kế hoạch này?')) {
-            try {
-                await PlansService.rejectPlan(planId);
-                await fetchPlans();
-                alert('Đã từ chối kế hoạch!');
-            } catch (err) {
-                console.error('Error rejecting plan:', err);
-                alert('Không thể từ chối kế hoạch. Vui lòng thử lại.');
-            }
+        setRejectingPlanId(planId);
+        setRejectReason('');
+        setShowRejectModal(true);
+    };
+
+    const handleConfirmReject = async () => {
+        if (!rejectReason.trim()) {
+            alert('Vui lòng nhập lý do từ chối!');
+            return;
         }
+        try {
+            await PlansService.rejectPlan(rejectingPlanId, rejectReason);
+            await fetchPlans();
+            setShowRejectModal(false);
+            setRejectingPlanId(null);
+            setRejectReason('');
+            alert('Đã từ chối kế hoạch!');
+        } catch (err) {
+            console.error('Error rejecting plan:', err);
+            alert('Không thể từ chối kế hoạch. Vui lòng thử lại.');
+        }
+    };
+
+    const handleViewRejectReason = (plan) => {
+        setViewingRejectReason({
+            title: plan.title,
+            reason: plan.rejectReason || 'Không có lý do cụ thể'
+        });
+        setShowRejectReasonModal(true);
     };
 
     const handlePermanentDelete = async (planId) => {
@@ -630,7 +654,7 @@ Thời gian bắt đầu dự kiến: ${plan.creatDate ? new Date(plan.creatDate
                                     <Th>STT</Th>
                                     <Th>Tiêu đề</Th>
                                     <Th>Vị trí</Th>
-                                    <Th>Trường</Th>
+                                    <Th>Khoa</Th>
                                     <Th>Số lượng</Th>
                                     <Th>CPA</Th>
                                     <Th>Trạng thái</Th>
@@ -697,7 +721,13 @@ Thời gian bắt đầu dự kiến: ${plan.creatDate ? new Date(plan.creatDate
                                                     </Btn>
                                                 )}
                                                 
-                                                {activeTab !== 'pending' && !canDeletePlan && !isHR && (
+                                                {activeTab === 'rejected' && plan.rejectReason && (
+                                                    <Btn edit onClick={() => handleViewRejectReason(plan)}>
+                                                        <FaSearch /> Xem lý do
+                                                    </Btn>
+                                                )}
+                                                
+                                                {activeTab !== 'pending' && !canDeletePlan && !isHR && !plan.rejectReason && (
                                                     <span style={{ color: '#999', fontSize: '0.85rem' }}>-</span>
                                                 )}
                                             </ActionButtons>
@@ -750,6 +780,76 @@ Thời gian bắt đầu dự kiến: ${plan.creatDate ? new Date(plan.creatDate
                             </FormGroup>
                             <SubmitButton type="submit">Đăng thông báo</SubmitButton>
                         </NotificationForm>
+                    </NotificationModalContent>
+                </NotificationModal>
+
+                {/* Modal nhập lý do từ chối */}
+                <NotificationModal show={showRejectModal}>
+                    <NotificationModalContent>
+                        <NotificationModalHeader>
+                            <h2>Từ chối kế hoạch</h2>
+                            <CloseButton onClick={() => {
+                                setShowRejectModal(false);
+                                setRejectingPlanId(null);
+                                setRejectReason('');
+                            }}>
+                                ×
+                            </CloseButton>
+                        </NotificationModalHeader>
+                        <NotificationForm onSubmit={(e) => { e.preventDefault(); handleConfirmReject(); }}>
+                            <FormGroup>
+                                <Label>Lý do từ chối *</Label>
+                                <TextArea
+                                    value={rejectReason}
+                                    onChange={(e) => setRejectReason(e.target.value)}
+                                    placeholder="Nhập lý do từ chối kế hoạch tuyển dụng này..."
+                                    required
+                                    style={{ minHeight: '150px' }}
+                                />
+                            </FormGroup>
+                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                                <SubmitButton type="button" onClick={() => {
+                                    setShowRejectModal(false);
+                                    setRejectingPlanId(null);
+                                    setRejectReason('');
+                                }} style={{ background: '#6c757d' }}>
+                                    Hủy
+                                </SubmitButton>
+                                <SubmitButton type="submit" style={{ background: '#dc3545' }}>
+                                    Xác nhận từ chối
+                                </SubmitButton>
+                            </div>
+                        </NotificationForm>
+                    </NotificationModalContent>
+                </NotificationModal>
+
+                {/* Modal xem lý do từ chối */}
+                <NotificationModal show={showRejectReasonModal}>
+                    <NotificationModalContent>
+                        <NotificationModalHeader>
+                            <h2>Lý do từ chối</h2>
+                            <CloseButton onClick={() => setShowRejectReasonModal(false)}>
+                                ×
+                            </CloseButton>
+                        </NotificationModalHeader>
+                        <div style={{ padding: '1rem 0' }}>
+                            <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Kế hoạch: {viewingRejectReason.title}</p>
+                            <div style={{ 
+                                background: '#f8d7da', 
+                                padding: '1rem', 
+                                borderRadius: '0.5rem', 
+                                border: '1px solid #f5c6cb',
+                                color: '#721c24'
+                            }}>
+                                <strong>Lý do từ chối:</strong>
+                                <p style={{ marginTop: '0.5rem', whiteSpace: 'pre-wrap' }}>{viewingRejectReason.reason}</p>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <SubmitButton type="button" onClick={() => setShowRejectReasonModal(false)}>
+                                Đóng
+                            </SubmitButton>
+                        </div>
                     </NotificationModalContent>
                 </NotificationModal>
             </Container>

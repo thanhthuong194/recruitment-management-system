@@ -36,6 +36,17 @@ class JobPostingService {
         }
     }
 
+    // Public - Get approved plan by ID (fallback for application form)
+    async getApprovedPlanById(planId) {
+        try {
+            const response = await axios.get(`${API_URL}/plans/public/${planId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching approved plan:', error);
+            throw error;
+        }
+    }
+
     // Get all job postings (authenticated)
     async getAllJobPostings() {
         try {

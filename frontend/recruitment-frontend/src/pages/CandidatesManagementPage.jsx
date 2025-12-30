@@ -29,12 +29,14 @@ const Controls = styled.div`
     gap: 1rem;
     margin-bottom: 2rem;
     flex-wrap: wrap;
+    align-items: center;
 `;
 
 const SearchBox = styled.div`
     position: relative;
     flex: 1;
-    min-width: 300px;
+    min-width: 250px;
+    max-width: calc(100% - 180px);
     
     input {
         width: 100%;
@@ -42,6 +44,7 @@ const SearchBox = styled.div`
         border: 2px solid #e0e0e0;
         border-radius: 8px;
         font-size: 1rem;
+        box-sizing: border-box;
         
         &:focus {
             outline: none;
@@ -64,6 +67,8 @@ const FilterSelect = styled.select`
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
+    flex-shrink: 0;
+    min-width: 160px;
     
     &:focus {
         outline: none;

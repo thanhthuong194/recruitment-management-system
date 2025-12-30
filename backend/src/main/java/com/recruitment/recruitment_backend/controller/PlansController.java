@@ -5,8 +5,10 @@ import com.recruitment.recruitment_backend.dto.PlanResponse;
 import com.recruitment.recruitment_backend.dto.PlanUpdateRequest;
 import com.recruitment.recruitment_backend.model.RecruitmentPlan;
 import com.recruitment.recruitment_backend.model.UnitManager;
+import com.recruitment.recruitment_backend.model.JobPosition;
 import com.recruitment.recruitment_backend.repository.RecruitmentPlanRepository;
 import com.recruitment.recruitment_backend.repository.UnitManagerRepository;
+import com.recruitment.recruitment_backend.repository.JobPositionRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,14 @@ public class PlansController {
 
     private final RecruitmentPlanRepository planRepository;
     private final UnitManagerRepository unitManagerRepository;
+    private final JobPositionRepository jobPositionRepository;
 
     public PlansController(RecruitmentPlanRepository planRepository, 
-                          UnitManagerRepository unitManagerRepository) {
+                          UnitManagerRepository unitManagerRepository,
+                          JobPositionRepository jobPositionRepository) {
         this.planRepository = planRepository;
         this.unitManagerRepository = unitManagerRepository;
+        this.jobPositionRepository = jobPositionRepository;
     }
 
     // GET all plans
@@ -151,18 +156,54 @@ public class PlansController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // PUBLIC - Get approved plan by ID (for application form)
+    @GetMapping(value = "/public/{id}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<?> getApprovedPlanById(@PathVariable Integer id) {
+        return planRepository.findById(id)
+                .map(plan -> {
+                    if (!"Approved".equals(plan.getStatus())) {
+                        return ResponseEntity.notFound().build();
+                    }
+                    // Return plan info with positionID if available
+                    PlanResponse response = convertToResponse(plan);
+                    // Try to find job position for this plan
+                    List<JobPosition> positions = jobPositionRepository.findByPlanPlanID(id);
+                    if (!positions.isEmpty()) {
+                        // Add positionID to response - we'll need to create a new response object
+                    }
+                    return ResponseEntity.ok(response);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // REJECT plan
-    @PutMapping(value = "/{id}/reject", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<PlanResponse> rejectPlan(@PathVariable Integer id) {
+    @PutMapping(value = "/{id}/reject", consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<PlanResponse> rejectPlan(@PathVariable Integer id, @RequestBody(required = false) RejectRequest rejectRequest) {
         return planRepository.findById(id)
                 .map(plan -> {
                     plan.setStatus("Rejected");
                     plan.setApprovDate(LocalDate.now());
+                    if (rejectRequest != null && rejectRequest.getRejectReason() != null) {
+                        plan.setRejectReason(rejectRequest.getRejectReason());
+                    }
                     // TODO: Set approvedBy to current logged-in rector
                     RecruitmentPlan updated = planRepository.save(plan);
                     return ResponseEntity.ok(convertToResponse(updated));
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Request class for reject reason
+    public static class RejectRequest {
+        private String rejectReason;
+        
+        public String getRejectReason() {
+            return rejectReason;
+        }
+        
+        public void setRejectReason(String rejectReason) {
+            this.rejectReason = rejectReason;
+        }
     }
 
     // Helper method to convert entity to DTO
@@ -179,6 +220,7 @@ public class PlansController {
                 .approvDate(plan.getApprovDate())
                 .createdBy(plan.getCreatedBy() != null ? plan.getCreatedBy().getUser().getUsername() : null)
                 .approvedBy(plan.getApprovedBy() != null ? plan.getApprovedBy().getUser().getUsername() : null)
+                .rejectReason(plan.getRejectReason())
                 .build();
     }
     

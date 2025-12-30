@@ -90,6 +90,36 @@ const TextArea = styled.textarea`
     }
 `;
 
+const Select = styled.select`
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+
+    &:focus {
+        outline: none;
+        border-color: #1877f2;
+    }
+`;
+
+const KHOA_LIST = [
+    'Khoa Khoa học Ứng dụng / Cơ bản',
+    'Khoa Cơ khí – Chế tạo máy',
+    'Khoa Điện – Điện tử',
+    'Khoa Cơ khí Động lực',
+    'Khoa Công nghệ Thông tin',
+    'Khoa Công trình Xây dựng',
+    'Khoa Kinh tế',
+    'Khoa Ngoại ngữ',
+    'Khoa Công nghệ Hóa học & Thực phẩm',
+    'Khoa Công nghệ Dệt may & Thiết kế thời trang',
+    'Khoa Chính trị – Nhân văn',
+    'Khoa Đào tạo Quốc tế',
+    'Khoa Đào tạo Chất lượng cao'
+];
+
 const ButtonGroup = styled.div`
     display: flex;
     gap: 1rem;
@@ -174,13 +204,18 @@ const RecruitmentPlanModal = ({ isOpen, onClose, initialData, onSubmit }) => {
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="school">Trường</Label>
-                        <Input
+                        <Label htmlFor="school">Khoa</Label>
+                        <Select
                             id="school"
                             name="school"
                             required
-                            defaultValue={initialData?.school}
-                        />
+                            defaultValue={initialData?.school || ''}
+                        >
+                            <option value="">-- Chọn Khoa --</option>
+                            {KHOA_LIST.map((khoa, index) => (
+                                <option key={index} value={khoa}>{khoa}</option>
+                            ))}
+                        </Select>
                     </FormGroup>
 
                     <FormGroup>

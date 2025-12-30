@@ -2,7 +2,9 @@ package com.recruitment.recruitment_backend.service;
 
 import com.recruitment.recruitment_backend.dto.JobPostingDTO;
 import com.recruitment.recruitment_backend.model.JobPosting;
+import com.recruitment.recruitment_backend.model.JobPosition;
 import com.recruitment.recruitment_backend.repository.JobPostingRepository;
+import com.recruitment.recruitment_backend.repository.JobPositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ public class JobPostingService {
 
     @Autowired
     private JobPostingRepository jobPostingRepository;
+
+    @Autowired
+    private JobPositionRepository jobPositionRepository;
 
     public List<JobPostingDTO> getAllJobPostings() {
         return jobPostingRepository.findAll().stream()
@@ -53,6 +58,12 @@ public class JobPostingService {
             dto.setSchool(jobPosting.getPlan().getSchool());
             dto.setQuantity(jobPosting.getPlan().getQuantity());
             dto.setRequiredCpa(jobPosting.getPlan().getCpa());
+            
+            // Get first job position for this plan
+            List<JobPosition> positions = jobPositionRepository.findByPlanPlanID(jobPosting.getPlan().getPlanID());
+            if (!positions.isEmpty()) {
+                dto.setPositionID(positions.get(0).getPositionID());
+            }
         }
         
         return dto;

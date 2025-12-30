@@ -23,4 +23,5 @@ public class PlanResponse {
     private LocalDate approvDate;
     private String createdBy;
     private String approvedBy;
+    private String rejectReason;
 }

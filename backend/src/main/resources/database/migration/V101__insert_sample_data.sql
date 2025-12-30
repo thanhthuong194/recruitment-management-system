@@ -28,16 +28,10 @@ INSERT INTO job_positions (planid, position, title)
 VALUES (1, N'Giảng viên CNTT', N'Lập trình Java');
 
 -- ====== CANDIDATES ======
-INSERT INTO candidates (cpa, date_of_birth, sex, phone, department, email, full_name, position, address, cv_path)
-VALUES
-(3.4, '2000-05-10', 'Nam', '0911222333', 'CNTT', 'candidate1@gmail.com', 'Nguyen D', 'Giảng viên CNTT', 'Hải Phòng', '/cv/nguyend.pdf'),
-(3.6, '1999-08-20', 'Nữ', '0911777888', 'CNTT', 'candidate2@gmail.com', 'Tran E', 'Giảng viên CNTT', 'Hà Nội', '/cv/trane.pdf');
+-- (Sample candidates removed)
 
 -- ====== APPLICATIONS ======
-INSERT INTO applications (apply_date, candidateid, positionid, status)
-VALUES
-('2025-02-15', 1, 1, 'Đang xét'),
-('2025-02-16', 2, 1, 'Đã duyệt');
+-- (Sample applications removed)
 
 -- ====== RECRUITMENT RESULTS ======
 INSERT INTO recruitment_results (planid, final_decision)
@@ -45,8 +39,7 @@ VALUES (1, 'Đã tuyển');
 
 -- ====== JOB POSTINGS ======
 INSERT INTO job_postings (created_by, created_date, deadline, planid, status, title)
-VALUES (3, '2025-01-02', '2025-03-01', 1, 'Đang mở', 'Tuyển Giảng viên CNTT');
+VALUES (3, '2025-01-02', '2025-03-01', 1, N'Đang mở', N'Tuyển Giảng viên CNTT');
 
 -- ====== NOTIFICATIONS ======
-INSERT INTO notifications (candidateid, senderid, sent_date, position, title)
-VALUES (1, 3, '2025-03-05', 'Giảng viên CNTT', 'Thông báo phỏng vấn');
+-- (Sample notification referencing candidate removed)

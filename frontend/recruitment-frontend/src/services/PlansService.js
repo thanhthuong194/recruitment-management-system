@@ -98,12 +98,13 @@ class PlansService {
         }
     }
 
-    // Reject plan
-    async rejectPlan(id) {
+    // Reject plan with reason
+    async rejectPlan(id, rejectReason = '') {
         try {
-            const response = await axios.put(`${API_URL}/plans/${id}/reject`, {}, {
-                headers: this.getAuthHeaders()
-            });
+            const response = await axios.put(`${API_URL}/plans/${id}/reject`, 
+                { rejectReason: rejectReason },
+                { headers: this.getAuthHeaders() }
+            );
             return response.data;
         } catch (error) {
             console.error('Error rejecting plan:', error);

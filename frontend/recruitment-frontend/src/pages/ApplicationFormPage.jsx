@@ -253,20 +253,44 @@ const ApplicationFormPage = () => {
     const fetchJobDetails = async () => {
         try {
             setLoading(true);
-            // Try to get job posting by planId first (from notification)
             let data;
+            
+            // Try to get job posting by planId first (from notification)
             try {
                 data = await JobPostingService.getJobPostingByPlanId(jobId);
             } catch (e) {
-                // Fallback: try to get by job posting ID
-                data = await JobPostingService.getJobPostingById(jobId);
+                // Fallback 1: try to get by job posting ID
+                try {
+                    data = await JobPostingService.getJobPostingById(jobId);
+                } catch (e2) {
+                    // Fallback 2: try to get approved plan directly
+                    try {
+                        const planData = await JobPostingService.getApprovedPlanById(jobId);
+                        // Convert plan data to job-like format
+                        data = {
+                            title: planData.title,
+                            position: planData.position,
+                            school: planData.school,
+                            quantity: planData.quantity,
+                            requiredCpa: planData.cpa,
+                            deadline: planData.approvDate,
+                            planid: planData.planid,
+                            positionID: null // No job position yet
+                        };
+                    } catch (e3) {
+                        throw new Error('Không tìm thấy thông tin tuyển dụng');
+                    }
+                }
             }
+            
             setJob(data);
-            // Pre-fill position from job
+            // Pre-fill position and department from job
             setFormData(prev => ({
                 ...prev,
-                position: data.position || ''
+                position: data.position || '',
+                department: data.school || ''
             }));
+            setError(null);
         } catch (err) {
             console.error('Error loading job:', err);
             setError('Không thể tải thông tin tin tuyển dụng');
@@ -341,7 +365,7 @@ const ApplicationFormPage = () => {
                 cpa: parseFloat(formData.cpa),
                 sex: formData.sex,
                 cvPath: formData.cvPath,
-                positionID: jobId ? parseInt(jobId) : null
+                positionID: job?.positionID || null
             };
 
             await ApplicationService.submitApplication(applicationData);
@@ -398,7 +422,7 @@ const ApplicationFormPage = () => {
                         <JobInfo>
                             <h3>{job.title}</h3>
                             <p><strong>Vị trí:</strong> {job.position}</p>
-                            <p><strong>Trường:</strong> {job.school}</p>
+                            <p><strong>Khoa:</strong> {job.school}</p>
                             <p><strong>GPA yêu cầu:</strong> ≥ {job.requiredCpa}</p>
                             <p><strong>Hạn nộp:</strong> {new Date(job.deadline).toLocaleDateString('vi-VN')}</p>
                         </JobInfo>
@@ -514,9 +538,9 @@ const ApplicationFormPage = () => {
                                     type="text"
                                     name="position"
                                     value={formData.position}
-                                    onChange={handleInputChange}
-                                    required
-                                    placeholder="Giảng viên"
+                                    readOnly
+                                    disabled
+                                    style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }}
                                 />
                             </FormGroup>
                         </FormRow>
@@ -530,9 +554,9 @@ const ApplicationFormPage = () => {
                                     type="text"
                                     name="department"
                                     value={formData.department}
-                                    onChange={handleInputChange}
-                                    required
-                                    placeholder="Khoa Công nghệ thông tin"
+                                    readOnly
+                                    disabled
+                                    style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }}
                                 />
                             </FormGroup>
                         </FormRow>
