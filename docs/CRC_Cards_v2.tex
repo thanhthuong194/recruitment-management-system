@@ -1,0 +1,356 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+\title{\textbf{CRC CARDS\\HỆ THỐNG QUẢN LÝ TUYỂN DỤNG}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Xây dựng các CRC Cards}
+
+% ================== CRC 1: Lập kế hoạch tuyển dụng ==================
+\begin{table}[h!]
+\centering
+\caption{CRC cho class Lập kế hoạch tuyển dụng}
+\renewcommand{\arraystretch}{1.2} 
+
+\begin{tabular}{|>{\arraybackslash}p{3cm}|>{\arraybackslash}p{6cm}|>{\arraybackslash}p{6cm}|} 
+
+\hline
+\textbf{Class}
+
+        Lập kế hoạch tuyển dụng
+        
+&   
+        \textbf{Responsibilities}
+        
+        - Thu nhận kế hoạch tuyển dụng từ Trưởng đơn vị và gửi cho TP. TC-CB
+        
+& 
+        \textbf{Collaborators}
+        
+        Duyệt kế hoạch 
+        
+\\ \hline
+&
+        \textbf{Attributes}
+
+        - Chức danh 
+        
+        - Số lượng cần tuyển 
+        
+        - Công việc đảm nhiệm 
+        
+        - Yêu cầu năng lực, trình độ 
+
+& 
+        \textbf{Relationships}
+
+        Generalization (a-kind-of):
+
+        Aggregation (has-part):
+
+        Other Associations: Duyệt kế hoạch
+    
+\\ \hline
+\end{tabular}
+\end{table}
+
+% ================== CRC 2: Duyệt kế hoạch ==================
+\begin{table}[h!]
+\centering
+\caption{CRC cho class Duyệt kế hoạch}
+\renewcommand{\arraystretch}{1.2} 
+
+\begin{tabular}{|>{\arraybackslash}p{3cm}|>{\arraybackslash}p{6cm}|>{\arraybackslash}p{6cm}|} 
+
+\hline
+\textbf{Class}
+
+        Duyệt kế hoạch
+        
+&   
+        \textbf{Responsibilities}
+        
+        - Tiếp nhận kế hoạch từ TP. TC-CB
+        
+        - Xem xét và phê duyệt kế hoạch
+        
+        - Gửi trả kế hoạch nếu từ chối
+        
+& 
+        \textbf{Collaborators}
+        
+        Lập kế hoạch tuyển dụng
+        
+        Thông báo tuyển dụng
+        
+\\ \hline
+&
+        \textbf{Attributes}
+
+        - Trạng thái phê duyệt
+        
+        - Lý do từ chối
+        
+        - Ngày phê duyệt
+        
+        - Người phê duyệt (Hiệu trưởng)
+
+& 
+        \textbf{Relationships}
+
+        Generalization (a-kind-of):
+
+        Aggregation (has-part):
+
+        Other Associations: Lập kế hoạch, Thông báo tuyển dụng
+    
+\\ \hline
+\end{tabular}
+\end{table}
+
+% ================== CRC 3: Thông báo tuyển dụng ==================
+\begin{table}[h!]
+\centering
+\caption{CRC cho class Thông báo tuyển dụng}
+\renewcommand{\arraystretch}{1.2} 
+
+\begin{tabular}{|>{\arraybackslash}p{3cm}|>{\arraybackslash}p{6cm}|>{\arraybackslash}p{6cm}|} 
+
+\hline
+\textbf{Class}
+
+        Thông báo tuyển dụng
+        
+&   
+        \textbf{Responsibilities}
+        
+        - Tạo thông báo tuyển dụng công khai
+        
+        - Đăng tải thông tin vị trí, yêu cầu, hạn nộp
+        
+        - Quản lý trạng thái thông báo
+        
+& 
+        \textbf{Collaborators}
+        
+        Duyệt kế hoạch
+        
+        Thu thập hồ sơ
+        
+\\ \hline
+&
+        \textbf{Attributes}
+
+        - Tiêu đề thông báo
+        
+        - Nội dung thông báo
+        
+        - Vị trí tuyển dụng
+        
+        - Yêu cầu ứng viên
+        
+        - Hạn nộp hồ sơ
+        
+        - Ngày đăng
+
+& 
+        \textbf{Relationships}
+
+        Generalization (a-kind-of):
+
+        Aggregation (has-part):
+
+        Other Associations: Duyệt kế hoạch, Thu thập hồ sơ
+    
+\\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 4: Thu thập và lập danh sách hồ sơ ==================
+\begin{table}[h!]
+\centering
+\caption{CRC cho class Thu thập và lập danh sách hồ sơ dự tuyển}
+\renewcommand{\arraystretch}{1.2} 
+
+\begin{tabular}{|>{\arraybackslash}p{3cm}|>{\arraybackslash}p{6cm}|>{\arraybackslash}p{6cm}|} 
+
+\hline
+\textbf{Class}
+
+        Thu thập và lập danh sách hồ sơ dự tuyển
+        
+&   
+        \textbf{Responsibilities}
+        
+        - Tiếp nhận hồ sơ từ ứng viên
+        
+        - Lưu trữ thông tin ứng viên
+        
+        - Sàng lọc hồ sơ đủ điều kiện
+        
+        - Lập danh sách ứng viên
+        
+& 
+        \textbf{Collaborators}
+        
+        Thông báo tuyển dụng
+        
+        Thông báo kết quả
+        
+\\ \hline
+&
+        \textbf{Attributes}
+
+        - Họ tên ứng viên
+        
+        - Email
+        
+        - Số điện thoại
+        
+        - Địa chỉ
+        
+        - CV đính kèm
+        
+        - Trạng thái hồ sơ
+        
+        - Ngày nộp
+
+& 
+        \textbf{Relationships}
+
+        Generalization (a-kind-of):
+
+        Aggregation (has-part): Hồ sơ ứng viên
+
+        Other Associations: Thông báo tuyển dụng, Thông báo kết quả
+    
+\\ \hline
+\end{tabular}
+\end{table}
+
+% ================== CRC 5: Thông báo kết quả ==================
+\begin{table}[h!]
+\centering
+\caption{CRC cho class Thông báo kết quả tuyển dụng}
+\renewcommand{\arraystretch}{1.2} 
+
+\begin{tabular}{|>{\arraybackslash}p{3cm}|>{\arraybackslash}p{6cm}|>{\arraybackslash}p{6cm}|} 
+
+\hline
+\textbf{Class}
+
+        Thông báo kết quả tuyển dụng
+        
+&   
+        \textbf{Responsibilities}
+        
+        - Cập nhật kết quả xét duyệt ứng viên
+        
+        - Tạo thông báo kết quả
+        
+        - Công bố kết quả công khai
+        
+        - Gửi email thông báo cho ứng viên
+        
+& 
+        \textbf{Collaborators}
+        
+        Thu thập hồ sơ
+        
+\\ \hline
+&
+        \textbf{Attributes}
+
+        - Tiêu đề thông báo
+        
+        - Nội dung kết quả
+        
+        - Danh sách trúng tuyển
+        
+        - Danh sách không trúng tuyển
+        
+        - Ngày công bố
+
+& 
+        \textbf{Relationships}
+
+        Generalization (a-kind-of):
+
+        Aggregation (has-part):
+
+        Other Associations: Thu thập hồ sơ
+    
+\\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== BẢNG TỔNG HỢP ==================
+\section{Bảng tổng hợp các CRC Cards}
+
+\begin{table}[h!]
+\centering
+\caption{Tổng hợp các Class trong hệ thống}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|p{5cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{STT} & \textbf{Class Name} & \textbf{Responsibilities} & \textbf{Collaborators} \\
+\hline
+1 & Lập kế hoạch tuyển dụng & Thu nhận và gửi kế hoạch & Duyệt kế hoạch \\
+\hline
+2 & Duyệt kế hoạch & Xem xét và phê duyệt & Lập kế hoạch, Thông báo TD \\
+\hline
+3 & Thông báo tuyển dụng & Đăng thông báo công khai & Duyệt kế hoạch, Thu thập hồ sơ \\
+\hline
+4 & Thu thập và lập danh sách hồ sơ & Tiếp nhận và sàng lọc hồ sơ & Thông báo TD, Thông báo KQ \\
+\hline
+5 & Thông báo kết quả & Công bố kết quả tuyển dụng & Thu thập hồ sơ \\
+\hline
+\end{tabular}
+\end{table}
+
+\vspace{1cm}
+
+% ================== MA TRẬN QUAN HỆ ==================
+\section{Ma trận quan hệ giữa các Class}
+
+\begin{table}[h!]
+\centering
+\caption{Ma trận quan hệ Collaborators}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{3.5cm}|c|c|c|c|c|}
+\hline
+\textbf{Class} & \textbf{Lập KH} & \textbf{Duyệt KH} & \textbf{TB TD} & \textbf{Thu thập HS} & \textbf{TB KQ} \\
+\hline
+Lập kế hoạch TD & - & $\checkmark$ & & & \\
+\hline
+Duyệt kế hoạch & $\checkmark$ & - & $\checkmark$ & & \\
+\hline
+Thông báo TD & & $\checkmark$ & - & $\checkmark$ & \\
+\hline
+Thu thập hồ sơ & & & $\checkmark$ & - & $\checkmark$ \\
+\hline
+Thông báo KQ & & & & $\checkmark$ & - \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{document}

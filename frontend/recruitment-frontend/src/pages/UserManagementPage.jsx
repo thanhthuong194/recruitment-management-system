@@ -280,7 +280,9 @@ const UserManagementPage = () => {
     email: '',
     address: '',
     role: 'UNIT_MANAGER',
-    sex: 'Nam'
+    sex: 'Nam',
+    department: '',
+    position: ''
   });
 
   useEffect(() => {
@@ -334,7 +336,9 @@ const UserManagementPage = () => {
       email: user.email,
       address: user.address,
       role: user.role,
-      sex: user.sex
+      sex: user.sex,
+      department: user.department || '',
+      position: user.position || ''
     });
     setShowModal(true);
   };
@@ -371,7 +375,9 @@ const UserManagementPage = () => {
       email: '',
       address: '',
       role: 'UNIT_MANAGER',
-      sex: 'Nam'
+      sex: 'Nam',
+      department: '',
+      position: ''
     });
   };
 
@@ -557,9 +563,33 @@ return (
                 />
               </FormGroup>
 
+              <FormGroup>
+                <Label>Phòng ban *</Label>
+                <Input
+                  type="text"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="VD: Khoa Công nghệ thông tin"
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Chức vụ/Vị trí *</Label>
+                <Input
+                  type="text"
+                  name="position"
+                  value={formData.position}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="VD: Trưởng khoa"
+                />
+              </FormGroup>
+
               {!editingUser && (
                 <FormGroup>
-                  <Label>Chức vụ</Label>
+                  <Label>Vai trò</Label>
                   <Select
                     name="role"
                     value={formData.role}

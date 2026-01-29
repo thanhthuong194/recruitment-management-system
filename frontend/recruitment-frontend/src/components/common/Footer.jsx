@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Component Footer của ứng dụng
+ * @module components/common/Footer
+ * @description Footer chứa thông tin bản quyền và liên hệ của trường
+ */
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -23,6 +29,16 @@ const FooterText = styled.p`
     margin: 0.3rem 0;
 `;
 
+/**
+ * Component Footer
+ * @component
+ * @returns {JSX.Element} Footer với thông tin bản quyền và địa chỉ
+ * 
+ * @description Hiển thị:
+ * - Bản quyền © 2025
+ * - Địa chỉ trường
+ * - Số điện thoại liên hệ
+ */
 const Footer = () => {
     return (
         <FooterWrapper>

@@ -14,15 +14,52 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Controller quản lý Người dùng hệ thống (Admin Functions).
+ * 
+ * <p>Cung cấp các API endpoint CRUD cho quản lý user:
+ * <ul>
+ *   <li>GET /api/users - Lấy danh sách tất cả users (Admin)</li>
+ *   <li>GET /api/users/{id} - Lấy user theo ID</li>
+ *   <li>POST /api/users - Tạo user mới (chỉ UNIT_MANAGER)</li>
+ *   <li>PUT /api/users/{id} - Cập nhật user</li>
+ *   <li>DELETE /api/users/{id} - Xóa user (chỉ UNIT_MANAGER)</li>
+ * </ul>
+ * 
+ * <p>Quyền hạn:
+ * <ul>
+ *   <li>Admin: Quản lý tất cả users</li>
+ *   <li>Giới hạn: Chỉ được tạo/xóa tài khoản UNIT_MANAGER</li>
+ * </ul>
+ * 
+ * <p>Lưu ý: Controller này khác với {@link UserController} - xử lý thông tin cá nhân.
+ * 
+ * @author Recruitment Team
+ * @version 1.0
+ * @see UserController
+ * @see UserDTO
+ */
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UserManagementController {
 
+    /** Repository truy vấn users */
     private final UsersRepository usersRepository;
+    
+    /** Repository truy vấn UnitManager */
     private final UnitManagerRepository unitManagerRepository;
+    
+    /** Encoder để mã hóa password */
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Constructor khởi tạo UserManagementController với dependency injection.
+     * 
+     * @param usersRepository Repository xử lý User
+     * @param unitManagerRepository Repository xử lý UnitManager
+     * @param passwordEncoder Password encoder cho BCrypt
+     */
     public UserManagementController(UsersRepository usersRepository, 
                                    UnitManagerRepository unitManagerRepository,
                                    PasswordEncoder passwordEncoder) {
@@ -32,7 +69,11 @@ public class UserManagementController {
     }
 
     /**
-     * Get all users (Admin only)
+     * Lấy danh sách tất cả người dùng (Admin only).
+     * 
+     * <p>Endpoint: GET /api/users
+     * 
+     * @return ResponseEntity chứa danh sách UserDTO (không bao gồm password)
      */
     @GetMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -43,7 +84,14 @@ public class UserManagementController {
     }
 
     /**
-     * Get user by ID
+     * Lấy thông tin người dùng theo ID.
+     * 
+     * <p>Endpoint: GET /api/users/{id}
+     * 
+     * @param id ID của user cần lấy
+     * @return ResponseEntity chứa:
+     *         - Thành công: UserDTO
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
      */
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
@@ -53,7 +101,23 @@ public class UserManagementController {
     }
 
     /**
-     * Create new user (Admin only - can only create UNIT_MANAGER)
+     * Tạo người dùng mới (Admin only - chỉ tạo được UNIT_MANAGER).
+     * 
+     * <p>Endpoint: POST /api/users
+     * 
+     * <p>Quy trình:
+     * <ol>
+     *   <li>Validate role = UNIT_MANAGER</li>
+     *   <li>Validate các trường bắt buộc (department, position)</li>
+     *   <li>Kiểm tra trùng username, email, phone</li>
+     *   <li>Mã hóa password với BCrypt</li>
+     *   <li>Tạo User và UnitManager record</li>
+     * </ol>
+     * 
+     * @param request Thông tin user cần tạo
+     * @return ResponseEntity chứa:
+     *         - Thành công: UserDTO đã tạo với HTTP 201
+     *         - Thất bại: Thông báo lỗi với HTTP 400/500
      */
     @PostMapping(consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
     public ResponseEntity<Object> createUser(@RequestBody CreateUserRequest request) {
@@ -117,7 +181,19 @@ public class UserManagementController {
     }
 
     /**
-     * Update user
+     * Cập nhật thông tin người dùng.
+     * 
+     * <p>Endpoint: PUT /api/users/{id}
+     * 
+     * <p>Có thể cập nhật: fullName, dateOfBirth, phoneNumber, email, address, sex
+     * <p>Password chỉ được cập nhật nếu có giá trị mới trong request
+     * 
+     * @param id ID của user cần cập nhật
+     * @param request Thông tin cần cập nhật
+     * @return ResponseEntity chứa:
+     *         - Thành công: UserDTO đã cập nhật
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     *         - Thất bại: Thông báo lỗi với HTTP 500
      */
     @PutMapping(value = "/{id}", consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
     public ResponseEntity<Object> updateUser(@PathVariable Integer id, @RequestBody CreateUserRequest request) {
@@ -148,7 +224,18 @@ public class UserManagementController {
     }
 
     /**
-     * Delete user (Only allow deleting UNIT_MANAGER)
+     * Xóa người dùng (chỉ được xóa UNIT_MANAGER).
+     * 
+     * <p>Endpoint: DELETE /api/users/{id}
+     * 
+     * <p>Giới hạn: Chỉ có thể xóa tài khoản có role = UNIT_MANAGER.
+     * Không thể xóa Admin, Rector, HR để đảm bảo tính toàn vẹn hệ thống.
+     * 
+     * @param id ID của user cần xóa
+     * @return ResponseEntity chứa:
+     *         - Thành công: "Xóa người dùng thành công"
+     *         - Thất bại: HTTP 403 nếu không phải UNIT_MANAGER
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
@@ -171,7 +258,13 @@ public class UserManagementController {
     }
 
     /**
-     * Convert User entity to DTO (without password)
+     * Chuyển đổi entity User sang DTO (loại bỏ password).
+     * 
+     * <p>Phương thức helper để map các trường từ entity sang response DTO,
+     * đảm bảo không trả về password cho client.
+     * 
+     * @param user Entity User cần chuyển đổi
+     * @return UserDTO đã được map (không có password)
      */
     private UserDTO convertToDTO(User user) {
         return UserDTO.builder()

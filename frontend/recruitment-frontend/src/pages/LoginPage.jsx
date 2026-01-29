@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Trang đăng nhập
+ * @module pages/LoginPage
+ * @description Trang cho phép người dùng đăng nhập vào hệ thống
+ */
+
 import React, { useContext } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 
@@ -7,11 +13,23 @@ import LoginForm from '../components/auth/LoginForm';
 import useAuth from '../hooks/useAuth'; 
 import { AuthContext } from '../context/AuthContext'; 
 
+/** @constant {Object} initialLoginState - Giá trị khởi tạo cho form đăng nhập */
 const initialLoginState = {
     username: '',
     password: ''
 };
 
+/**
+ * Component trang đăng nhập
+ * @component
+ * @returns {JSX.Element} Trang đăng nhập
+ * 
+ * @description
+ * - Sử dụng useAuth hook để quản lý form state
+ * - Gọi login function từ AuthContext
+ * - Redirect đến /home khi đăng nhập thành công
+ * - Hiển thị lỗi nếu đăng nhập thất bại
+ */
 const LoginPage = () => {
 
     const navigate = useNavigate();

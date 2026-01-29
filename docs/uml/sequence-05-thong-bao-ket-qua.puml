@@ -1,0 +1,78 @@
+@startuml Sequence_ThongBaoKetQua
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam sequenceParticipantBackgroundColor #E3F2FD
+skinparam sequenceParticipantBorderColor #1565C0
+skinparam sequenceArrowColor #1565C0
+skinparam sequenceLifeLineBorderColor #90CAF9
+
+title Sơ đồ tuần tự - UC5: Thông báo kết quả
+
+actor "Cán bộ nhân sự" as PM #FFE082
+participant "Hệ thống" as System #E3F2FD
+database "Cơ sở dữ liệu" as DB #C8E6C9
+participant "Hệ thống\nThông báo" as Notif #FFF9C4
+actor "Ứng viên" as Cand #FFE082
+
+== Cán bộ nhân sự nhập kết quả tuyển dụng ==
+
+PM -> System: 1. Truy cập danh sách ứng viên đã xét duyệt
+activate System
+System -> DB: 2. Lấy danh sách ứng viên đạt yêu cầu
+activate DB
+DB --> System: 3. Danh sách ứng viên
+deactivate DB
+System --> PM: 4. Hiển thị danh sách
+deactivate System
+
+PM -> System: 5. Nhập kết quả cho từng ứng viên
+activate System
+note right
+  - Kết quả: Trúng tuyển/Không trúng tuyển
+  - Điểm đánh giá
+  - Nhận xét
+end note
+
+System -> DB: 6. Lưu kết quả tuyển dụng
+activate DB
+DB --> System: 7. Xác nhận lưu thành công
+deactivate DB
+System --> PM: 8. Cập nhật kết quả thành công
+deactivate System
+
+== Công bố và gửi thông báo kết quả ==
+
+PM -> System: 9. Công bố kết quả tuyển dụng
+activate System
+System -> DB: 10. Cập nhật trạng thái "Đã công bố"
+activate DB
+DB --> System: 11. Xác nhận cập nhật
+deactivate DB
+
+System -> Notif: 12. Gửi thông báo kết quả đến ứng viên
+activate Notif
+Notif -> Cand: 13. Gửi email thông báo kết quả
+Notif --> System: 14. Đã gửi thông báo
+deactivate Notif
+
+System --> PM: 15. Thông báo công bố kết quả thành công
+deactivate System
+
+== Ứng viên xem kết quả ==
+
+Cand -> System: 16. Truy cập xem kết quả ứng tuyển
+activate System
+System -> DB: 17. Lấy kết quả của ứng viên
+activate DB
+DB --> System: 18. Thông tin kết quả
+deactivate DB
+System --> Cand: 19. Hiển thị kết quả tuyển dụng
+deactivate System
+
+note over Cand
+  Ứng viên nhận được:
+  - Kết quả trúng tuyển/không trúng tuyển
+  - Nhận xét từ nhà tuyển dụng
+end note
+
+@enduml

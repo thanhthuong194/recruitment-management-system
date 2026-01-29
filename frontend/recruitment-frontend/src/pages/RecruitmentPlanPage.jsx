@@ -1,3 +1,15 @@
+/**
+ * @fileoverview Trang quản lý kế hoạch tuyển dụng
+ * @module pages/RecruitmentPlanPage
+ * @description Trang cho phép tạo, chỉnh sửa, duyệt và đăng thông báo
+ * kế hoạch tuyển dụng theo quy trình phê duyệt
+ * 
+ * Quy trình:
+ * 1. Trưởng bộ phận (UM) tạo kế hoạch -> Trạng thái: Pending
+ * 2. Hiệu trưởng (Rector) duyệt/từ chối -> Trạng thái: Approved/Rejected
+ * 3. HR đăng thông báo tuyển dụng cho kế hoạch đã duyệt
+ */
+
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaCheck, FaTimes, FaBullhorn } from 'react-icons/fa';
@@ -362,6 +374,27 @@ const PostedBadge = styled.span`
 `;
 
 
+/**
+ * Component trang quản lý kế hoạch tuyển dụng
+ * @component
+ * @returns {JSX.Element} Trang quản lý kế hoạch
+ * 
+ * @description
+ * Features theo role:
+ * - UNIT_MANAGER: Tạo/sửa kế hoạch (chỉ pending)
+ * - RECTOR: Duyệt/từ chối, xóa kế hoạch pending
+ * - PERSONNEL_MANAGER (HR): Đăng thông báo tuyển dụng, xóa vĩnh viễn
+ * 
+ * UI Components:
+ * - Tabs: Chờ duyệt, Đã duyệt, Từ chối
+ * - Bảng danh sách kế hoạch
+ * - Modal tạo/sửa kế hoạch
+ * - Modal đăng thông báo tuyển dụng
+ * - Modal nhập lý do từ chối
+ * 
+ * @example
+ * <RecruitmentPlanPage />
+ */
 const RecruitmentPlanPage = () => {
     const { user } = useContext(AuthContext);
     const [searchQuery, setSearchQuery] = useState('');
@@ -380,7 +413,10 @@ const RecruitmentPlanPage = () => {
     const [showRejectReasonModal, setShowRejectReasonModal] = useState(false);
     const [viewingRejectReason, setViewingRejectReason] = useState({ title: '', reason: '' });
 
-    // Define roles first before using in useEffect
+    /**
+     * Định nghĩa quyền hạn theo role
+     * @description Xác định các permissions dựa trên role của user hiện tại
+     */
     const isAdmin = user?.role === 'ADMIN';
     const isRector = user?.role === 'RECTOR'; // Hiệu trưởng
     const isHR = user?.role === 'PERSONNEL_MANAGER'; // HR
@@ -391,10 +427,12 @@ const RecruitmentPlanPage = () => {
     const canPermanentDelete = isHR; // Chỉ HR mới được xóa vĩnh viễn
     const canApprovePlan = isRector; // Chỉ Rector được phê duyệt
 
+    /** Effect: Tải danh sách kế hoạch khi mount */
     useEffect(() => {
         fetchPlans();
     }, []);
 
+    /** Effect: Kiểm tra trạng thái đã đăng thông báo khi plans thay đổi */
     useEffect(() => {
         // Check posted status for approved plans
         if (plans.length > 0 && isHR) {
@@ -402,6 +440,11 @@ const RecruitmentPlanPage = () => {
         }
     }, [plans, isHR]);
 
+    /**
+     * Kiểm tra các kế hoạch đã đăng thông báo
+     * @async
+     * @function checkPostedStatus
+     */
     const checkPostedStatus = async () => {
         const approvedPlans = plans.filter(p => (p.status || '').toLowerCase() === 'approved');
         const posted = new Set();
@@ -416,6 +459,11 @@ const RecruitmentPlanPage = () => {
         setPostedPlans(posted);
     };
 
+    /**
+     * Tải danh sách kế hoạch từ API
+     * @async
+     * @function fetchPlans
+     */
     const fetchPlans = async () => {
         try {
             setLoading(true);
@@ -430,11 +478,21 @@ const RecruitmentPlanPage = () => {
         }
     };
 
+    /**
+     * Mở modal thêm kế hoạch mới
+     * @function handleAddPlan
+     */
     const handleAddPlan = () => {
         setEditingPlan(null);
         setIsModalOpen(true);
     };
 
+    /**
+     * Xử lý submit form tạo/cập nhật kế hoạch
+     * @async
+     * @function handleSubmit
+     * @param {Object} data - Dữ liệu kế hoạch từ form
+     */
     const handleSubmit = async (data) => {
         try {
             if (editingPlan) {
@@ -454,6 +512,12 @@ const RecruitmentPlanPage = () => {
         }
     };
 
+    /**
+     * Xử lý xóa kế hoạch (pending)
+     * @async
+     * @function handleDelete
+     * @param {number|string} planId - ID kế hoạch cần xóa
+     */
     const handleDelete = async (planId) => {
         if (window.confirm('Bạn có chắc muốn xóa kế hoạch này?')) {
             try {
@@ -467,6 +531,12 @@ const RecruitmentPlanPage = () => {
         }
     };
 
+    /**
+     * Xử lý duyệt kế hoạch
+     * @async
+     * @function handleApprove
+     * @param {number|string} planId - ID kế hoạch cần duyệt
+     */
     const handleApprove = async (planId) => {
         if (window.confirm('Bạn có chắc muốn duyệt kế hoạch này?')) {
             try {
@@ -695,6 +765,12 @@ Thời gian bắt đầu dự kiến: ${plan.creatDate ? new Date(plan.creatDate
                                                     )
                                                 )}
                                                 
+                                                {activeTab === 'approved' && isHR && (
+                                                    <Btn delete onClick={() => handleDelete(plan.planid)}>
+                                                        <FaTrash /> Xóa
+                                                    </Btn>
+                                                )}
+                                                
                                                 {activeTab === 'pending' && canApprovePlan && (
                                                     <>
                                                         <Btn approve onClick={() => handleApprove(plan.planid)}>
@@ -724,6 +800,12 @@ Thời gian bắt đầu dự kiến: ${plan.creatDate ? new Date(plan.creatDate
                                                 {activeTab === 'rejected' && plan.rejectReason && (
                                                     <Btn edit onClick={() => handleViewRejectReason(plan)}>
                                                         <FaSearch /> Xem lý do
+                                                    </Btn>
+                                                )}
+                                                
+                                                {activeTab === 'rejected' && isHR && (
+                                                    <Btn delete onClick={() => handleDelete(plan.planid)}>
+                                                        <FaTrash /> Xóa
                                                     </Btn>
                                                 )}
                                                 

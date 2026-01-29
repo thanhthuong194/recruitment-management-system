@@ -1,11 +1,22 @@
+/**
+ * @fileoverview Component Button tái sử dụng
+ * @module components/common/Button
+ * @description Button với 2 variants: primary và secondary
+ * Hỗ trợ cả nút thường và Link navigation
+ */
+
 import styled, {css} from 'styled-components';
 import { Link } from 'react-router-dom'; 
 
-
+/** @constant {string} PRIMARY_COLOR_BG - Màu nền primary */
 const PRIMARY_COLOR_BG = '#1877f2'; 
+/** @constant {string} PRIMARY_COLOR_HOVER - Màu hover primary */
 const PRIMARY_COLOR_HOVER = '#166fe5';
+/** @constant {string} SECONDARY_COLOR_BG - Màu nền secondary */
 const SECONDARY_COLOR_BG = 'rgba(255, 255, 255, 0.15)';
+/** @constant {string} SECONDARY_COLOR_HOVER - Màu hover secondary */
 const SECONDARY_COLOR_HOVER = 'rgba(255, 255, 255, 0.25)';
+/** @constant {string} SECONDARY_TEXT_COLOR - Màu chữ secondary */
 const SECONDARY_TEXT_COLOR = '#F5F5F5';
 
 const StyledButton = styled.button`
@@ -50,6 +61,25 @@ const StyledButton = styled.button`
     `}
 `;
 
+/**
+ * Component Button tái sử dụng
+ * @component
+ * @param {Object} props - Props của component
+ * @param {React.ReactNode} props.children - Nội dung button
+ * @param {boolean} [props.primary=false] - Sử dụng style primary (màu xanh nổi bật)
+ * @param {string} [props.to] - URL đích nếu button là Link
+ * @param {Function} [props.onClick] - Hàm xử lý click
+ * @param {string} [props.type='button'] - Type của button (button|submit|reset)
+ * @param {React.ComponentType} [props.icon] - Icon component hiển thị bên trái text
+ * @returns {JSX.Element} Button hoặc Link
+ * 
+ * @example
+ * // Button primary
+ * <Button primary onClick={handleClick}>Submit</Button>
+ * 
+ * // Button Link với icon
+ * <Button to="/login" icon={FaSignIn}>Login</Button>
+ */
 const Button = ({ children, primary, to, onClick, type = 'button', icon: IconComponent, ...props }) => {
     const ButtonContent = (
         <>

@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Component form quên mật khẩu
+ * @module components/auth/ForgotPasswordForm
+ * @description Form gửi yêu cầu đặt lại mật khẩu qua email
+ */
+
 import React from 'react';
 import styled, {keyframes} from 'styled-components';
 import { FaEnvelope, FaSpinner } from 'react-icons/fa';
@@ -101,6 +107,28 @@ const spin = keyframes`
 `;
 
 
+/**
+ * Component form quên mật khẩu
+ * @component
+ * @param {Object} props - Props của component
+ * @param {Object} props.formData - Dữ liệu form { email }
+ * @param {Function} props.handleChange - Hàm xử lý thay đổi input
+ * @param {Function} props.handleSubmit - Hàm xử lý submit form
+ * @param {boolean} props.isLoading - Trạng thái đang xử lý
+ * @param {string|null} props.error - Thông báo lỗi (nếu có)
+ * @param {string|null} props.success - Thông báo thành công (nếu có)
+ * @returns {JSX.Element} Form quên mật khẩu
+ * 
+ * @example
+ * <ForgotPasswordForm
+ *   formData={{ email: '' }}
+ *   handleChange={handleChange}
+ *   handleSubmit={handleSubmit}
+ *   isLoading={false}
+ *   error={null}
+ *   success={null}
+ * />
+ */
 const ForgotPasswordForm = ({ formData, handleChange, handleSubmit, isLoading, error, success }) => {
     return (
         <Form onSubmit={handleSubmit}>

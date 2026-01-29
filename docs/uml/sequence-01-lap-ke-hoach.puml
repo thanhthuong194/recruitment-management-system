@@ -1,0 +1,44 @@
+@startuml Sequence_LapKeHoach
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam sequenceParticipantBackgroundColor #E3F2FD
+skinparam sequenceParticipantBorderColor #1565C0
+skinparam sequenceArrowColor #1565C0
+skinparam sequenceLifeLineBorderColor #90CAF9
+
+title Sơ đồ tuần tự - UC1: Lập kế hoạch tuyển dụng
+
+actor "Cán bộ nhân sự" as PM #FFE082
+participant "Hệ thống" as System #E3F2FD
+database "Cơ sở dữ liệu" as DB #C8E6C9
+
+PM -> System: 1. Truy cập chức năng lập kế hoạch
+activate System
+System --> PM: 2. Hiển thị form nhập kế hoạch
+deactivate System
+
+PM -> System: 3. Nhập thông tin kế hoạch tuyển dụng
+activate System
+note right
+  - Chức danh cần tuyển
+  - Số lượng cần tuyển
+  - Yêu cầu năng lực, trình độ
+  - Công việc đảm nhiệm
+  - Thời gian tuyển dụng
+end note
+
+PM -> System: 4. Gửi kế hoạch để phê duyệt
+System -> DB: 5. Lưu kế hoạch (Trạng thái: Chờ duyệt)
+activate DB
+DB --> System: 6. Xác nhận lưu thành công
+deactivate DB
+
+System --> PM: 7. Thông báo đã gửi kế hoạch thành công
+deactivate System
+
+note over PM, DB
+  Kế hoạch được lưu với trạng thái "Chờ duyệt"
+  và chuyển sang Hiệu trưởng xem xét
+end note
+
+@enduml

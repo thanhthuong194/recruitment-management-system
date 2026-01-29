@@ -292,9 +292,14 @@ const CandidatesManagementPage = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    
+    // States for rejection dialog
+    const [showRejectDialog, setShowRejectDialog] = useState(false);
+    const [rejectApplicationId, setRejectApplicationId] = useState(null);
+    const [rejectReason, setRejectReason] = useState('');
 
     const isAdmin = user?.role === 'ADMIN';
-    const isHR = user?.role === 'PERSONNEL_MANAGER';
+    const isHR = user?.role === 'PERSONNEL_MANAGER'; // Chỉ HR được duyệt/từ chối
     const isRector = user?.role === 'RECTOR';
 
     useEffect(() => {
@@ -341,12 +346,50 @@ const CandidatesManagementPage = () => {
     };
 
     const handleStatusChange = async (applicationId, newStatus) => {
+        // Chỉ HR mới có quyền thay đổi trạng thái
+        if (!isHR) {
+            alert('Chỉ nhân viên HR mới có quyền duyệt/từ chối hồ sơ');
+            return;
+        }
+
+        // Nếu từ chối, hiện dialog nhập lý do
+        if (newStatus === 'Từ chối') {
+            setRejectApplicationId(applicationId);
+            setRejectReason('');
+            setShowRejectDialog(true);
+            return;
+        }
+
         try {
             await ApplicationService.updateApplicationStatus(applicationId, newStatus);
             await fetchData();
+            alert('Cập nhật trạng thái thành công!');
         } catch (error) {
             console.error('Error updating status:', error);
             alert('Không thể cập nhật trạng thái. Vui lòng thử lại.');
+        }
+    };
+
+    const handleConfirmReject = async () => {
+        if (!rejectReason.trim()) {
+            alert('Vui lòng nhập lý do từ chối');
+            return;
+        }
+
+        try {
+            await ApplicationService.updateApplicationStatus(
+                rejectApplicationId, 
+                'Từ chối', 
+                rejectReason
+            );
+            await fetchData();
+            setShowRejectDialog(false);
+            setRejectApplicationId(null);
+            setRejectReason('');
+            alert('Đã từ chối hồ sơ thành công!');
+        } catch (error) {
+            console.error('Error rejecting application:', error);
+            alert('Không thể từ chối hồ sơ. Vui lòng thử lại.');
         }
     };
 
@@ -363,28 +406,30 @@ const CandidatesManagementPage = () => {
         window.open(`${apiBase}/api/files/download/${fileName}`, '_blank');
     };
 
-    // Merge candidates with applications
-    const mergedData = candidates.map(candidate => {
-        const candidateApplications = applications.filter(
-            app => app.candidate?.candidateID === candidate.candidateID
-        );
-        return {
-            ...candidate,
-            applications: candidateApplications,
-            latestApplication: candidateApplications[0] || null
-        };
-    });
+    // Hiển thị theo application thay vì theo candidate
+    // Mỗi đơn ứng tuyển sẽ là 1 dòng riêng
+    const applicationData = applications.map(app => ({
+        ...app.candidate,
+        application: app,
+        applicationID: app.applicationID,
+        applyDate: app.applyDate,
+        status: app.status,
+        rejectionReason: app.rejectionReason,
+        positionTitle: app.positionTitle,
+        positionID: app.positionID
+    }));
 
     // Filter data
-    const filteredData = mergedData.filter(item => {
+    const filteredData = applicationData.filter(item => {
         const matchesSearch = 
             item.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.phone?.includes(searchQuery) ||
-            item.position?.toLowerCase().includes(searchQuery.toLowerCase());
+            item.position?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.positionTitle?.toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || 
-            item.latestApplication?.status?.toLowerCase() === statusFilter.toLowerCase();
+            item.status?.toLowerCase() === statusFilter.toLowerCase();
 
         return matchesSearch && matchesStatus;
     });
@@ -458,7 +503,7 @@ const CandidatesManagementPage = () => {
                 <TableContainer>
                     {filteredData.length === 0 ? (
                         <EmptyState>
-                            Không tìm thấy ứng viên nào
+                            Không tìm thấy hồ sơ nào
                         </EmptyState>
                     ) : (
                         <Table>
@@ -475,49 +520,50 @@ const CandidatesManagementPage = () => {
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {filteredData.map(candidate => (
-                                    <Tr key={candidate.candidateID}>
-                                        <Td>{candidate.fullName}</Td>
-                                        <Td>{candidate.email}</Td>
-                                        <Td>{candidate.phone}</Td>
-                                        <Td>{candidate.position}</Td>
-                                        <Td>{candidate.cpa}</Td>
+                                {filteredData.map(item => (
+                                    <Tr key={item.applicationID}>
+                                        <Td>{item.fullName}</Td>
+                                        <Td>{item.email}</Td>
+                                        <Td>{item.phone}</Td>
+                                        <Td>{item.positionTitle || item.position}</Td>
+                                        <Td>{item.cpa}</Td>
                                         <Td>
-                                            {candidate.latestApplication?.applyDate 
-                                                ? new Date(candidate.latestApplication.applyDate).toLocaleDateString('vi-VN')
+                                            {item.applyDate 
+                                                ? new Date(item.applyDate).toLocaleDateString('vi-VN')
                                                 : '-'
                                             }
                                         </Td>
                                         <Td>
-                                            {candidate.latestApplication ? (
+                                            {isHR ? (
                                                 <StatusSelect
-                                                    value={candidate.latestApplication.status}
+                                                    value={item.status}
                                                     onChange={(e) => handleStatusChange(
-                                                        candidate.latestApplication.applicationID,
+                                                        item.applicationID,
                                                         e.target.value
                                                     )}
-                                                    disabled={!isHR && !isRector && !isAdmin}
                                                 >
                                                     <option value="Đang xét">Đang xét</option>
                                                     <option value="Đã duyệt">Đã duyệt</option>
                                                     <option value="Từ chối">Từ chối</option>
                                                 </StatusSelect>
                                             ) : (
-                                                <StatusBadge status="pending">Chưa nộp</StatusBadge>
+                                                <StatusBadge status={item.status}>
+                                                    {item.status}
+                                                </StatusBadge>
                                             )}
                                         </Td>
                                         <Td>
                                             <ActionButtons>
                                                 <IconButton 
                                                     view 
-                                                    onClick={() => handleViewDetails(candidate)}
+                                                    onClick={() => handleViewDetails({...item, latestApplication: item.application})}
                                                     title="Xem chi tiết"
                                                 >
                                                     <FaEye />
                                                 </IconButton>
                                                 <IconButton 
                                                     download 
-                                                    onClick={() => handleDownloadCV(candidate.cvPath)}
+                                                    onClick={() => handleDownloadCV(item.cvPath)}
                                                     title="Tải CV"
                                                 >
                                                     <FaDownload />
@@ -525,7 +571,7 @@ const CandidatesManagementPage = () => {
                                                 {isAdmin && (
                                                     <IconButton 
                                                         delete 
-                                                        onClick={() => handleDelete(candidate.candidateID)}
+                                                        onClick={() => handleDelete(item.candidateID)}
                                                         title="Xóa"
                                                     >
                                                         <FaTrash />
@@ -596,8 +642,73 @@ const CandidatesManagementPage = () => {
                                         </IconButton>
                                     </span>
                                 </DetailRow>
+                                {selectedCandidate.latestApplication?.rejectionReason && (
+                                    <DetailRow>
+                                        <strong>Lý do từ chối:</strong>
+                                        <span style={{color: '#dc3545'}}>{selectedCandidate.latestApplication.rejectionReason}</span>
+                                    </DetailRow>
+                                )}
                             </div>
                         )}
+                    </ModalContent>
+                </Modal>
+
+                {/* Dialog nhập lý do từ chối */}
+                <Modal show={showRejectDialog} onClick={() => setShowRejectDialog(false)}>
+                    <ModalContent onClick={(e) => e.stopPropagation()} style={{maxWidth: '500px'}}>
+                        <ModalHeader>
+                            <h2>Lý do từ chối hồ sơ</h2>
+                            <CloseButton onClick={() => setShowRejectDialog(false)}>×</CloseButton>
+                        </ModalHeader>
+                        <div>
+                            <p style={{marginBottom: '1rem', color: '#555'}}>
+                                Vui lòng nhập lý do từ chối hồ sơ ứng viên:
+                            </p>
+                            <textarea
+                                value={rejectReason}
+                                onChange={(e) => setRejectReason(e.target.value)}
+                                placeholder="Nhập lý do từ chối..."
+                                style={{
+                                    width: '100%',
+                                    minHeight: '120px',
+                                    padding: '0.8rem',
+                                    border: '2px solid #e0e0e0',
+                                    borderRadius: '8px',
+                                    fontSize: '1rem',
+                                    resize: 'vertical',
+                                    boxSizing: 'border-box'
+                                }}
+                            />
+                            <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem', justifyContent: 'flex-end'}}>
+                                <button
+                                    onClick={() => setShowRejectDialog(false)}
+                                    style={{
+                                        padding: '0.8rem 1.5rem',
+                                        border: '2px solid #e0e0e0',
+                                        borderRadius: '8px',
+                                        background: 'white',
+                                        cursor: 'pointer',
+                                        fontSize: '1rem'
+                                    }}
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={handleConfirmReject}
+                                    style={{
+                                        padding: '0.8rem 1.5rem',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        background: '#dc3545',
+                                        color: 'white',
+                                        cursor: 'pointer',
+                                        fontSize: '1rem'
+                                    }}
+                                >
+                                    Xác nhận từ chối
+                                </button>
+                            </div>
+                        </div>
                     </ModalContent>
                 </Modal>
             </Container>

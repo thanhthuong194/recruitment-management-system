@@ -1,7 +1,15 @@
+/**
+ * @fileoverview Cấu hình routing chính của ứng dụng
+ * @module routes/AppRoutes
+ * @description Định nghĩa tất cả các routes của ứng dụng,
+ * bao gồm cả public routes và protected routes
+ */
+
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
+// Pages imports
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
@@ -15,6 +23,34 @@ import PublicJobsPage from "../pages/PublicJobsPage";
 import ApplicationFormPage from "../pages/ApplicationFormPage";
 import CandidatesManagementPage from "../pages/CandidatesManagementPage";
 
+/**
+ * Component chứa tất cả các routes của ứng dụng
+ * @component
+ * @returns {JSX.Element} Routes configuration
+ * 
+ * @description
+ * Public routes (không cần đăng nhập):
+ * - / : Landing page
+ * - /login : Trang đăng nhập
+ * - /forgot-password : Trang quên mật khẩu
+ * - /notifications : Thông báo tuyển dụng công khai
+ * - /jobs : Danh sách việc làm công khai
+ * - /apply/:jobId : Form nộp hồ sơ
+ * 
+ * Protected routes (cần đăng nhập):
+ * - /home : Trang chủ sau đăng nhập
+ * - /recruitment/plan : Quản lý kế hoạch tuyển dụng
+ * - /recruitment/notifications : Quản lý thông báo
+ * - /profile : Trang cá nhân
+ * - /users : Quản lý người dùng (Admin)
+ * - /candidates : Quản lý ứng viên
+ * 
+ * @example
+ * // Sử dụng trong App.js
+ * function App() {
+ *   return <AppRoutes />;
+ * }
+ */
 const AppRoutes = () => {
   return (
     <Routes>

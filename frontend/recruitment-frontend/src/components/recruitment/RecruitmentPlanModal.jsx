@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Component Modal tạo/chỉnh sửa kế hoạch tuyển dụng
+ * @module components/recruitment/RecruitmentPlanModal
+ * @description Form modal cho phép tạo mới hoặc chỉnh sửa kế hoạch tuyển dụng
+ */
+
 import React from 'react';
 import styled from 'styled-components';
 import { FaTimes } from 'react-icons/fa';
@@ -154,6 +160,32 @@ const Button = styled.button`
     `}
 `;
 
+/**
+ * Component Modal kế hoạch tuyển dụng
+ * @component
+ * @param {Object} props - Props của component
+ * @param {boolean} props.isOpen - Trạng thái mở/đóng modal
+ * @param {Function} props.onClose - Hàm xử lý đóng modal
+ * @param {Object|null} props.initialData - Dữ liệu kế hoạch để chỉnh sửa (null nếu tạo mới)
+ * @param {Function} props.onSubmit - Hàm xử lý submit form
+ * @returns {JSX.Element|null} Modal component hoặc null nếu đóng
+ * 
+ * @description Form bao gồm các trường:
+ * - Tiêu đề kế hoạch
+ * - Vị trí tuyển dụng
+ * - Khoa/đơn vị (dropdown)
+ * - Số lượng cần tuyển
+ * - Yêu cầu CPA (0-4)
+ * - Ngày tạo
+ * 
+ * @example
+ * <RecruitmentPlanModal
+ *   isOpen={true}
+ *   onClose={() => setIsOpen(false)}
+ *   initialData={null}
+ *   onSubmit={handleSubmit}
+ * />
+ */
 const RecruitmentPlanModal = ({ isOpen, onClose, initialData, onSubmit }) => {
     if (!isOpen) return null;
 

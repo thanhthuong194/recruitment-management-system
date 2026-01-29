@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Layout chính cho các trang đã xác thực
+ * @module layouts/MainLayout
+ * @description Wrapper layout bao gồm Header, nội dung chính và Footer
+ * Sử dụng cho các trang sau khi đăng nhập
+ */
+
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 
@@ -18,6 +25,23 @@ const ContentArea = styled.main`
     background-color: #f8f9fa;
 `;
 
+/**
+ * Layout chính cho các trang authenticated
+ * @component
+ * @param {Object} props - Props của component
+ * @param {React.ReactNode} props.children - Nội dung trang
+ * @returns {JSX.Element} Layout với Header, content area và Footer
+ * 
+ * @description
+ * - Header tự động ẩn/hiện theo scroll
+ * - Nút đăng xuất trên Header
+ * - Content area với background màu xám nhạt
+ * 
+ * @example
+ * <MainLayout>
+ *   <HomePage />
+ * </MainLayout>
+ */
 const MainLayout = ({ children }) => {
     const { isHidden } = useScrollDirection(80);
     const { user, logout } = useContext(AuthContext);

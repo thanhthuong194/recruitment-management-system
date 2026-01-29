@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Component Header chính của ứng dụng
+ * @module components/common/Header
+ * @description Header cố định chứa logo, tiêu đề trường và các action buttons
+ * Tự động ẩn/hiện khi scroll
+ */
+
 import React from 'react';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
@@ -100,6 +107,23 @@ const AuthActionLink = styled(Link)`
     }
 `;
 
+/**
+ * Component Header cố định
+ * @component
+ * @param {Object} props - Props của component
+ * @param {boolean} props.isAuthenticated - Người dùng đã đăng nhập chưa
+ * @param {Function} props.onLogout - Hàm xử lý đăng xuất
+ * @returns {JSX.Element} Header component
+ * 
+ * @description
+ * - Hiển thị logo trường và tiêu đề
+ * - Nút "Về trang chủ" trên trang auth (login/register)
+ * - Nút "Đăng xuất" khi đã đăng nhập
+ * - Tự động ẩn khi scroll xuống, hiện khi scroll lên
+ * 
+ * @example
+ * <Header isAuthenticated={true} onLogout={handleLogout} />
+ */
 const Header = ({ isAuthenticated, onLogout }) => {
     const location = useLocation();
 

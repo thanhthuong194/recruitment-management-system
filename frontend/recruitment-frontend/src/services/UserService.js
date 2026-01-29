@@ -1,10 +1,28 @@
+/**
+ * @fileoverview Service xử lý các API liên quan đến thông tin cá nhân người dùng
+ * @module services/UserService
+ * @description Cung cấp các phương thức để lấy và cập nhật profile người dùng đang đăng nhập
+ */
+
 import ApiClient from '../api-client/src/ApiClient';
 import UsersApi from '../api-client/src/api/UsersApi';
 
-// Quan trọng: Phải import 'ApiClient.instance' để đảm bảo dùng chung 1 đối tượng
-// đã được ApiService cài đặt token.
+/**
+ * Instance UsersApi sử dụng singleton ApiClient
+ * @type {UsersApi}
+ * @description Quan trọng: Phải import 'ApiClient.instance' để đảm bảo dùng chung 1 đối tượng
+ * đã được ApiService cài đặt token.
+ */
 const usersApiInstance = new UsersApi(ApiClient.instance);
 
+/**
+ * Chuyển đổi callback-based API call thành Promise
+ * @function promisifyApiCall
+ * @param {Function} apiMethod - Method của API cần gọi
+ * @param {...*} args - Các tham số truyền vào API method
+ * @returns {Promise<*>} Promise resolve với data từ API hoặc reject với Error
+ * @private
+ */
 const promisifyApiCall = (apiMethod, ...args) => {
     return new Promise((resolve, reject) => {
         // Dùng .call() để đảm bảo 'this' là 'usersApiInstance'
@@ -42,8 +60,29 @@ const promisifyApiCall = (apiMethod, ...args) => {
             resolve(data);
         });
     });
-};/**
- * Lấy thông tin cá nhân của người dùng hiện tại (gọi GET /api/users/me)
+};
+
+/**
+ * Lấy thông tin cá nhân của người dùng hiện tại
+ * @async
+ * @function getUserProfile
+ * @returns {Promise<Object>} Thông tin profile đã được map sang format frontend
+ * @returns {string} returns.id - ID người dùng
+ * @returns {string} returns.username - Tên đăng nhập
+ * @returns {string} returns.email - Email
+ * @returns {string} returns.phone - Số điện thoại
+ * @returns {string} returns.fullName - Họ và tên
+ * @returns {string} returns.role - Vai trò
+ * @returns {string} returns.dateOfBirth - Ngày sinh
+ * @returns {string} returns.address - Địa chỉ
+ * @returns {string} returns.sex - Giới tính
+ * @returns {string} returns.department - Phòng ban
+ * @returns {string} returns.position - Chức vụ
+ * @throws {Error} Nếu không thể lấy thông tin
+ * 
+ * @description Gọi GET /api/users/me và map response từ backend format sang frontend format
+ * Backend sử dụng: userID, phoneNumber
+ * Frontend sử dụng: id, phone
  */
 export const getUserProfile = async () => {
     try {
@@ -84,7 +123,23 @@ export const getUserProfile = async () => {
 };
 
 /**
- * Cập nhật thông tin cá nhân
+ * Cập nhật thông tin cá nhân của người dùng hiện tại
+ * @async
+ * @function updateUserProfile
+ * @param {Object} updateData - Dữ liệu cập nhật
+ * @param {string} [updateData.email] - Email mới
+ * @param {string} [updateData.phone] - Số điện thoại mới
+ * @param {string} [updateData.fullName] - Họ tên mới
+ * @param {string} [updateData.address] - Địa chỉ mới
+ * @param {string} [updateData.dateOfBirth] - Ngày sinh mới (ISO format)
+ * @returns {Promise<Object>} Thông tin đã cập nhật từ server
+ * @throws {Error} Nếu cập nhật thất bại
+ * 
+ * @example
+ * await updateUserProfile({
+ *   email: 'newemail@example.com',
+ *   phone: '0123456789'
+ * });
  */
 export const updateUserProfile = async (updateData) => {
     try {

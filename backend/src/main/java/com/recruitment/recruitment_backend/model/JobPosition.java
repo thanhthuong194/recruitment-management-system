@@ -16,6 +16,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Entity đại diện cho Vị trí Tuyển dụng cụ thể.
+ * 
+ * <p>Mỗi kế hoạch tuyển dụng (RecruitmentPlan) có thể có nhiều vị trí tuyển dụng.
+ * Vị trí tuyển dụng được liên kết với hồ sơ ứng tuyển (Application).
+ * 
+ * <p>Quan hệ:
+ * <ul>
+ *   <li>ManyToOne với RecruitmentPlan (kế hoạch cha)</li>
+ *   <li>OneToMany với Application (các hồ sơ ứng tuyển vị trí này)</li>
+ * </ul>
+ * 
+ * @author Recruitment Team
+ * @version 1.0
+ * @see RecruitmentPlan
+ * @see Application
+ */
 @Entity
 @Table(name = "JobPositions")
 @Getter 
@@ -26,16 +43,20 @@ import lombok.ToString;
 @Builder
 
 public class JobPosition {
+    /** ID vị trí (auto-generated) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer positionID;
 
+    /** Tiêu đề/Tên vị trí tuyển dụng */
     @Column(nullable = false, length = 50)
     private String title; 
 
+    /** Mô tả vị trí công việc */
     @Column(nullable = false, length = 50)
     private String position; 
 
+    /** Kế hoạch tuyển dụng liên kết */
     @ManyToOne(fetch = FetchType.LAZY, optional = false) 
     @JoinColumn(name = "planID", nullable = false)
     private RecruitmentPlan plan;

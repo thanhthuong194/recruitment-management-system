@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Trang quên mật khẩu
+ * @module pages/ForgotPasswordPage
+ * @description Trang cho phép người dùng yêu cầu đặt lại mật khẩu qua email
+ */
+
 import React, { useContext } from 'react'; 
 import AuthLayout from '../layouts/AuthLayout';
 import AuthCard from '../components/auth/AuthCard'; 
@@ -5,10 +11,21 @@ import ForgotPasswordForm from '../components/auth/ForgotPasswordForm';
 import useAuth from '../hooks/useAuth';
 import { AuthContext } from '../context/AuthContext'; 
 
+/** @constant {Object} initialForgotPasswordState - Giá trị khởi tạo cho form */
 const initialForgotPasswordState = {
     email: '',
 };
 
+/**
+ * Component trang quên mật khẩu
+ * @component
+ * @returns {JSX.Element} Trang quên mật khẩu
+ * 
+ * @description
+ * - Sử dụng useAuth hook với forgotPassword function
+ * - Hiển thị thông báo thành công khi gửi email
+ * - Hiển thị lỗi nếu email không tồn tại
+ */
 const ForgotPasswordPage = () => {
     const { forgotPassword } = useContext(AuthContext);
 

@@ -1,7 +1,14 @@
+/**
+ * @fileoverview Component thẻ chứa form xác thực
+ * @module components/auth/AuthCard
+ * @description Card wrapper cho các form login, register, forgot password
+ */
+
     import React from 'react';
     import styled from 'styled-components';
     import { FaUserLock, FaUserPlus, FaQuestionCircle } from 'react-icons/fa';
 
+    /** @constant {string} ACCENT_COLOR - Màu nhấn mạnh chính */
     const ACCENT_COLOR = '#1877f2';
 
     const FormCard = styled.div`
@@ -39,12 +46,31 @@
         }
     `;
 
+    /**
+     * Map loại form với icon tương ứng
+     * @constant {Object}
+     */
     const ICON_MAP = {
         login: FaUserLock,
         register: FaUserPlus,
         forgot: FaQuestionCircle
     };
 
+    /**
+     * Component thẻ chứa form xác thực
+     * @component
+     * @param {Object} props - Props của component
+     * @param {string} props.type - Loại form ('login' | 'register' | 'forgot')
+     * @param {string} props.title - Tiêu đề hiển thị
+     * @param {string} props.tagline - Mô tả ngắn dưới tiêu đề
+     * @param {React.ReactNode} props.children - Form component con
+     * @returns {JSX.Element} Card chứa form
+     * 
+     * @example
+     * <AuthCard type="login" title="Đăng nhập" tagline="Vui lòng nhập thông tin">
+     *   <LoginForm {...formProps} />
+     * </AuthCard>
+     */
     const AuthCard = ({ type, title, tagline, children }) => {
         const Icon = ICON_MAP[type] || FaUserLock; 
 

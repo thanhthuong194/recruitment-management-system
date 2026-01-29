@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Trang chủ sau đăng nhập
+ * @module pages/HomePage
+ * @description Trang dashboard hiển thị các chức năng chính của hệ thống
+ * tùy theo role của người dùng
+ */
+
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -87,6 +94,20 @@ const CardDescription = styled.p`
     line-height: 1.6;
 `;
 
+/**
+ * Component trang chủ sau đăng nhập
+ * @component
+ * @returns {JSX.Element} Trang dashboard
+ * 
+ * @description
+ * - Hiển thị welcome message với tên người dùng
+ * - Hiển thị các feature cards tùy theo role:
+ *   + RECTOR: Kế hoạch, Thông báo, Hồ sơ, Kết quả, Cá nhân
+ *   + UNIT_MANAGER: Kế hoạch, Cá nhân
+ *   + PERSONNEL_MANAGER: Thông báo, Hồ sơ, Kết quả, Cá nhân
+ *   + ADMIN: Quản lý người dùng, Cá nhân
+ * - Navigate đến trang tương ứng khi click card
+ */
 const HomePage = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -111,13 +132,6 @@ const HomePage = () => {
             title: 'Hồ sơ',
             description: 'Hồ sơ của ứng viên ứng tuyển.',
             path: '/candidates',
-            roles: ['ADMIN', 'PERSONNEL_MANAGER', 'RECTOR']
-        },
-        {
-            icon: FaClipboardCheck,
-            title: 'Kết quả',
-            description: 'Tổng hợp kết quả tuyển dụng.',
-            path: '/results',
             roles: ['ADMIN', 'PERSONNEL_MANAGER', 'RECTOR']
         },
         {

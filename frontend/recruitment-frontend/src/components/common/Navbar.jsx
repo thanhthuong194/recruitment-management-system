@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Component Navbar chính của ứng dụng
+ * @module components/common/Navbar
+ * @description Thanh điều hướng hiển thị các menu khác nhau
+ * tùy theo trạng thái xác thực của người dùng
+ */
+
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -72,6 +79,11 @@ const NavLinkItem = styled(Link)`
     }
 `;
 
+/**
+ * Links hiển thị cho người dùng chưa đăng nhập
+ * @component
+ * @returns {JSX.Element} Các navigation links cho guest
+ */
 const GuestLinks = () => (
     <>
         <NavLinkItem to="/" active="true">
@@ -96,6 +108,11 @@ const GuestLinks = () => (
     </>
 );
 
+/**
+ * Links hiển thị cho người dùng đã đăng nhập
+ * @component
+ * @returns {JSX.Element} Các navigation links cho authenticated user
+ */
 const AuthLinks = () => (
     <>
         <NavLinkItem to="/" active="true">
@@ -128,6 +145,21 @@ const AuthLinks = () => (
     </>
 );
 
+/**
+ * Component Navbar
+ * @component
+ * @param {Object} props - Props của component
+ * @param {boolean} [props.isAuthenticated=false] - Trạng thái đăng nhập
+ * @param {boolean} [props.$hidden] - Ẩn navbar khi scroll
+ * @returns {JSX.Element} Navbar với menu tương ứng
+ * 
+ * @description Hiển thị:
+ * - GuestLinks khi chưa đăng nhập (Trang chủ, Giới thiệu, Thông báo, etc.)
+ * - AuthLinks khi đã đăng nhập (Kế hoạch, Hồ sơ, Kết quả, etc.)
+ * 
+ * @example
+ * <Navbar isAuthenticated={true} $hidden={isHidden} />
+ */
 const Navbar = ({ isAuthenticated = false, $hidden }) => {
     return (
         <NavWrapper $hidden={$hidden}>

@@ -1,0 +1,168 @@
+@startuml ClassDiagram_TuyenDung
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam classBackgroundColor #E3F2FD
+skinparam classBorderColor #1565C0
+skinparam classHeaderBackgroundColor #BBDEFB
+skinparam arrowColor #1565C0
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 60
+skinparam classAttributeIconSize 0
+
+left to right direction
+
+title Sơ đồ lớp (Class Diagram) - Hệ thống Quản lý Tuyển dụng
+
+' ========== CLASS DEFINITIONS ==========
+
+class "Người dùng\n(User)" as User {
+    - maNguoiDung: Long
+    - tenDangNhap: String
+    - matKhau: String
+    - email: String
+    - hoTen: String
+    - soDienThoai: String
+    - vaiTro: String
+    - trangThai: Boolean
+    --
+    + dangNhap()
+    + dangXuat()
+    + capNhatThongTin()
+}
+
+class "Cán bộ nhân sự\n(PersonnelManager)" as PersonnelManager {
+    - maNhanVien: String
+    - phongBan: String
+    - chucVu: String
+    --
+    + lapKeHoach()
+    + dangTinTuyenDung()
+    + thuThapHoSo()
+    + thongBaoKetQua()
+}
+
+class "Hiệu trưởng\n(Rector)" as Rector {
+    - chucDanh: String
+    - nhiemKy: String
+    --
+    + xemXetKeHoach()
+    + pheDuyetKeHoach()
+    + tuChoiKeHoach()
+}
+
+class "Ứng viên\n(Candidate)" as Candidate {
+    - diaChi: String
+    - ngaySinh: Date
+    - gioiTinh: String
+    - trinhDoHocVan: String
+    --
+    + xemTinTuyenDung()
+    + nopHoSo()
+    + xemKetQua()
+}
+
+class "Kế hoạch tuyển dụng\n(RecruitmentPlan)" as RecruitmentPlan {
+    - maKeHoach: Long
+    - chucDanhCanTuyen: String
+    - soLuong: Integer
+    - yeuCau: String
+    - thoiGianTuyenDung: Date
+    - trangThai: String
+    --
+    + gui()
+    + pheDuyet()
+    + tuChoi()
+}
+
+class "Tin tuyển dụng\n(JobPosting)" as JobPosting {
+    - maTin: Long
+    - tieuDe: String
+    - moTaCongViec: String
+    - yeuCau: String
+    - mucLuong: String
+    - diaDiem: String
+    - ngayDang: Date
+    - hanNop: Date
+    - trangThai: String
+    --
+    + dangTin()
+    + dongTin()
+    + layDanhSachHoSo()
+}
+
+class "Vị trí công việc\n(JobPosition)" as JobPosition {
+    - maViTri: Long
+    - tenViTri: String
+    - moTa: String
+    - phongBan: String
+    --
+    + layDanhSachTin()
+}
+
+class "Đơn ứng tuyển\n(Application)" as Application {
+    - maDon: Long
+    - ngayNop: Date
+    - urlCV: String
+    - thuGioiThieu: String
+    - trangThai: String
+    - ghiChu: String
+    --
+    + nop()
+    + capNhatTrangThai()
+    + dinhKemCV()
+}
+
+class "Thông báo tuyển dụng\n(RecruitmentNotification)" as RecruitmentNotification {
+    - maThongBao: Long
+    - tieuDe: String
+    - noiDung: String
+    - loai: String
+    - ngayTao: Date
+    - ngayCongBo: Date
+    - trangThai: String
+    --
+    + congBo()
+    + guiEmail()
+}
+
+class "Kết quả tuyển dụng\n(RecruitmentResult)" as RecruitmentResult {
+    - maKetQua: Long
+    - ketQua: String
+    - diemDanhGia: Double
+    - nhanXet: String
+    - ngayCongBo: Date
+    --
+    + congBo()
+    + capNhatKetQua()
+}
+
+' ========== RELATIONSHIPS ==========
+
+' Generalization (Inheritance)
+User <|-- PersonnelManager
+User <|-- Rector
+User <|-- Candidate
+
+' Associations
+PersonnelManager "1" --> "*" RecruitmentPlan
+PersonnelManager "1" --> "*" JobPosting
+PersonnelManager "1" --> "*" RecruitmentNotification
+
+Rector "1" --> "*" RecruitmentPlan
+
+Candidate "1" --> "*" Application
+Candidate "1" --> "*" RecruitmentNotification
+
+' Aggregations
+RecruitmentPlan "1" o--> "*" JobPosition
+JobPosting "1" o--> "*" Application
+
+' Other Associations
+RecruitmentPlan "1" --> "1" JobPosting
+JobPosting "*" --> "1" JobPosition
+Application "1" --> "1" RecruitmentResult
+RecruitmentNotification "*" --> "*" RecruitmentResult
+RecruitmentResult "*" --> "1" Candidate
+
+@enduml

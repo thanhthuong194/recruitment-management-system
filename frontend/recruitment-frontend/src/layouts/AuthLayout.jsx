@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Layout cho các trang xác thực (login, register, forgot password)
+ * @module layouts/AuthLayout
+ * @description Layout với background hình ảnh, dùng cho các form xác thực
+ */
+
 import React from "react";
 import styled from "styled-components";
 
@@ -34,6 +40,25 @@ const ContentWrapper = styled.div`
 
 
 
+/**
+ * Layout cho các trang xác thực
+ * @component
+ * @param {Object} props - Props của component
+ * @param {React.ReactNode} props.children - Form xác thực (AuthCard)
+ * @returns {JSX.Element} Layout với background và Header
+ * 
+ * @description
+ * - Background hình ảnh toàn màn hình
+ * - Header phía trên
+ * - Content được căn giữa
+ * 
+ * @example
+ * <AuthLayout>
+ *   <AuthCard type="login" title="Đăng nhập">
+ *     <LoginForm />
+ *   </AuthCard>
+ * </AuthLayout>
+ */
 const AuthLayout = ({ children }) => {
     return (
         <AuthContainer>

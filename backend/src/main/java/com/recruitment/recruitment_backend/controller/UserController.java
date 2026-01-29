@@ -13,17 +13,58 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
 
+/**
+ * Controller xử lý các chức năng liên quan đến thông tin người dùng hiện tại.
+ * 
+ * <p>Cung cấp các API endpoint cho:
+ * <ul>
+ *   <li>Lấy thông tin profile người dùng đang đăng nhập</li>
+ *   <li>Cập nhật thông tin cá nhân</li>
+ * </ul>
+ * 
+ * <p>Base URL: /api/users
+ * 
+ * <p>Lưu ý: Controller này xử lý thông tin của người dùng HIỆN TẠI (đang đăng nhập).
+ * Để quản lý tất cả users (Admin), xem {@link UserManagementController}.
+ * 
+ * @author Recruitment Team
+ * @version 1.0
+ * @see UserService
+ * @see UserManagementController
+ */
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UserController {
     
+    /** Service xử lý logic nghiệp vụ người dùng */
     private final UserService userService;
 
+    /**
+     * Constructor khởi tạo UserController với dependency injection.
+     * 
+     * @param userService Service xử lý nghiệp vụ User
+     */
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Lấy thông tin profile của người dùng đang đăng nhập.
+     * 
+     * <p>Endpoint: GET /api/users/me
+     * 
+     * <p>Cách xác định user hiện tại:
+     * <ol>
+     *   <li>Ưu tiên lấy từ SecurityContext (nếu đã authenticated)</li>
+     *   <li>Fallback: Parse từ Basic Auth header</li>
+     * </ol>
+     * 
+     * @param authHeader Header Authorization (Basic Auth), tùy chọn
+     * @return ResponseEntity chứa:
+     *         - Thành công: UserProfileDTO với thông tin user
+     *         - Thất bại: HTTP 401 nếu chưa đăng nhập
+     */
     @GetMapping(value = "/me", produces = "application/json; charset=UTF-8")
     public ResponseEntity<UserProfileDTO> getMyProfile(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         // Try to get authentication from SecurityContext first
@@ -55,6 +96,26 @@ public class UserController {
         return ResponseEntity.ok(profile);
     }
 
+    /**
+     * Cập nhật thông tin cá nhân của người dùng đang đăng nhập.
+     * 
+     * <p>Endpoint: PUT /api/users/me
+     * 
+     * <p>Các trường có thể cập nhật:
+     * <ul>
+     *   <li>Email (kiểm tra unique)</li>
+     *   <li>Số điện thoại (kiểm tra unique)</li>
+     *   <li>Địa chỉ</li>
+     * </ul>
+     * 
+     * <p>Lưu ý: Không thể thay đổi username, role, hoặc thông tin nhạy cảm khác.
+     * 
+     * @param userDetails Thông tin xác thực từ Spring Security
+     * @param updateRequest Đối tượng chứa các trường cần cập nhật
+     * @return ResponseEntity chứa:
+     *         - Thành công: User entity đã được cập nhật (không bao gồm password)
+     *         - Thất bại: Thông báo lỗi với HTTP 400
+     */
     @PutMapping("/me")
     public ResponseEntity<Object> updateMyProfile(
             @AuthenticationPrincipal UserDetails userDetails,

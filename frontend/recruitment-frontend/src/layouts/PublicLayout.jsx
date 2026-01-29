@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Layout cho các trang công khai (landing page)
+ * @module layouts/PublicLayout
+ * @description Layout với video background cho trang chủ công khai
+ */
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -19,6 +25,23 @@ const MainContent = styled.main`
     align-items: center; 
 `;
 
+/**
+ * Layout cho trang công khai
+ * @component
+ * @param {Object} props - Props của component
+ * @param {React.ReactNode} props.children - Nội dung trang (HeroSection)
+ * @returns {JSX.Element} Layout với video background
+ * 
+ * @description
+ * - Video background toàn màn hình
+ * - Overlay tối để tăng độ tương phản
+ * - Header và Navbar cố định, tự động ẩn khi scroll
+ * 
+ * @example
+ * <PublicLayout>
+ *   <HeroSection />
+ * </PublicLayout>
+ */
 const PublicLayout = ({ children }) => {
     const { isHidden } = useScrollDirection(80);
     return (

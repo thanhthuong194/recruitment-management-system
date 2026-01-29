@@ -1,0 +1,201 @@
+digraph ERD {
+    // Cấu hình chung
+    graph [
+        rankdir=TB,
+        splines=polyline,
+        nodesep=0.5,
+        ranksep=0.8,
+        fontname="Arial",
+        label="Lược đồ ER - Hệ thống Quản lý Tuyển dụng",
+        labelloc=t,
+        fontsize=18,
+        bgcolor=white
+    ];
+    
+    node [fontname="Arial", fontsize=10];
+    edge [fontname="Arial", fontsize=9];
+
+    // ========== THỰC THỂ (Hình chữ nhật) ==========
+    node [shape=rectangle, style="filled", fillcolor="white", color="black", penwidth=2];
+    
+    NGUOIDUNG [label="NGUOIDUNG"];
+    CANBO [label="CANBO"];
+    HIEUTRUONG [label="HIEUTRUONG"];
+    UNGVIEN [label="UNGVIEN"];
+    KEHOACH [label="KEHOACH"];
+    TINTD [label="TINTD"];
+    DONUNGTUYEN [label="DONUNGTUYEN"];
+    KETQUA [label="KETQUA"];
+
+    // ========== QUAN HỆ (Hình thoi) ==========
+    node [shape=diamond, style="filled", fillcolor="white", color="black", penwidth=1, width=1, height=0.6];
+    
+    LA1 [label="LA"];
+    LA2 [label="LA"];
+    LA3 [label="LA"];
+    LAP [label="LAP"];
+    DUYET [label="DUYET"];
+    TAO [label="TAO"];
+    NHAN [label="NHAN"];
+    NOP [label="NOP"];
+    CO [label="CO"];
+
+    // ========== THUỘC TÍNH NGUOIDUNG ==========
+    node [shape=ellipse, style="filled", fillcolor="white", color="black", penwidth=1, width=0.8, height=0.4];
+    
+    // Khóa chính (có gạch chân) - dùng HTML label
+    nd_ma [label=<<u>MaND</u>>];
+    nd_ten [label="HoTen"];
+    nd_email [label="Email"];
+    nd_sdt [label="SDT"];
+    nd_vaitro [label="VaiTro"];
+
+    // ========== THUỘC TÍNH CANBO ==========
+    cb_ma [label=<<u>MaCB</u>>];
+    cb_manv [label="MaNV"];
+    cb_pb [label="PhongBan"];
+
+    // ========== THUỘC TÍNH HIEUTRUONG ==========
+    ht_ma [label=<<u>MaHT</u>>];
+    ht_cd [label="ChucDanh"];
+
+    // ========== THUỘC TÍNH UNGVIEN ==========
+    uv_ma [label=<<u>MaUV</u>>];
+    uv_dc [label="DiaChi"];
+    uv_ns [label="NgaySinh"];
+    uv_td [label="TrinhDo"];
+
+    // ========== THUỘC TÍNH KEHOACH ==========
+    kh_ma [label=<<u>MaKH</u>>];
+    kh_cd [label="ChucDanh"];
+    kh_sl [label="SoLuong"];
+    kh_yc [label="YeuCau"];
+    kh_tt [label="TrangThai"];
+
+    // ========== THUỘC TÍNH TINTD ==========
+    td_ma [label=<<u>MaTin</u>>];
+    td_td [label="TieuDe"];
+    td_ml [label="MucLuong"];
+    td_hn [label="HanNop"];
+
+    // ========== THUỘC TÍNH DONUNGTUYEN ==========
+    don_ma [label=<<u>MaDon</u>>];
+    don_nn [label="NgayNop"];
+    don_cv [label="CV"];
+    don_tt [label="TrangThai"];
+
+    // ========== THUỘC TÍNH KETQUA ==========
+    kq_ma [label=<<u>MaKQ</u>>];
+    kq_kq [label="KetQua"];
+    kq_diem [label="Diem"];
+    kq_nx [label="NhanXet"];
+
+    // ========== LAYOUT - Xếp theo hàng ==========
+    // Hàng 1: Thuộc tính NGUOIDUNG
+    {rank=same; nd_ma; nd_ten; nd_email; nd_sdt; nd_vaitro}
+    
+    // Hàng 2: NGUOIDUNG
+    {rank=same; NGUOIDUNG}
+    
+    // Hàng 3: Quan hệ LA
+    {rank=same; LA1; LA2; LA3}
+    
+    // Hàng 4: CANBO, HIEUTRUONG, UNGVIEN + thuộc tính
+    {rank=same; cb_ma; cb_manv; cb_pb; CANBO; HIEUTRUONG; ht_ma; ht_cd; UNGVIEN; uv_ma; uv_dc; uv_ns; uv_td}
+    
+    // Hàng 5: Quan hệ LAP, DUYET, NOP
+    {rank=same; LAP; DUYET; NOP}
+    
+    // Hàng 6: KEHOACH, DONUNGTUYEN
+    {rank=same; KEHOACH; kh_ma; kh_cd; kh_sl; kh_yc; kh_tt; DONUNGTUYEN; don_ma; don_nn; don_cv; don_tt}
+    
+    // Hàng 7: Quan hệ TAO, CO
+    {rank=same; TAO; CO}
+    
+    // Hàng 8: TINTD, KETQUA
+    {rank=same; TINTD; td_ma; td_td; td_ml; td_hn; KETQUA; kq_ma; kq_kq; kq_diem; kq_nx}
+    
+    // Hàng 9: Quan hệ NHAN
+    {rank=same; NHAN}
+
+    // ========== KẾT NỐI THUỘC TÍNH ==========
+    edge [style=solid, color="black", penwidth=1, arrowhead=none, arrowtail=none];
+    
+    nd_ma -> NGUOIDUNG;
+    nd_ten -> NGUOIDUNG;
+    nd_email -> NGUOIDUNG;
+    nd_sdt -> NGUOIDUNG;
+    nd_vaitro -> NGUOIDUNG;
+
+    cb_ma -> CANBO;
+    cb_manv -> CANBO;
+    cb_pb -> CANBO;
+
+    ht_ma -> HIEUTRUONG;
+    ht_cd -> HIEUTRUONG;
+
+    uv_ma -> UNGVIEN;
+    uv_dc -> UNGVIEN;
+    uv_ns -> UNGVIEN;
+    uv_td -> UNGVIEN;
+
+    kh_ma -> KEHOACH;
+    kh_cd -> KEHOACH;
+    kh_sl -> KEHOACH;
+    kh_yc -> KEHOACH;
+    kh_tt -> KEHOACH;
+
+    td_ma -> TINTD;
+    td_td -> TINTD;
+    td_ml -> TINTD;
+    td_hn -> TINTD;
+
+    don_ma -> DONUNGTUYEN;
+    don_nn -> DONUNGTUYEN;
+    don_cv -> DONUNGTUYEN;
+    don_tt -> DONUNGTUYEN;
+
+    kq_ma -> KETQUA;
+    kq_kq -> KETQUA;
+    kq_diem -> KETQUA;
+    kq_nx -> KETQUA;
+
+    // ========== KẾT NỐI QUAN HỆ ==========
+    edge [style=solid, color="black", penwidth=1.5];
+    
+    // NGUOIDUNG - LA - CANBO
+    NGUOIDUNG -> LA1 [label="(1,1)\nngười dùng", arrowhead=none];
+    LA1 -> CANBO [label="(0,1)\ncán bộ", arrowhead=none];
+
+    // NGUOIDUNG - LA - HIEUTRUONG
+    NGUOIDUNG -> LA2 [label="(1,1)", arrowhead=none];
+    LA2 -> HIEUTRUONG [label="(0,1)", arrowhead=none];
+
+    // NGUOIDUNG - LA - UNGVIEN
+    NGUOIDUNG -> LA3 [label="(1,1)", arrowhead=none];
+    LA3 -> UNGVIEN [label="(0,1)", arrowhead=none];
+
+    // CANBO - LAP - KEHOACH
+    CANBO -> LAP [label="(0,N)\nlập", arrowhead=none];
+    LAP -> KEHOACH [label="(1,1)\nkế hoạch", arrowhead=none];
+
+    // HIEUTRUONG - DUYET - KEHOACH
+    HIEUTRUONG -> DUYET [label="(0,N)\nduyệt", arrowhead=none];
+    DUYET -> KEHOACH [label="(0,1)", arrowhead=none];
+
+    // KEHOACH - TAO - TINTD
+    KEHOACH -> TAO [label="(1,N)\ntạo", arrowhead=none];
+    TAO -> TINTD [label="(1,1)\ntin TD", arrowhead=none];
+
+    // TINTD - NHAN - DONUNGTUYEN
+    TINTD -> NHAN [label="(0,N)\nnhận", arrowhead=none];
+    NHAN -> DONUNGTUYEN [label="(1,1)\nđơn", arrowhead=none];
+
+    // UNGVIEN - NOP - DONUNGTUYEN
+    UNGVIEN -> NOP [label="(0,N)\nnộp", arrowhead=none];
+    NOP -> DONUNGTUYEN [label="(1,1)", arrowhead=none];
+
+    // DONUNGTUYEN - CO - KETQUA
+    DONUNGTUYEN -> CO [label="(0,1)\ncó", arrowhead=none];
+    CO -> KETQUA [label="(1,1)\nkết quả", arrowhead=none];
+}

@@ -1,7 +1,14 @@
+/**
+ * @fileoverview Component InputField tái sử dụng cho forms
+ * @module components/common/InputField
+ * @description Input field với label, icon và hỗ trợ ẩn/hiện password
+ */
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
+/** @constant {string} ACCENT_COLOR - Màu nhấn mạnh cho focus state */
 const ACCENT_COLOR = '#1877f2';
 
 const InputGroup = styled.div`

@@ -1,9 +1,16 @@
+/**
+ * @fileoverview Component form đăng nhập
+ * @module components/auth/LoginForm
+ * @description Form nhập thông tin đăng nhập với username và password
+ */
+
 import React from 'react';
 import styled from 'styled-components';
 import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import InputField from '../common/InputField';
 
+/** @constant {string} ACCENT_COLOR - Màu nhấn mạnh chính */
 const ACCENT_COLOR = '#1877f2';
 
 const PrimaryButton = styled.button`

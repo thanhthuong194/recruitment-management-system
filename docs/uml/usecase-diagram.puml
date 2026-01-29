@@ -1,0 +1,40 @@
+@startuml UseCase_TuyenDung
+!theme plain
+skinparam actorStyle awesome
+skinparam backgroundColor #FEFEFE
+skinparam usecaseBackgroundColor #E8F4FD
+skinparam usecaseBorderColor #1E88E5
+skinparam actorBackgroundColor #FFE082
+skinparam actorBorderColor #F57C00
+
+title Sơ đồ Use Case - Hệ thống Quản lý Tuyển dụng
+
+left to right direction
+
+actor "Cán bộ nhân sự\n(PersonnelManager)" as PM #FFE082
+actor "Hiệu trưởng\n(Rector)" as Rector #FFE082
+actor "Ứng viên\n(Candidate)" as Candidate #FFE082
+
+rectangle "Hệ thống Quản lý Tuyển dụng" {
+    usecase "UC1: Lập kế hoạch\ntuyển dụng" as UC1
+    usecase "UC2: Duyệt kế hoạch" as UC2
+    usecase "UC3: Thông báo\ntuyển dụng" as UC3
+    usecase "UC4: Thu thập và lập\ndanh sách hồ sơ dự tuyển" as UC4
+    usecase "UC5: Thông báo\nkết quả" as UC5
+}
+
+PM --> UC1
+PM --> UC2
+PM --> UC3
+PM --> UC4
+PM --> UC5
+
+Rector --> UC2
+
+Candidate --> UC4
+
+UC3 ..> UC1 : <<include>>
+UC4 ..> UC3 : <<include>>
+UC5 ..> UC4 : <<include>>
+
+@enduml

@@ -18,15 +18,52 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Controller quản lý Kế hoạch Tuyển dụng (Recruitment Plans).
+ * 
+ * <p>Cung cấp các API endpoint CRUD cho kế hoạch tuyển dụng:
+ * <ul>
+ *   <li>GET /api/plans - Lấy danh sách tất cả kế hoạch</li>
+ *   <li>GET /api/plans/{id} - Lấy kế hoạch theo ID</li>
+ *   <li>POST /api/plans - Tạo kế hoạch mới (Unit Manager)</li>
+ *   <li>PUT /api/plans/{id} - Cập nhật kế hoạch</li>
+ *   <li>DELETE /api/plans/{id} - Xóa kế hoạch</li>
+ *   <li>PUT /api/plans/{id}/approve - Duyệt kế hoạch (Rector)</li>
+ *   <li>PUT /api/plans/{id}/reject - Từ chối kế hoạch (Rector)</li>
+ * </ul>
+ * 
+ * <p>Workflow trạng thái kế hoạch:
+ * <pre>
+ * Pending → Approved → (Đăng tin tuyển dụng)
+ *        ↘ Rejected
+ * </pre>
+ * 
+ * @author Recruitment Team
+ * @version 1.0
+ * @see RecruitmentPlan
+ * @see PlanResponse
+ */
 @RestController
 @RequestMapping("/api/plans")
 @CrossOrigin(origins = "*")
 public class PlansController {
 
+    /** Repository truy vấn kế hoạch tuyển dụng */
     private final RecruitmentPlanRepository planRepository;
+    
+    /** Repository truy vấn thông tin trưởng đơn vị */
     private final UnitManagerRepository unitManagerRepository;
+    
+    /** Repository truy vấn vị trí tuyển dụng */
     private final JobPositionRepository jobPositionRepository;
 
+    /**
+     * Constructor khởi tạo PlansController với dependency injection.
+     * 
+     * @param planRepository Repository xử lý RecruitmentPlan
+     * @param unitManagerRepository Repository xử lý UnitManager
+     * @param jobPositionRepository Repository xử lý JobPosition
+     */
     public PlansController(RecruitmentPlanRepository planRepository, 
                           UnitManagerRepository unitManagerRepository,
                           JobPositionRepository jobPositionRepository) {
@@ -35,7 +72,13 @@ public class PlansController {
         this.jobPositionRepository = jobPositionRepository;
     }
 
-    // GET all plans
+    /**
+     * Lấy danh sách tất cả kế hoạch tuyển dụng.
+     * 
+     * <p>Endpoint: GET /api/plans
+     * 
+     * @return ResponseEntity chứa danh sách PlanResponse
+     */
     @GetMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<List<PlanResponse>> getAllPlans() {
         List<RecruitmentPlan> plans = planRepository.findAll();
@@ -45,7 +88,16 @@ public class PlansController {
         return ResponseEntity.ok(response);
     }
 
-    // GET plan by ID
+    /**
+     * Lấy thông tin kế hoạch tuyển dụng theo ID.
+     * 
+     * <p>Endpoint: GET /api/plans/{id}
+     * 
+     * @param id ID của kế hoạch cần lấy
+     * @return ResponseEntity chứa:
+     *         - Thành công: PlanResponse với thông tin kế hoạch
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     */
     @GetMapping(value = "/{id}", produces = "application/json; charset=UTF-8")
     public ResponseEntity<PlanResponse> getPlanById(@PathVariable Integer id) {
         return planRepository.findById(id)
@@ -53,7 +105,21 @@ public class PlansController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // CREATE new plan
+    /**
+     * Tạo kế hoạch tuyển dụng mới.
+     * 
+     * <p>Endpoint: POST /api/plans
+     * 
+     * <p>Quy trình:
+     * <ol>
+     *   <li>Lấy UnitManager đầu tiên làm người tạo (tạm thời)</li>
+     *   <li>Tạo kế hoạch với trạng thái "Pending"</li>
+     *   <li>Lưu vào database</li>
+     * </ol>
+     * 
+     * @param request Thông tin kế hoạch cần tạo (title, position, school, quantity, cpa)
+     * @return ResponseEntity với PlanResponse đã được tạo, HTTP 201 Created
+     */
     @PostMapping(consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
     public ResponseEntity<PlanResponse> createPlan(@RequestBody PlanCreateRequest request) {
         // Get first UnitManager as default creator (simplified)
@@ -76,7 +142,19 @@ public class PlansController {
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToResponse(saved));
     }
 
-    // UPDATE existing plan
+    /**
+     * Cập nhật thông tin kế hoạch tuyển dụng.
+     * 
+     * <p>Endpoint: PUT /api/plans/{id}
+     * 
+     * <p>Có thể cập nhật các trường: title, position, school, quantity, cpa, status, approvDate
+     * 
+     * @param id ID của kế hoạch cần cập nhật
+     * @param request Thông tin cần cập nhật (các trường null sẽ không thay đổi)
+     * @return ResponseEntity chứa:
+     *         - Thành công: PlanResponse đã cập nhật
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     */
     @PutMapping(value = "/{id}", consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
     public ResponseEntity<PlanResponse> updatePlan(@PathVariable Integer id, 
                                                     @RequestBody PlanUpdateRequest request) {
@@ -96,7 +174,19 @@ public class PlansController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // DELETE plan
+    /**
+     * Xóa kế hoạch tuyển dụng.
+     * 
+     * <p>Endpoint: DELETE /api/plans/{id}
+     * 
+     * <p>Lưu ý: Không thể xóa kế hoạch đã có dữ liệu liên quan (ví dụ: kết quả tuyển dụng)
+     * 
+     * @param id ID của kế hoạch cần xóa
+     * @return ResponseEntity chứa:
+     *         - Thành công: HTTP 204 No Content
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     *         - Lỗi: HTTP 409 Conflict nếu có dữ liệu liên quan
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePlan(@PathVariable Integer id) {
         if (!planRepository.existsById(id)) {
@@ -116,7 +206,23 @@ public class PlansController {
         }
     }
 
-    // DELETE PERMANENTLY approved/rejected plans (HR only)
+    /**
+     * Xóa vĩnh viễn kế hoạch đã duyệt hoặc từ chối (chỉ dành cho HR).
+     * 
+     * <p>Endpoint: DELETE /api/plans/{id}/permanent
+     * 
+     * <p>Điều kiện:
+     * <ul>
+     *   <li>Chỉ HR (PERSONNEL_MANAGER) mới có quyền</li>
+     *   <li>Chỉ xóa được kế hoạch có status "Approved" hoặc "Rejected"</li>
+     * </ul>
+     * 
+     * @param id ID của kế hoạch cần xóa vĩnh viễn
+     * @return ResponseEntity chứa:
+     *         - Thành công: HTTP 204 No Content
+     *         - Thất bại: HTTP 403 nếu không phải Approved/Rejected
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     */
     @DeleteMapping("/{id}/permanent")
     public ResponseEntity<?> deletePlanPermanently(@PathVariable Integer id) {
         // For now, we allow HR to delete (in production, check authentication)
@@ -142,7 +248,23 @@ public class PlansController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // APPROVE plan
+    /**
+     * Phê duyệt kế hoạch tuyển dụng (dành cho Rector).
+     * 
+     * <p>Endpoint: PUT /api/plans/{id}/approve
+     * 
+     * <p>Hành động:
+     * <ul>
+     *   <li>Cập nhật status thành "Approved"</li>
+     *   <li>Ghi nhận ngày phê duyệt (approvDate = today)</li>
+     *   <li>TODO: Ghi nhận người phê duyệt (approvedBy)</li>
+     * </ul>
+     * 
+     * @param id ID của kế hoạch cần phê duyệt
+     * @return ResponseEntity chứa:
+     *         - Thành công: PlanResponse đã cập nhật
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     */
     @PutMapping(value = "/{id}/approve", produces = "application/json; charset=UTF-8")
     public ResponseEntity<PlanResponse> approvePlan(@PathVariable Integer id) {
         return planRepository.findById(id)
@@ -156,7 +278,18 @@ public class PlansController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // PUBLIC - Get approved plan by ID (for application form)
+    /**
+     * Lấy thông tin kế hoạch đã duyệt theo ID (Public API cho form ứng tuyển).
+     * 
+     * <p>Endpoint: GET /api/plans/public/{id}
+     * 
+     * <p>Lưu ý: Chỉ trả về kế hoạch có status "Approved"
+     * 
+     * @param id ID của kế hoạch
+     * @return ResponseEntity chứa:
+     *         - Thành công: PlanResponse của kế hoạch đã duyệt
+     *         - Thất bại: HTTP 404 nếu không tìm thấy hoặc chưa được duyệt
+     */
     @GetMapping(value = "/public/{id}", produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> getApprovedPlanById(@PathVariable Integer id) {
         return planRepository.findById(id)
@@ -176,7 +309,24 @@ public class PlansController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // REJECT plan
+    /**
+     * Từ chối kế hoạch tuyển dụng (dành cho Rector).
+     * 
+     * <p>Endpoint: PUT /api/plans/{id}/reject
+     * 
+     * <p>Hành động:
+     * <ul>
+     *   <li>Cập nhật status thành "Rejected"</li>
+     *   <li>Ghi nhận ngày từ chối (approvDate = today)</li>
+     *   <li>Lưu lý do từ chối (nếu có)</li>
+     * </ul>
+     * 
+     * @param id ID của kế hoạch cần từ chối
+     * @param rejectRequest Request body chứa lý do từ chối (tùy chọn)
+     * @return ResponseEntity chứa:
+     *         - Thành công: PlanResponse đã cập nhật
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     */
     @PutMapping(value = "/{id}/reject", consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
     public ResponseEntity<PlanResponse> rejectPlan(@PathVariable Integer id, @RequestBody(required = false) RejectRequest rejectRequest) {
         return planRepository.findById(id)
@@ -193,20 +343,39 @@ public class PlansController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Request class for reject reason
+    /**
+     * Lớp inner chứa thông tin lý do từ chối kế hoạch.
+     */
     public static class RejectRequest {
+        /** Lý do từ chối kế hoạch */
         private String rejectReason;
         
+        /**
+         * Lấy lý do từ chối.
+         * @return Chuỗi lý do từ chối
+         */
         public String getRejectReason() {
             return rejectReason;
         }
         
+        /**
+         * Đặt lý do từ chối.
+         * @param rejectReason Lý do từ chối mới
+         */
         public void setRejectReason(String rejectReason) {
             this.rejectReason = rejectReason;
         }
     }
 
-    // Helper method to convert entity to DTO
+    /**
+     * Chuyển đổi entity RecruitmentPlan sang DTO PlanResponse.
+     * 
+     * <p>Phương thức helper để map các trường từ entity sang response DTO,
+     * bao gồm cả thông tin người tạo và người duyệt.
+     * 
+     * @param plan Entity RecruitmentPlan cần chuyển đổi
+     * @return PlanResponse DTO đã được map
+     */
     private PlanResponse convertToResponse(RecruitmentPlan plan) {
         return PlanResponse.builder()
                 .planid(plan.getPlanID())
@@ -224,14 +393,27 @@ public class PlansController {
                 .build();
     }
     
-    // Error response class
+    /**
+     * Lớp inner đại diện cho response lỗi.
+     * 
+     * <p>Sử dụng để trả về thông báo lỗi dạng JSON có cấu trúc.
+     */
     private static class ErrorResponse {
+        /** Thông báo lỗi */
         private final String error;
         
+        /**
+         * Constructor khởi tạo ErrorResponse.
+         * @param error Thông báo lỗi
+         */
         public ErrorResponse(String error) {
             this.error = error;
         }
         
+        /**
+         * Lấy thông báo lỗi.
+         * @return Chuỗi thông báo lỗi
+         */
         public String getError() {
             return error;
         }

@@ -1,0 +1,91 @@
+@startuml Activity_QuyTrinhTuyenDung
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #E3F2FD
+skinparam activityBorderColor #1565C0
+skinparam activityDiamondBackgroundColor #FFF9C4
+skinparam activityDiamondBorderColor #F9A825
+skinparam swimlaneBackgroundColor #F5F5F5
+skinparam swimlaneBorderColor #BDBDBD
+
+title Sơ đồ hoạt động - Quy trình tuyển dụng tổng quan
+
+|#FFE0B2| Cán bộ nhân sự (PersonnelManager) |
+|#E3F2FD| Hiệu trưởng (Rector) |
+|#C8E6C9| Ứng viên (Candidate) |
+
+|Cán bộ nhân sự (PersonnelManager)|
+start
+:Lập kế hoạch tuyển dụng;
+note right
+  - Xác định vị trí cần tuyển
+  - Số lượng cần tuyển
+  - Yêu cầu năng lực
+  - Thời gian tuyển dụng
+end note
+
+|Hiệu trưởng (Rector)|
+:Xem xét kế hoạch;
+
+if (Kế hoạch hợp lệ?) then (Có)
+  :Phê duyệt kế hoạch;
+  |Cán bộ nhân sự (PersonnelManager)|
+else (Không)
+  :Từ chối kế hoạch;
+  |Cán bộ nhân sự (PersonnelManager)|
+  :Chỉnh sửa kế hoạch;
+  |Hiệu trưởng (Rector)|
+  :Xem xét lại;
+  detach
+endif
+
+|Cán bộ nhân sự (PersonnelManager)|
+:Đăng thông báo tuyển dụng;
+note right
+  - Tạo tin tuyển dụng
+  - Công bố trên hệ thống
+  - Gửi thông báo
+end note
+
+|Ứng viên (Candidate)|
+:Xem thông báo tuyển dụng;
+:Nộp hồ sơ ứng tuyển;
+note right
+  - Điền thông tin cá nhân
+  - Đính kèm CV
+  - Viết thư giới thiệu
+end note
+
+|Cán bộ nhân sự (PersonnelManager)|
+:Thu thập hồ sơ;
+
+:Sàng lọc hồ sơ;
+
+if (Hồ sơ đạt yêu cầu?) then (Có)
+  :Đưa vào danh sách xét duyệt;
+else (Không)
+  :Loại hồ sơ;
+  :Thông báo kết quả sơ tuyển;
+  |Ứng viên (Candidate)|
+  :Nhận thông báo không đạt;
+  stop
+endif
+
+|Cán bộ nhân sự (PersonnelManager)|
+:Xét duyệt hồ sơ;
+
+if (Trúng tuyển?) then (Có)
+  :Tạo kết quả PASSED;
+else (Không)
+  :Tạo kết quả FAILED;
+endif
+
+:Thông báo kết quả;
+
+|Ứng viên (Candidate)|
+:Nhận kết quả tuyển dụng;
+:Xem chi tiết kết quả;
+
+stop
+
+@enduml

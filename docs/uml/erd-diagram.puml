@@ -1,0 +1,178 @@
+@startuml ERD_TuyenDung
+' ERD theo kiểu Chen Notation
+' Thực thể: hình chữ nhật (xanh dương)
+' Quan hệ: hình thoi (xanh lá)
+' Thuộc tính: hình elip (xanh nhạt), khóa chính (vàng)
+
+skinparam backgroundColor white
+
+title Mô hình thực thể và liên kết (ER Diagram)\nHệ thống Quản lý Tuyển dụng
+
+' ========== THỰC THỂ NGƯỜI DÙNG ==========
+storage "maNguoiDung" as user_id #FFF9C4
+storage "tenDangNhap" as user_username #90CAF9
+storage "matKhau" as user_password #90CAF9
+storage "email" as user_email #90CAF9
+storage "hoTen" as user_name #90CAF9
+storage "soDienThoai" as user_phone #90CAF9
+storage "vaiTro" as user_role #90CAF9
+
+rectangle "NGƯỜI DÙNG" as User #2196F3
+
+user_id -- User
+user_username -- User
+user_password -- User
+user_email -- User
+user_name -- User
+user_phone -- User
+user_role -- User
+
+' ========== THỰC THỂ CÁN BỘ NHÂN SỰ ==========
+storage "maCBNS" as pm_id #FFF9C4
+storage "maNhanVien" as pm_empcode #90CAF9
+storage "phongBan" as pm_dept #90CAF9
+storage "chucVu" as pm_position #90CAF9
+
+rectangle "CÁN BỘ NHÂN SỰ" as PM #2196F3
+
+pm_id -- PM
+pm_empcode -- PM
+pm_dept -- PM
+pm_position -- PM
+
+' ========== THỰC THỂ HIỆU TRƯỞNG ==========
+storage "maHieuTruong" as rector_id #FFF9C4
+storage "chucDanh" as rector_title #90CAF9
+storage "nhiemKy" as rector_term #90CAF9
+
+rectangle "HIỆU TRƯỞNG" as Rector #2196F3
+
+rector_id -- Rector
+rector_title -- Rector
+rector_term -- Rector
+
+' ========== THỰC THỂ ỨNG VIÊN ==========
+storage "maUngVien" as cand_id #FFF9C4
+storage "diaChi" as cand_addr #90CAF9
+storage "ngaySinh" as cand_dob #90CAF9
+storage "gioiTinh" as cand_gender #90CAF9
+storage "trinhDo" as cand_edu #90CAF9
+
+rectangle "ỨNG VIÊN" as Candidate #2196F3
+
+cand_id -- Candidate
+cand_addr -- Candidate
+cand_dob -- Candidate
+cand_gender -- Candidate
+cand_edu -- Candidate
+
+' ========== THỰC THỂ KẾ HOẠCH ==========
+storage "maKeHoach" as plan_id #FFF9C4
+storage "chucDanhTuyen" as plan_title #90CAF9
+storage "soLuong" as plan_qty #90CAF9
+storage "yeuCau" as plan_req #90CAF9
+storage "thoiGian" as plan_time #90CAF9
+storage "trangThai" as plan_status #90CAF9
+
+rectangle "KẾ HOẠCH\nTUYỂN DỤNG" as Plan #2196F3
+
+plan_id -- Plan
+plan_title -- Plan
+plan_qty -- Plan
+plan_req -- Plan
+plan_time -- Plan
+plan_status -- Plan
+
+' ========== THỰC THỂ TIN TUYỂN DỤNG ==========
+storage "maTin" as job_id #FFF9C4
+storage "tieuDe" as job_title #90CAF9
+storage "moTa" as job_desc #90CAF9
+storage "mucLuong" as job_salary #90CAF9
+storage "diaDiem" as job_location #90CAF9
+storage "hanNop" as job_deadline #90CAF9
+
+rectangle "TIN TUYỂN DỤNG" as JobPosting #2196F3
+
+job_id -- JobPosting
+job_title -- JobPosting
+job_desc -- JobPosting
+job_salary -- JobPosting
+job_location -- JobPosting
+job_deadline -- JobPosting
+
+' ========== THỰC THỂ ĐƠN ỨNG TUYỂN ==========
+storage "maDon" as app_id #FFF9C4
+storage "ngayNop" as app_date #90CAF9
+storage "urlCV" as app_cv #90CAF9
+storage "thuGioiThieu" as app_letter #90CAF9
+storage "trangThaiDon" as app_status #90CAF9
+
+rectangle "ĐƠN ỨNG TUYỂN" as Application #2196F3
+
+app_id -- Application
+app_date -- Application
+app_cv -- Application
+app_letter -- Application
+app_status -- Application
+
+' ========== THỰC THỂ KẾT QUẢ ==========
+storage "maKetQua" as result_id #FFF9C4
+storage "ketQua" as result_result #90CAF9
+storage "diem" as result_score #90CAF9
+storage "nhanXet" as result_comment #90CAF9
+
+rectangle "KẾT QUẢ\nTUYỂN DỤNG" as Result #2196F3
+
+result_id -- Result
+result_result -- Result
+result_score -- Result
+result_comment -- Result
+
+' ========== CÁC MỐI QUAN HỆ ==========
+
+' User - PM (là)
+card "là" as rel_user_pm #4CAF50
+User -- rel_user_pm
+rel_user_pm -- PM
+
+' User - Rector (là)
+card "là" as rel_user_rector #4CAF50
+User -- rel_user_rector
+rel_user_rector -- Rector
+
+' User - Candidate (là)
+card "là" as rel_user_cand #4CAF50
+User -- rel_user_cand
+rel_user_cand -- Candidate
+
+' PM - Plan (lập)
+card "lập" as rel_pm_plan #4CAF50
+PM -- rel_pm_plan
+rel_pm_plan -- Plan
+
+' Rector - Plan (duyệt)
+card "duyệt" as rel_rector_plan #4CAF50
+Rector -- rel_rector_plan
+rel_rector_plan -- Plan
+
+' Plan - JobPosting (tạo)
+card "tạo" as rel_plan_job #4CAF50
+Plan -- rel_plan_job
+rel_plan_job -- JobPosting
+
+' JobPosting - Application (nhận)
+card "nhận" as rel_job_app #4CAF50
+JobPosting -- rel_job_app
+rel_job_app -- Application
+
+' Candidate - Application (nộp)
+card "nộp" as rel_cand_app #4CAF50
+Candidate -- rel_cand_app
+rel_cand_app -- Application
+
+' Application - Result (có)
+card "có" as rel_app_result #4CAF50
+Application -- rel_app_result
+rel_app_result -- Result
+
+@enduml

@@ -19,20 +19,78 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.io.IOException;
 
+/**
+ * Cấu hình Spring Security cho ứng dụng.
+ * 
+ * <p>Class này cấu hình toàn bộ các khía cạnh bảo mật:
+ * <ul>
+ *   <li>CORS - Cross-Origin Resource Sharing</li>
+ *   <li>CSRF - Tắt vì sử dụng stateless API</li>
+ *   <li>Session - Stateless (không lưu session)</li>
+ *   <li>Password Encoding - BCrypt</li>
+ * </ul>
+ * 
+ * <p>Cấu hình CORS cho phép:
+ * <ul>
+ *   <li>Origins: localhost:3000 (React frontend)</li>
+ *   <li>Methods: GET, POST, PUT, DELETE, OPTIONS</li>
+ *   <li>Headers: Authorization, Content-Type, Accept</li>
+ * </ul>
+ * 
+ * <p>Lưu ý: Hiện tại cấu hình cho phép tất cả requests (permitAll)
+ * để dễ development. Trong production cần cấu hình lại phân quyền.
+ * 
+ * @author Recruitment Team
+ * @version 1.0
+ * @see org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Tạo bean PasswordEncoder sử dụng BCrypt.
+     * 
+     * <p>BCrypt là thuật toán mã hóa mật khẩu an toàn,
+     * tự động thêm salt và có cost factor có thể điều chỉnh.
+     * 
+     * @return BCryptPasswordEncoder instance
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Tạo bean AuthenticationManager từ cấu hình.
+     * 
+     * <p>AuthenticationManager được sử dụng trong AuthController
+     * để xác thực thông tin đăng nhập.
+     * 
+     * @param authConfig Cấu hình authentication
+     * @return AuthenticationManager instance
+     * @throws Exception Nếu không thể tạo AuthenticationManager
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    /**
+     * Cấu hình Security Filter Chain.
+     * 
+     * <p>Thiết lập các quy tắc bảo mật:
+     * <ul>
+     *   <li>CORS: Cho phép từ các origin đã cấu hình</li>
+     *   <li>CSRF: Tắt (REST API stateless)</li>
+     *   <li>Session: Stateless (không tạo HTTP session)</li>
+     *   <li>Authorization: Hiện tại permitAll()</li>
+     * </ul>
+     * 
+     * @param http HttpSecurity builder
+     * @return SecurityFilterChain đã cấu hình
+     * @throws Exception Nếu có lỗi cấu hình
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -64,6 +122,22 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Cấu hình CORS (Cross-Origin Resource Sharing).
+     * 
+     * <p>Cho phép React frontend (localhost:3000) gọi API.
+     * 
+     * <p>Cấu hình chi tiết:
+     * <ul>
+     *   <li>Allowed Origins: localhost:3000, 127.0.0.1:3000</li>
+     *   <li>Allowed Methods: GET, POST, PUT, DELETE, OPTIONS</li>
+     *   <li>Allowed Headers: Authorization, Content-Type, Accept</li>
+     *   <li>Allow Credentials: true (cho phép gửi cookies/auth)</li>
+     *   <li>Exposed Headers: Authorization</li>
+     * </ul>
+     * 
+     * @return CorsConfigurationSource đã cấu hình
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

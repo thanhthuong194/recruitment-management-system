@@ -1,0 +1,54 @@
+@startuml Sequence_DuyetKeHoach
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam sequenceParticipantBackgroundColor #E3F2FD
+skinparam sequenceParticipantBorderColor #1565C0
+skinparam sequenceArrowColor #1565C0
+skinparam sequenceLifeLineBorderColor #90CAF9
+
+title Sơ đồ tuần tự - UC2: Duyệt kế hoạch
+
+actor "Hiệu trưởng" as Rector #FFE082
+participant "Hệ thống" as System #E3F2FD
+database "Cơ sở dữ liệu" as DB #C8E6C9
+actor "Cán bộ nhân sự" as PM #FFE082
+
+Rector -> System: 1. Truy cập danh sách kế hoạch chờ duyệt
+activate System
+System -> DB: 2. Lấy danh sách kế hoạch
+activate DB
+DB --> System: 3. Danh sách kế hoạch
+deactivate DB
+System --> Rector: 4. Hiển thị danh sách kế hoạch
+deactivate System
+
+Rector -> System: 5. Chọn kế hoạch để xem chi tiết
+activate System
+System --> Rector: 6. Hiển thị chi tiết kế hoạch
+note right
+  - Chức danh cần tuyển
+  - Số lượng
+  - Yêu cầu năng lực
+  - Thời gian tuyển dụng
+end note
+
+alt Phê duyệt kế hoạch
+    Rector -> System: 7a. Phê duyệt kế hoạch
+    System -> DB: 8a. Cập nhật trạng thái "Đã duyệt"
+    activate DB
+    DB --> System: 9a. Xác nhận cập nhật
+    deactivate DB
+    System -> PM: 10a. Gửi thông báo kế hoạch được duyệt
+    System --> Rector: 11a. Thông báo phê duyệt thành công
+else Từ chối kế hoạch
+    Rector -> System: 7b. Từ chối kế hoạch (kèm lý do)
+    System -> DB: 8b. Cập nhật trạng thái "Từ chối"
+    activate DB
+    DB --> System: 9b. Xác nhận cập nhật
+    deactivate DB
+    System -> PM: 10b. Gửi thông báo từ chối (kèm lý do)
+    System --> Rector: 11b. Thông báo từ chối thành công
+end
+deactivate System
+
+@enduml

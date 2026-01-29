@@ -1,0 +1,60 @@
+@startuml Sequence_ThongBaoTuyenDung
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam sequenceParticipantBackgroundColor #E3F2FD
+skinparam sequenceParticipantBorderColor #1565C0
+skinparam sequenceArrowColor #1565C0
+skinparam sequenceLifeLineBorderColor #90CAF9
+
+title Sơ đồ tuần tự - UC3: Thông báo tuyển dụng
+
+actor "Cán bộ nhân sự" as PM #FFE082
+participant "Hệ thống" as System #E3F2FD
+database "Cơ sở dữ liệu" as DB #C8E6C9
+participant "Hệ thống\nThông báo" as Notif #FFF9C4
+
+PM -> System: 1. Truy cập danh sách kế hoạch đã duyệt
+activate System
+System -> DB: 2. Lấy kế hoạch đã được phê duyệt
+activate DB
+DB --> System: 3. Danh sách kế hoạch đã duyệt
+deactivate DB
+System --> PM: 4. Hiển thị danh sách
+deactivate System
+
+PM -> System: 5. Chọn kế hoạch để tạo thông báo tuyển dụng
+activate System
+System --> PM: 6. Hiển thị form tạo thông báo
+deactivate System
+
+PM -> System: 7. Nhập thông tin thông báo tuyển dụng
+activate System
+note right
+  - Tiêu đề thông báo
+  - Mô tả công việc
+  - Yêu cầu ứng viên
+  - Mức lương
+  - Địa điểm làm việc
+  - Hạn nộp hồ sơ
+end note
+
+PM -> System: 8. Đăng thông báo tuyển dụng
+System -> DB: 9. Lưu thông báo tuyển dụng
+activate DB
+DB --> System: 10. Xác nhận lưu thành công
+deactivate DB
+
+System -> Notif: 11. Công bố thông báo công khai
+activate Notif
+Notif --> System: 12. Thông báo đã được công bố
+deactivate Notif
+
+System --> PM: 13. Thông báo đăng tin thành công
+deactivate System
+
+note over PM, Notif
+  Thông báo tuyển dụng được công bố công khai
+  trên hệ thống để ứng viên có thể xem và nộp hồ sơ
+end note
+
+@enduml

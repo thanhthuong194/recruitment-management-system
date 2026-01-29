@@ -1,0 +1,470 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+\title{\textbf{CRC CARDS\\HỆ THỐNG QUẢN LÝ TUYỂN DỤNG}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Xây dựng các CRC Cards}
+
+% ================== CRC 1: RecruitmentPlan ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "RecruitmentPlan"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Kế hoạch tuyển dụng (RecruitmentPlan) & \textbf{ID:} 1 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Biểu diễn thông tin của một kế hoạch tuyển dụng bao gồm vị trí cần tuyển, số lượng, yêu cầu, thời gian và trạng thái phê duyệt.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC1-UC5} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Lưu trữ thông tin kế hoạch & \multicolumn{2}{|p{11cm}|}{PersonnelManager} \\
+Cập nhật trạng thái phê duyệt & \multicolumn{2}{|p{11cm}|}{Rector} \\
+Theo dõi tiến độ tuyển dụng & \multicolumn{2}{|p{11cm}|}{Hệ thống quản lý tuyển dụng} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã kế hoạch (id) \\
+\quad $\bullet$ Tên kế hoạch (planName) \\
+\quad $\bullet$ Vị trí tuyển dụng (position) \\
+\quad $\bullet$ Số lượng cần tuyển (quantity) \\
+\quad $\bullet$ Yêu cầu (requirements) \\
+\quad $\bullet$ Ngày bắt đầu (startDate) \\
+\quad $\bullet$ Ngày kết thúc (endDate) \\
+\quad $\bullet$ Trạng thái (status) - enum: PENDING, APPROVED, REJECTED \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} None \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} JobPosting \\
+\quad $\bullet$ \textbf{Other Associations:} PersonnelManager, Rector \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 2: User ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "User"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Người dùng (User) & \textbf{ID:} 2 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Đại diện cho người dùng hệ thống, bao gồm thông tin tài khoản, quyền hạn và thông tin cá nhân.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC1-UC5} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Xác thực đăng nhập & \multicolumn{2}{|p{11cm}|}{Hệ thống xác thực} \\
+Quản lý thông tin cá nhân & \multicolumn{2}{|p{11cm}|}{Phân hệ quản lý người dùng} \\
+Phân quyền truy cập & \multicolumn{2}{|p{11cm}|}{SecurityConfig} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã người dùng (id) \\
+\quad $\bullet$ Tên đăng nhập (username) \\
+\quad $\bullet$ Mật khẩu (password) \\
+\quad $\bullet$ Email (email) \\
+\quad $\bullet$ Họ tên (fullName) \\
+\quad $\bullet$ Số điện thoại (phone) \\
+\quad $\bullet$ Vai trò (role) - enum: ADMIN, PERSONNEL\_MANAGER, RECTOR, CANDIDATE \\
+\quad $\bullet$ Trạng thái (active) \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} None \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} None \\
+\quad $\bullet$ \textbf{Other Associations:} Admin, PersonnelManager, Rector, Candidate \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 3: PersonnelManager ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "PersonnelManager"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Cán bộ nhân sự (PersonnelManager) & \textbf{ID:} 3 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Đại diện cho cán bộ nhân sự (TP. TC-CB), người thực hiện các nghiệp vụ lập kế hoạch, đăng thông báo, thu thập hồ sơ và thông báo kết quả tuyển dụng.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC1, UC3, UC4, UC5} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Lập kế hoạch tuyển dụng & \multicolumn{2}{|p{11cm}|}{RecruitmentPlan} \\
+Đăng thông báo tuyển dụng & \multicolumn{2}{|p{11cm}|}{JobPosting, RecruitmentNotification} \\
+Thu thập và sàng lọc hồ sơ & \multicolumn{2}{|p{11cm}|}{Application, Candidate} \\
+Thông báo kết quả tuyển dụng & \multicolumn{2}{|p{11cm}|}{RecruitmentNotification} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã cán bộ (id) \\
+\quad $\bullet$ Mã nhân viên (employeeCode) \\
+\quad $\bullet$ Phòng ban (department) \\
+\quad $\bullet$ Chức vụ (position) \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} User \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} None \\
+\quad $\bullet$ \textbf{Other Associations:} RecruitmentPlan, JobPosting, Application, Candidate \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 4: Rector ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "Rector"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Hiệu trưởng (Rector) & \textbf{ID:} 4 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Đại diện cho Hiệu trưởng/Ban giám đốc, người có quyền phê duyệt hoặc từ chối kế hoạch tuyển dụng.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC2} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Xem xét kế hoạch tuyển dụng & \multicolumn{2}{|p{11cm}|}{RecruitmentPlan} \\
+Phê duyệt kế hoạch & \multicolumn{2}{|p{11cm}|}{Hệ thống quản lý tuyển dụng} \\
+Từ chối kế hoạch & \multicolumn{2}{|p{11cm}|}{PersonnelManager} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã hiệu trưởng (id) \\
+\quad $\bullet$ Chức danh (title) \\
+\quad $\bullet$ Nhiệm kỳ (term) \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} User \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} None \\
+\quad $\bullet$ \textbf{Other Associations:} RecruitmentPlan \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 5: Candidate ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "Candidate"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Ứng viên (Candidate) & \textbf{ID:} 5 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Đại diện cho ứng viên tham gia ứng tuyển, bao gồm thông tin cá nhân và trạng thái ứng tuyển.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC4} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Nộp hồ sơ ứng tuyển & \multicolumn{2}{|p{11cm}|}{Application} \\
+Cập nhật thông tin cá nhân & \multicolumn{2}{|p{11cm}|}{Hệ thống quản lý ứng viên} \\
+Xem kết quả ứng tuyển & \multicolumn{2}{|p{11cm}|}{RecruitmentNotification} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã ứng viên (id) \\
+\quad $\bullet$ Họ tên (fullName) \\
+\quad $\bullet$ Email (email) \\
+\quad $\bullet$ Số điện thoại (phone) \\
+\quad $\bullet$ Địa chỉ (address) \\
+\quad $\bullet$ Ngày sinh (dateOfBirth) \\
+\quad $\bullet$ Giới tính (gender) \\
+\quad $\bullet$ Trình độ học vấn (education) \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} User \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} Application \\
+\quad $\bullet$ \textbf{Other Associations:} JobPosting, RecruitmentNotification \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 6: Application ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "Application"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Đơn ứng tuyển (Application) & \textbf{ID:} 6 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Biểu diễn thông tin đơn ứng tuyển của ứng viên vào một vị trí tuyển dụng, bao gồm hồ sơ và trạng thái xét duyệt.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC4, UC5} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Lưu trữ thông tin đơn ứng tuyển & \multicolumn{2}{|p{11cm}|}{Candidate} \\
+Quản lý tệp đính kèm (CV) & \multicolumn{2}{|p{11cm}|}{FileStorageService} \\
+Cập nhật trạng thái xét duyệt & \multicolumn{2}{|p{11cm}|}{PersonnelManager} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã đơn (id) \\
+\quad $\bullet$ Ngày nộp (submittedDate) \\
+\quad $\bullet$ CV đính kèm (cvUrl) \\
+\quad $\bullet$ Thư giới thiệu (coverLetter) \\
+\quad $\bullet$ Trạng thái (status) - enum: PENDING, REVIEWING, ACCEPTED, REJECTED \\
+\quad $\bullet$ Ghi chú (notes) \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} None \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} None \\
+\quad $\bullet$ \textbf{Other Associations:} Candidate, JobPosting, PersonnelManager \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 7: JobPosting ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "JobPosting"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Tin tuyển dụng (JobPosting) & \textbf{ID:} 7 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Biểu diễn thông tin tin tuyển dụng công khai, bao gồm vị trí, mô tả công việc, yêu cầu và thời hạn nộp hồ sơ.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC3, UC4} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Lưu trữ thông tin tin tuyển dụng & \multicolumn{2}{|p{11cm}|}{RecruitmentPlan} \\
+Hiển thị công khai cho ứng viên & \multicolumn{2}{|p{11cm}|}{Candidate} \\
+Quản lý thời hạn nộp hồ sơ & \multicolumn{2}{|p{11cm}|}{Hệ thống quản lý tuyển dụng} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã tin (id) \\
+\quad $\bullet$ Tiêu đề (title) \\
+\quad $\bullet$ Mô tả công việc (description) \\
+\quad $\bullet$ Yêu cầu (requirements) \\
+\quad $\bullet$ Mức lương (salary) \\
+\quad $\bullet$ Địa điểm làm việc (location) \\
+\quad $\bullet$ Ngày đăng (postedDate) \\
+\quad $\bullet$ Hạn nộp (deadline) \\
+\quad $\bullet$ Trạng thái (status) - enum: ACTIVE, CLOSED, DRAFT \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} None \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} Application \\
+\quad $\bullet$ \textbf{Other Associations:} RecruitmentPlan, JobPosition, PersonnelManager \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 8: RecruitmentNotification ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "RecruitmentNotification"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Thông báo tuyển dụng (RecruitmentNotification) & \textbf{ID:} 8 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Biểu diễn thông báo tuyển dụng và thông báo kết quả gửi đến ứng viên.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC3, UC5} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Lưu trữ nội dung thông báo & \multicolumn{2}{|p{11cm}|}{PersonnelManager} \\
+Công bố thông báo công khai & \multicolumn{2}{|p{11cm}|}{Hệ thống quản lý thông báo} \\
+Gửi email thông báo & \multicolumn{2}{|p{11cm}|}{Candidate} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã thông báo (id) \\
+\quad $\bullet$ Tiêu đề (title) \\
+\quad $\bullet$ Nội dung (content) \\
+\quad $\bullet$ Loại thông báo (type) - enum: RECRUITMENT, RESULT \\
+\quad $\bullet$ Ngày tạo (createdDate) \\
+\quad $\bullet$ Ngày công bố (publishedDate) \\
+\quad $\bullet$ Trạng thái (status) - enum: DRAFT, PUBLISHED \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} None \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} None \\
+\quad $\bullet$ \textbf{Other Associations:} PersonnelManager, Candidate, RecruitmentPlan \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 9: JobPosition ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "JobPosition"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Vị trí công việc (JobPosition) & \textbf{ID:} 9 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Biểu diễn thông tin vị trí công việc trong tổ chức, dùng để phân loại các tin tuyển dụng.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC1, UC3} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Lưu trữ thông tin vị trí & \multicolumn{2}{|p{11cm}|}{JobPosting} \\
+Phân loại công việc & \multicolumn{2}{|p{11cm}|}{RecruitmentPlan} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã vị trí (id) \\
+\quad $\bullet$ Tên vị trí (name) \\
+\quad $\bullet$ Mô tả (description) \\
+\quad $\bullet$ Phòng ban (department) \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} None \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} None \\
+\quad $\bullet$ \textbf{Other Associations:} JobPosting, RecruitmentPlan \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== CRC 10: RecruitmentResult ==================
+\begin{table}[h!]
+\centering
+\caption{CRC của Class "RecruitmentResult"}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4cm}|p{5cm}|p{6cm}|}
+\hline
+\textbf{Class Name:} Kết quả tuyển dụng (RecruitmentResult) & \textbf{ID:} 10 & \textbf{Type:} Concrete, Domain \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Description:} Biểu diễn kết quả tuyển dụng của từng ứng viên sau quá trình xét duyệt.} \\
+\hline
+\multicolumn{3}{|p{15cm}|}{\textbf{Associated Use Cases:} UC5} \\
+\hline
+\textbf{Responsibilities} & \multicolumn{2}{|p{11cm}|}{\textbf{Collaborators}} \\
+\hline
+Lưu trữ kết quả xét duyệt & \multicolumn{2}{|p{11cm}|}{Application} \\
+Cập nhật trạng thái trúng tuyển & \multicolumn{2}{|p{11cm}|}{Candidate} \\
+Cung cấp dữ liệu cho thông báo & \multicolumn{2}{|p{11cm}|}{RecruitmentNotification} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Attributes:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ Mã kết quả (id) \\
+\quad $\bullet$ Kết quả (result) - enum: PASSED, FAILED \\
+\quad $\bullet$ Điểm đánh giá (score) \\
+\quad $\bullet$ Nhận xét (comments) \\
+\quad $\bullet$ Ngày công bố (announcedDate) \\
+} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Relationships:}} \\
+\multicolumn{3}{|p{15cm}|}{
+\quad $\bullet$ \textbf{Generalization (a-kind-of):} None \\
+\quad $\bullet$ \textbf{Aggregation (has-parts):} None \\
+\quad $\bullet$ \textbf{Other Associations:} Application, Candidate, RecruitmentNotification \\
+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ================== BẢNG TỔNG HỢP CRC CARDS ==================
+\section*{Bảng tổng hợp các CRC Cards}
+
+\begin{table}[h!]
+\centering
+\caption{Tổng hợp các Class trong hệ thống}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|p{4cm}|p{3cm}|p{6cm}|}
+\hline
+\textbf{ID} & \textbf{Class Name} & \textbf{Type} & \textbf{Associated Use Cases} \\
+\hline
+1 & RecruitmentPlan & Concrete, Domain & UC1, UC2, UC3, UC4, UC5 \\
+\hline
+2 & User & Concrete, Domain & UC1, UC2, UC3, UC4, UC5 \\
+\hline
+3 & PersonnelManager & Concrete, Domain & UC1, UC3, UC4, UC5 \\
+\hline
+4 & Rector & Concrete, Domain & UC2 \\
+\hline
+5 & Candidate & Concrete, Domain & UC4 \\
+\hline
+6 & Application & Concrete, Domain & UC4, UC5 \\
+\hline
+7 & JobPosting & Concrete, Domain & UC3, UC4 \\
+\hline
+8 & RecruitmentNotification & Concrete, Domain & UC3, UC5 \\
+\hline
+9 & JobPosition & Concrete, Domain & UC1, UC3 \\
+\hline
+10 & RecruitmentResult & Concrete, Domain & UC5 \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{document}

@@ -1,0 +1,85 @@
+@startuml Sequence_ThuThapHoSo
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam sequenceParticipantBackgroundColor #E3F2FD
+skinparam sequenceParticipantBorderColor #1565C0
+skinparam sequenceArrowColor #1565C0
+skinparam sequenceLifeLineBorderColor #90CAF9
+
+title Sơ đồ tuần tự - UC4: Thu thập và lập danh sách hồ sơ dự tuyển
+
+actor "Ứng viên" as Cand #FFE082
+participant "Hệ thống" as System #E3F2FD
+database "Cơ sở dữ liệu" as DB #C8E6C9
+actor "Cán bộ nhân sự" as PM #FFE082
+
+== Ứng viên xem và nộp hồ sơ ==
+
+Cand -> System: 1. Truy cập trang tuyển dụng
+activate System
+System -> DB: 2. Lấy danh sách tin tuyển dụng
+activate DB
+DB --> System: 3. Danh sách tin tuyển dụng
+deactivate DB
+System --> Cand: 4. Hiển thị danh sách việc làm
+deactivate System
+
+Cand -> System: 5. Xem chi tiết tin tuyển dụng
+activate System
+System --> Cand: 6. Hiển thị thông tin chi tiết
+deactivate System
+
+Cand -> System: 7. Đăng ký ứng tuyển
+activate System
+System --> Cand: 8. Hiển thị form nộp hồ sơ
+deactivate System
+
+Cand -> System: 9. Điền thông tin và nộp hồ sơ
+activate System
+note right
+  - Sơ yếu lý lịch
+  - Đơn xin dự tuyển
+  - CV đính kèm
+  - Thư giới thiệu
+end note
+
+System -> DB: 10. Lưu hồ sơ ứng tuyển
+activate DB
+DB --> System: 11. Xác nhận lưu thành công
+deactivate DB
+System --> Cand: 12. Thông báo nộp hồ sơ thành công
+deactivate System
+
+== Cán bộ nhân sự thu thập và sàng lọc hồ sơ ==
+
+PM -> System: 13. Truy cập quản lý hồ sơ ứng tuyển
+activate System
+System -> DB: 14. Lấy danh sách hồ sơ
+activate DB
+DB --> System: 15. Danh sách hồ sơ ứng tuyển
+deactivate DB
+System --> PM: 16. Hiển thị danh sách hồ sơ
+deactivate System
+
+PM -> System: 17. Xem chi tiết từng hồ sơ
+activate System
+System --> PM: 18. Hiển thị thông tin hồ sơ
+
+alt Hồ sơ đạt yêu cầu
+    PM -> System: 19a. Đưa vào danh sách xét duyệt
+    System -> DB: 20a. Cập nhật trạng thái "Đạt yêu cầu"
+else Hồ sơ không đạt
+    PM -> System: 19b. Loại hồ sơ (ghi chú lý do)
+    System -> DB: 20b. Cập nhật trạng thái "Không đạt"
+end
+
+DB --> System: 21. Xác nhận cập nhật
+System --> PM: 22. Cập nhật danh sách thành công
+deactivate System
+
+note over PM, DB
+  Cán bộ nhân sự lập danh sách
+  ứng viên đạt yêu cầu để xét duyệt
+end note
+
+@enduml

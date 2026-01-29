@@ -16,18 +16,58 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Controller quản lý Upload/Download File (CV).
+ * 
+ * <p>Cung cấp các API endpoint cho:
+ * <ul>
+ *   <li>POST /api/files/upload-cv - Upload file CV (Public)</li>
+ *   <li>GET /api/files/download/{fileName} - Download file CV</li>
+ * </ul>
+ * 
+ * <p>Định dạng file được hỗ trợ:
+ * <ul>
+ *   <li>PDF (.pdf)</li>
+ *   <li>Word (.doc, .docx)</li>
+ * </ul>
+ * 
+ * <p>Giới hạn: 5MB tối đa
+ * 
+ * @author Recruitment Team
+ * @version 1.0
+ * @see FileStorageService
+ */
 @RestController
 @RequestMapping("/api/files")
 @CrossOrigin(origins = "*")
 public class FileUploadController {
 
+    /** Service xử lý lưu trữ file */
     @Autowired
     private FileStorageService fileStorageService;
 
+    /** Thư mục lưu trữ file upload */
     @Value("${file.upload-dir:uploads/cv}")
     private String uploadDir;
 
-    // Public endpoint - Upload CV (no authentication required)
+    /**
+     * Upload file CV (Public API - không cần đăng nhập).
+     * 
+     * <p>Endpoint: POST /api/files/upload-cv
+     * 
+     * <p>Quy trình validation:
+     * <ol>
+     *   <li>Kiểm tra file không rỗng</li>
+     *   <li>Kiểm tra định dạng file (PDF, DOC, DOCX)</li>
+     *   <li>Kiểm tra kích thước file (max 5MB)</li>
+     *   <li>Lưu file với tên unique (UUID)</li>
+     * </ol>
+     * 
+     * @param file MultipartFile - File CV cần upload
+     * @return ResponseEntity chứa:
+     *         - Thành công: { filePath: "/uploads/cv/xxx.pdf", message: "..." }
+     *         - Thất bại: { error: "lý do" } với HTTP 400
+     */
     @PostMapping("/upload-cv")
     public ResponseEntity<?> uploadCV(@RequestParam("file") MultipartFile file) {
         try {
@@ -70,7 +110,20 @@ public class FileUploadController {
         }
     }
 
-    // Public endpoint - Download CV
+    /**
+     * Download file CV theo tên file.
+     * 
+     * <p>Endpoint: GET /api/files/download/{fileName}
+     * 
+     * <p>Trả về file với header Content-Disposition: inline để có thể xem trực tiếp
+     * trong browser (đối với PDF).
+     * 
+     * @param fileName Tên file cần download (UUID + extension)
+     * @return ResponseEntity chứa:
+     *         - Thành công: Resource file với đúng Content-Type
+     *         - Thất bại: HTTP 404 nếu không tìm thấy
+     *         - Thất bại: HTTP 400 nếu có lỗi
+     */
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadCV(@PathVariable String fileName) {
         try {
