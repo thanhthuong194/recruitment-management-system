@@ -46,20 +46,9 @@ public class UserManagementController {
 
     /** Repository truy vấn users */
     private final UsersRepository usersRepository;
-    
-    /** Repository truy vấn UnitManager */
     private final UnitManagerRepository unitManagerRepository;
-    
-    /** Encoder để mã hóa password */
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Constructor khởi tạo UserManagementController với dependency injection.
-     * 
-     * @param usersRepository Repository xử lý User
-     * @param unitManagerRepository Repository xử lý UnitManager
-     * @param passwordEncoder Password encoder cho BCrypt
-     */
     public UserManagementController(UsersRepository usersRepository, 
                                    UnitManagerRepository unitManagerRepository,
                                    PasswordEncoder passwordEncoder) {

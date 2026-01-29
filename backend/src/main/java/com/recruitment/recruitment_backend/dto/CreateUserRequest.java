@@ -70,10 +70,7 @@ public class CreateUserRequest {
     
     /** Giới tính: Nam, Nữ, Khác */
     private String sex;
-    
-    /** Phòng ban (bắt buộc cho UNIT_MANAGER) */
+    // UNIT_MANAGER specific fields
     private String department;
-    
-    /** Chức vụ (bắt buộc cho UNIT_MANAGER) */
     private String position;
 }
